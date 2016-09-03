@@ -18,6 +18,7 @@ class led_anim_c
         //current color levels (this is compatible with FastLED)
         CRGB led_level[LED_COUNT];
 
+    private:
         //alternate color levels. (used for stuff like fading and blinking)
         CRGB led_alternate_level[LED_COUNT];
 
@@ -35,6 +36,7 @@ class led_anim_c
         uint8_t led_param2[LED_COUNT];
 
 
+    public:
         //constructor
         led_anim_c()
         {
@@ -49,7 +51,25 @@ class led_anim_c
 
         }
 
+        //fade from current to specified level, by stepsize
+        void fade_to_fast(uint16_t led, CRGB level, uint8_t stepsize)
+        {
+            led_alternate_level[led]=level;
+            led_mode[led]=MODE_FADE_FAST;
+            led_param1[led]=stepsize;
+        }
 
+        //fade from specified level back to current to level, by stepsize
+        void fade_from_fast(uint16_t led, CRGB level, uint8_t stepsize)
+        {
+            led_alternate_level[led]=led_level[led];
+            led_level[led]=level;
+            led_mode[led]=MODE_FADE_FAST;
+            led_param1[led]=stepsize;
+        }
+
+
+    private:
         //fades led_level to led_alternate_level by led_param1 steps on every call.
         void step_fade_fast(uint16_t led)
         {
@@ -99,6 +119,7 @@ class led_anim_c
         }
 
 
+    public:
         void step()
         {
             for (uint16_t led=0; led<LED_COUNT; led++)

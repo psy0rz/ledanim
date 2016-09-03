@@ -28,6 +28,12 @@ struct CRGB {
 		uint8_t raw[3];
 	};
 
+    /// allow construction from R, G, B
+    inline CRGB( uint8_t ir, uint8_t ig, uint8_t ib)  __attribute__((always_inline))
+        : r(ir), g(ig), b(ib)
+    {
+    }
+
   /// Array access operator to index into the crgb object
 	inline uint8_t& operator[] (uint8_t x) __attribute__((always_inline))
     {

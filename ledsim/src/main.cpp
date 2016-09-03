@@ -40,16 +40,17 @@ int main(int, char**){
     #define LED_COUNT 100
     led_anim_c<LED_COUNT> led_anim;
 
-    led_anim.led_level[0].r=255;
-    led_anim.led_alternate_level[0].r=0;
-    led_anim.led_alternate_level[0].g=255;
-    led_anim.led_alternate_level[0].b=0;
-    led_anim.led_mode[0]=led_anim_c<LED_COUNT>::MODE_FADE_FAST;
-    led_anim.led_param1[0]=1;
+    for (int led=0; led<10; led++)
+    {
+        led_anim.fade_to_fast(led, CRGB(255,128,0), led+1);
+        led_anim.fade_from_fast(led+10, CRGB(255,128,255), led+1);
+    }
+
 
     SDL_Event e;
     bool quit = false;
     while (!quit){
+
         led_anim.step();
 
         //draw leds
