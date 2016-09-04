@@ -1,3 +1,5 @@
+//class responsible for per-led animations (usually fading and setting)
+
 #ifndef LED_ANIM_H
 #define LED_ANIM_H
 
@@ -51,6 +53,14 @@ class led_anim_c
 
         }
 
+        //set led to a fixed value without effects
+        void set(uint16_t led, CRGB level)
+        {
+            led_mode[led]=0;
+            led_level[led]=level;
+
+        }
+
         //fade from current to specified level, by stepsize
         void fade_to_fast(uint16_t led, CRGB level, uint8_t stepsize)
         {
@@ -67,6 +77,7 @@ class led_anim_c
             led_mode[led]=MODE_FADE_FAST;
             led_param1[led]=stepsize;
         }
+
 
 
     private:

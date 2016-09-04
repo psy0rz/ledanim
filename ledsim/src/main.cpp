@@ -2,7 +2,7 @@
 #include <SDL.h>
 
 
-#include "led_anim.hpp"
+#include "strip_anim.hpp"
 
 #include <iostream>
 
@@ -38,25 +38,32 @@ int main(int, char**){
     SDL_RenderClear(ren);
 
     #define LED_COUNT 100
-    led_anim_c<LED_COUNT> led_anim;
-
-    for (int led=0; led<10; led++)
-    {
-        led_anim.fade_to_fast(led, CRGB(255,128,0), led+1);
-        led_anim.fade_from_fast(led+10, CRGB(255,128,255), led+1);
-    }
+    // led_anim_c<LED_COUNT> led_anim;
+    //
+    // for (int led=0; led<10; led++)
+    // {
+    //     led_anim.fade_to_fast(led, CRGB(255,128,0), led+1);
+    //     led_anim.fade_from_fast(led+10, CRGB(255,128,0), led+1);
+    // }
+    strip_anim_c<LED_COUNT> strip_anim;
 
 
     SDL_Event e;
     bool quit = false;
     while (!quit){
 
-        led_anim.step();
+        strip_anim.step();
 
         //draw leds
         for (uint16_t led=0; led<LED_COUNT; led++)
         {
-        	SDL_SetRenderDrawColor(ren, led_anim.led_level[led].r, led_anim.led_level[led].g, led_anim.led_level[led].b, SDL_ALPHA_OPAQUE);
+        	SDL_SetRenderDrawColor(
+                ren,
+                strip_anim.led_anim.led_level[led].r,
+                strip_anim.led_anim.led_level[led].g,
+                strip_anim.led_anim.led_level[led].b,
+                SDL_ALPHA_OPAQUE
+            );
         	SDL_Rect rect;
         	rect.x=(led+1)*12;
         	rect.y=12;

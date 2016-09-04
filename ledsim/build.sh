@@ -1,4 +1,4 @@
 mkdir build 2>/dev/null
 cd build
-cmake ..
+cmake ..  -DCMAKE_BUILD_TYPE=Release
 make 

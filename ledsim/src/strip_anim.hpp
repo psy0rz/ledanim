@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <led_anim.hpp>
 #include <vector>
+#include "util.hpp"
 
 
 enum led_commands_t
@@ -16,6 +17,7 @@ enum led_commands_t
     CMD_DELAY_8,      //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
     CMD_DELAY_16,     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
     CMD_LED_NR_8,
+    CMD_LED_NR_16,
     CMD_LED_SET_NEXT,
 };
 
@@ -48,6 +50,7 @@ class strip_anim_c
         strip_anim_c()
         {
             commands.push_back(CMD_EOF);
+            DEBUG_LOG("commands:" << commands.size());
             reset();
         }
 
@@ -59,6 +62,8 @@ class strip_anim_c
             pc++;
             if (pc>=commands.size())
                 pc=0;
+
+            // DEBUG_LOG("get_next8: " << ret);
 
             return(ret);
         }
@@ -75,39 +80,51 @@ class strip_anim_c
 
         void execute_commands()
         {
+            uint8_t command;
+
             while(1)
             {
-                switch (get_next8())
+                command=get_next8();
+                switch (command)
                 {
                     //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
-                    CMD_DELAY_8:
+                    case CMD_DELAY_8:
                         delay=get_next8();
+                        DEBUG_LOG("CMD_DELAY_8: " << delay);
                         return;
                     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
-                    CMD_DELAY_16:
+                    case CMD_DELAY_16:
                         delay=get_next16();
+                        DEBUG_LOG("CMD_DELAY_16: " << delay);
                         return;
                     //end of program. update ledstrip and loop.
-                    CMD_EOF:
+                    case CMD_EOF:
                         pc=0;
+                        DEBUG_LOG("CMD_EOF");
                         return;
 
                     //set led number
-                    CMD_LED_NR_8:
+                    case CMD_LED_NR_8:
                         led=get_next8();
+                        DEBUG_LOG("CMD_LED_NR_8: " << led);
                         break;
                     //set led number
-                    CMD_LED_NR_16:
+                    case CMD_LED_NR_16:
                         led=get_next16();
+                        DEBUG_LOG("CMD_LED_NR_16: " << led);
                         break;
 
                     //set current led to specified color and goes to next led
-                    CMD_LED_SET_NEXT:
+                    case CMD_LED_SET_NEXT:
+                        DEBUG_LOG("CMD_LED_SET_NEXT");
                         led_anim.set(led, CRGB(get_next8(), get_next8(), get_next8()));
                         led=led+1;
                         if (led>= LED_COUNT)
                             led=0;
-
+                    default:
+                        DEBUG_LOG("UNKNOWN command " << (int)command << " at pc " << pc);
+                        delay=100;
+                        return;
 
                 }
             }
@@ -119,7 +136,9 @@ class strip_anim_c
 
             if (delay==0)
             {
+                DEBUG_LOG("start execute_commands");
                 execute_commands();
+                DEBUG_LOG("done execute_commands, delay=" << delay);
             }
             else
             {
