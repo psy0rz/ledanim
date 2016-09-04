@@ -48,14 +48,16 @@ int main(int, char**){
 
 
     strip_anim.commands={
-        // CMD_PEN_COLOR_RND  , 0,255 , 0,0 , 0,0 ,
-        CMD_PEN_COLOR_RND  , 0,255 , 0,255 , 0,255 ,
+        CMD_REPEAT_BEGIN_RND   , 0,0  , 0,10  ,
+        CMD_PEN_COLOR_RND      , 0,255 , 0,255 , 0,255 ,
         CMD_PEN_FADE_SPEED_RND , 1 , 10 ,
-        CMD_PEN_FADE_MODE  , FADE_FROM_FAST ,
         CMD_PEN_WIDTH_RND      , 1 , 10 ,
-        CMD_LED_NR_16_RND  , 0,0 , 255,255    ,
-        CMD_PEN_DRAW       ,
-
+        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+        CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
+        CMD_PEN_DRAW           ,
+        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+        CMD_PEN_DRAW           ,
+        CMD_REPEAT_END         ,
     };
 
 

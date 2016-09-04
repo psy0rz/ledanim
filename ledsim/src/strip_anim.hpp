@@ -14,8 +14,14 @@
 enum led_commands_t
 {
     CMD_EOF,         //end of program
+    CMD_UPDATE,
     CMD_DELAY_8,      //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
     CMD_DELAY_16,     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
+
+    CMD_REPEAT_BEGIN,
+    CMD_REPEAT_BEGIN_RND,
+    CMD_REPEAT_END,
+
     CMD_LED_NR_8,
     CMD_LED_NR_8_RND,
     CMD_LED_NR_16,
@@ -29,6 +35,7 @@ enum led_commands_t
     CMD_PEN_FADE_MODE,
     CMD_PEN_FADE_SPEED,
     CMD_PEN_FADE_SPEED_RND,
+
 };
 
 
@@ -52,6 +59,9 @@ class strip_anim_c
 
         //current proram counter.
         uint16_t pc;
+
+        uint16_t repeat_count;
+        uint16_t repeat_begin;
 
         //delay until next command
         uint16_t delay;
@@ -83,6 +93,8 @@ class strip_anim_c
             pen_width=1;
             pen_skip=0;
             pen_fade_mode=FADE_NONE;
+            repeat_begin=0;
+            repeat_count=0;
         }
 
         strip_anim_c()
@@ -127,23 +139,52 @@ class strip_anim_c
                 command=get_next8();
                 switch (command)
                 {
-                    //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
+                    //send output and continue execution. execution continues when step-time is complete.
+                    case CMD_UPDATE:
+                        DEBUG_LOG("CMD_UPDATE");
+                        return;
+
+                    //send output and delay execution. (fades keep going)
                     case CMD_DELAY_8:
                         delay=get_next8();
                         DEBUG_LOG("CMD_DELAY_8: " << delay);
                         return;
 
-                    //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
+                    //16 bits
                     case CMD_DELAY_16:
                         delay=get_next16();
                         DEBUG_LOG("CMD_DELAY_16: " << delay);
                         return;
+
+
 
                     //end of program. update ledstrip and loop.
                     case CMD_EOF:
                         pc=0;
                         DEBUG_LOG("CMD_EOF");
                         return;
+
+                    //start of a repeating loop
+                    case CMD_REPEAT_BEGIN:
+                        repeat_count=get_next16();
+                        repeat_begin=pc;
+                        break;
+
+                    case CMD_REPEAT_BEGIN_RND:
+                        min=get_next16();
+                        max=get_next16();
+                        repeat_count=get_random(min,max);
+                        repeat_begin=pc;
+                        break;
+
+                    //end of repeating loop, jump to beginning until repeat_count is 0
+                    case CMD_REPEAT_END:
+                        if (repeat_count>0)
+                        {
+                            pc=repeat_begin;
+                            repeat_count--;
+                        }
+                        break;
 
                     //set led number, 8 bits.
                     case CMD_LED_NR_8:
