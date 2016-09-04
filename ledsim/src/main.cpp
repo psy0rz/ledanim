@@ -37,15 +37,28 @@ int main(int, char**){
     SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ren);
 
-    #define LED_COUNT 100
-    // led_anim_c<LED_COUNT> led_anim;
-    //
-    // for (int led=0; led<10; led++)
-    // {
-    //     led_anim.fade_to_fast(led, CRGB(255,128,0), led+1);
-    //     led_anim.fade_from_fast(led+10, CRGB(255,128,0), led+1);
-    // }
+    #define COLS 50
+    #define ROWS 30
+    #define LED_COUNT ROWS*COLS
+
     strip_anim_c<LED_COUNT> strip_anim;
+
+    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
+    strip_anim.commands.push_back(255);
+    strip_anim.commands.push_back(0);
+    strip_anim.commands.push_back(0);
+
+    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
+    strip_anim.commands.push_back(0);
+    strip_anim.commands.push_back(255);
+    strip_anim.commands.push_back(0);
+
+    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
+    strip_anim.commands.push_back(0);
+    strip_anim.commands.push_back(0);
+    strip_anim.commands.push_back(255);
+
+
 
 
     SDL_Event e;
@@ -55,27 +68,33 @@ int main(int, char**){
         strip_anim.step();
 
         //draw leds
-        for (uint16_t led=0; led<LED_COUNT; led++)
+
+        for (uint16_t row=0; row<ROWS; row++)
         {
-        	SDL_SetRenderDrawColor(
-                ren,
-                strip_anim.led_anim.led_level[led].r,
-                strip_anim.led_anim.led_level[led].g,
-                strip_anim.led_anim.led_level[led].b,
-                SDL_ALPHA_OPAQUE
-            );
-        	SDL_Rect rect;
-        	rect.x=(led+1)*12;
-        	rect.y=12;
-        	rect.h=10;
-        	rect.w=10;
+            for (uint16_t col=0; col<COLS; col++)
+            {
+                uint16_t led=(row*COLS) + col;
+
+            	SDL_SetRenderDrawColor(
+                    ren,
+                    strip_anim.led_anim.led_level[led].r,
+                    strip_anim.led_anim.led_level[led].g,
+                    strip_anim.led_anim.led_level[led].b,
+                    SDL_ALPHA_OPAQUE
+                );
+            	SDL_Rect rect;
+                rect.x=(col+1)*12;
+                rect.y=(row+1)*12;
+            	rect.h=10;
+            	rect.w=10;
 
 
-        	if (SDL_RenderFillRect(ren, &rect))
-        	{
-        		std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
-        	}
+            	if (SDL_RenderFillRect(ren, &rect))
+            	{
+            		std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
+            	}
 
+            }
         }
 
         //this loop basicly runs at monitor refresh speed

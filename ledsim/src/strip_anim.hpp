@@ -49,8 +49,6 @@ class strip_anim_c
 
         strip_anim_c()
         {
-            commands.push_back(CMD_EOF);
-            DEBUG_LOG("commands:" << commands.size());
             reset();
         }
 
@@ -58,10 +56,12 @@ class strip_anim_c
         uint8_t get_next8()
         {
             uint8_t ret;
+
+            if (pc>= commands.size())
+                return(CMD_EOF);
+
             ret=commands[pc];
             pc++;
-            if (pc>=commands.size())
-                pc=0;
 
             // DEBUG_LOG("get_next8: " << ret);
 
@@ -116,13 +116,21 @@ class strip_anim_c
 
                     //set current led to specified color and goes to next led
                     case CMD_LED_SET_NEXT:
-                        DEBUG_LOG("CMD_LED_SET_NEXT");
-                        led_anim.set(led, CRGB(get_next8(), get_next8(), get_next8()));
-                        led=led+1;
-                        if (led>= LED_COUNT)
-                            led=0;
+                        {
+                            CRGB rgb;
+                            rgb.r=get_next8();
+                            rgb.g=get_next8();
+                            rgb.b=get_next8();
+                            DEBUG_LOG("CMD_LED_SET_NEXT (" << (int)rgb.r << " , " << (int)rgb.g << " , " << (int)rgb.b << ")  led=" << led);
+                            led_anim.set(led, rgb);
+                            led=led+1;
+                            if (led>= LED_COUNT)
+                                led=0;
+                            break;
+                        }
+
                     default:
-                        DEBUG_LOG("UNKNOWN command " << (int)command << " at pc " << pc);
+                        DEBUG_LOG("UNKNOWN command " << (int)command << " at pc " << pc-1);
                         delay=100;
                         return;
 
