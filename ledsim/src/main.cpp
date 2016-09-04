@@ -12,26 +12,26 @@
  * Lesson 0: Test to make sure SDL is setup properly
  */
 int main(int, char**){
-	if (SDL_Init(SDL_INIT_VIDEO) != 0){
-		std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
+    if (SDL_Init(SDL_INIT_VIDEO) != 0){
+        std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
 
-	SDL_Window *win = SDL_CreateWindow("Led strip simulation", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
-	if (win == NULL){
-		std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-		SDL_Quit();
-		return 1;
-	}
+    SDL_Window *win = SDL_CreateWindow("Led strip simulation", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    if (win == NULL){
+        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
 
     SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     // SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED );
-	if (ren == NULL){
-		SDL_DestroyWindow(win);
-		std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-		SDL_Quit();
-		return 1;
-	}
+    if (ren == NULL){
+        SDL_DestroyWindow(win);
+        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
 
 
 
@@ -106,7 +106,8 @@ int main(int, char**){
         CMD_PEN_DRAW           ,
         CMD_DELAY_8            , 8 ,
         CMD_REPEAT_END         ,
-   };
+    };
+
 
     struct timespec now;
     struct timespec prev;
@@ -142,24 +143,24 @@ int main(int, char**){
             {
                 uint16_t led=(row*COLS) + col;
 
-            	SDL_SetRenderDrawColor(
+                SDL_SetRenderDrawColor(
                     ren,
                     strip_anim.led_anim.led_level[led].r,
                     strip_anim.led_anim.led_level[led].g,
                     strip_anim.led_anim.led_level[led].b,
                     SDL_ALPHA_OPAQUE
                 );
-            	SDL_Rect rect;
+                SDL_Rect rect;
                 rect.x=(col+1)*12;
                 rect.y=(row+1)*12;
-            	rect.h=10;
-            	rect.w=10;
+                rect.h=10;
+                rect.w=10;
 
 
-            	if (SDL_RenderFillRect(ren, &rect))
-            	{
-            		std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
-            	}
+                if (SDL_RenderFillRect(ren, &rect))
+                {
+                    std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
+                }
 
             }
 
@@ -170,9 +171,9 @@ int main(int, char**){
 
         while (SDL_PollEvent(&e))
         {
-    		if (e.type == SDL_QUIT){
-    			quit = true;
-    		}
+            if (e.type == SDL_QUIT){
+                quit = true;
+            }
         }
 
         // FPS
@@ -190,6 +191,6 @@ int main(int, char**){
 
 
 
-	SDL_Quit();
-	return 0;
+    SDL_Quit();
+    return 0;
 }
