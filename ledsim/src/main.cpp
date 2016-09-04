@@ -90,6 +90,8 @@ int main(int, char**){
         CMD_PEN_COLOR          , 255 , 0 , 0 ,
         CMD_PEN_FADE_SPEED     , 5  ,
         CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
+        CMD_PEN_CLONE_COUNT    , 0,3 ,
+        CMD_PEN_CLONE_OFFSET   , 0,9 ,
 
         //to the right
         CMD_PEN_STEP           , 1 ,

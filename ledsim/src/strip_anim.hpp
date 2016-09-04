@@ -36,6 +36,8 @@ enum led_commands_t
     CMD_PEN_FADE_MODE,
     CMD_PEN_FADE_SPEED,
     CMD_PEN_FADE_SPEED_RND,
+    CMD_PEN_CLONE_COUNT,
+    CMD_PEN_CLONE_OFFSET,
 
 };
 
@@ -73,10 +75,13 @@ class strip_anim_c
         //current pen color
         CRGB pen_color;
 
-
-
         //current pen width
         uint16_t pen_width;
+
+        //clone pen every X leds
+        uint16_t pen_clone_offset;
+        uint16_t pen_clone_count;
+
 
         //current pen_step
         int8_t pen_step;
@@ -98,6 +103,8 @@ class strip_anim_c
             pen_fade_mode=FADE_NONE;
             repeat_begin=0;
             repeat_count=0;
+            pen_clone_offset=0;
+            pen_clone_count=0;
         }
 
         strip_anim_c()
@@ -300,31 +307,45 @@ class strip_anim_c
                         DEBUG_LOG("CMD_PEN_FADE_SPEED_RND (" << (int)pen_fade_speed << ")");
                         break;
 
+                    //set current pen clone count and offset.
+                    case CMD_PEN_CLONE_OFFSET:
+                        pen_clone_offset=get_next16();
+                        DEBUG_LOG("CMD_PEN_CLONE_SIZE (" << (int)pen_clone_offset << ")");
+                        break;
+
+                    case CMD_PEN_CLONE_COUNT:
+                        pen_clone_count=get_next16();
+                        DEBUG_LOG("CMD_PEN_CLONE_COUNT (" << (int)pen_clone_count << ")");
+                        break;
 
 
                     //draw with the current pen-settings
                     case CMD_PEN_DRAW:
                         {
                             uint16_t tmp_led=led;
-                            for (uint16_t i=0; i<pen_width; i++)
+                            for (uint16_t clone_count=0; clone_count<pen_clone_count+1; clone_count++)
                             {
-                                switch (pen_fade_mode)
+                                for (uint16_t width_count=0; width_count<pen_width; width_count++)
                                 {
-                                    case FADE_NONE:
-                                        led_anim.set(tmp_led, pen_color);
-                                        break;
-                                    case FADE_TO_FAST:
-                                        led_anim.fade_to_fast(tmp_led, pen_color, pen_fade_speed);
-                                        break;
-                                    case FADE_FROM_FAST:
-                                        led_anim.fade_from_fast(tmp_led, pen_color, pen_fade_speed);
-                                        break;
-                                    default:
-                                        break;
+                                    switch (pen_fade_mode)
+                                    {
+                                        case FADE_NONE:
+                                            led_anim.set(tmp_led, pen_color);
+                                            break;
+                                        case FADE_TO_FAST:
+                                            led_anim.fade_to_fast(tmp_led, pen_color, pen_fade_speed);
+                                            break;
+                                        case FADE_FROM_FAST:
+                                            led_anim.fade_from_fast(tmp_led, pen_color, pen_fade_speed);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    tmp_led++;
+                                    if (tmp_led>=LED_COUNT)
+                                        tmp_led=0;
                                 }
-                                tmp_led++;
-                                if (tmp_led>=LED_COUNT)
-                                    tmp_led=0;
+                                tmp_led=(tmp_led+pen_clone_offset-1)%LED_COUNT;
                             }
                         }
                         led=(led+pen_step)%LED_COUNT;
