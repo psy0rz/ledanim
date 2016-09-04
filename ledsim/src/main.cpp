@@ -111,7 +111,7 @@ int main(int, char**){
     //police lights
     strip_anim.commands={
         CMD_PEN_WIDTH          , 10,
-        CMD_PEN_CLONE_COUNT    , 0,1 ,
+        CMD_PEN_CLONE_COUNT    , 0,5 ,
         CMD_PEN_CLONE_OFFSET   , 0,20,
 
         ///////////////////////// left red
