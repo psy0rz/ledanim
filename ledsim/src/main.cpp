@@ -40,13 +40,14 @@ int main(int, char**){
     SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ren);
 
-    #define COLS 50
-    #define ROWS 30
+    #define COLS 40
+    #define ROWS 4
     #define LED_COUNT ROWS*COLS
 
     strip_anim_c<LED_COUNT> strip_anim;
 
 
+    //random noise to test various functions
     strip_anim.commands={
         CMD_REPEAT_BEGIN_RND   , 0,0  , 0,10  ,
         CMD_PEN_COLOR_RND      , 0,255 , 0,255 , 0,255 ,
@@ -55,6 +56,29 @@ int main(int, char**){
         CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
         CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
         CMD_PEN_DRAW           ,
+        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+        CMD_PEN_DRAW           ,
+        CMD_REPEAT_END         ,
+    };
+
+    //fire animation, we try to make the indirect light on the ground look like fire.
+    strip_anim.commands={
+        //glowing red background
+        CMD_REPEAT_BEGIN       , 0,100,
+        CMD_PEN_COLOR_RND      , 20,127 , 0,0 , 0,0 ,
+        CMD_PEN_FADE_SPEED     , 1  ,
+        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+        CMD_PEN_WIDTH          , 1,
+        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+        CMD_PEN_DRAW           ,
+        CMD_REPEAT_END         ,
+
+        //bright yellow flames
+        CMD_REPEAT_BEGIN       , 0,2,
+        CMD_PEN_COLOR_RND      , 200,255 , 100,200 , 0,0 ,
+        CMD_PEN_FADE_SPEED_RND , 10 , 30 ,
+        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+        CMD_PEN_WIDTH_RND      , 1 , 3,
         CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
         CMD_PEN_DRAW           ,
         CMD_REPEAT_END         ,
