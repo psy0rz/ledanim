@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include <time.h>
+
 /*
  * Lesson 0: Test to make sure SDL is setup properly
  */
@@ -22,7 +24,8 @@ int main(int, char**){
 		return 1;
 	}
 
-	SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    // SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED );
 	if (ren == NULL){
 		SDL_DestroyWindow(win);
 		std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -43,21 +46,36 @@ int main(int, char**){
 
     strip_anim_c<LED_COUNT> strip_anim;
 
-    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
-    strip_anim.commands.push_back(255);
-    strip_anim.commands.push_back(0);
-    strip_anim.commands.push_back(0);
 
-    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
-    strip_anim.commands.push_back(0);
-    strip_anim.commands.push_back(255);
-    strip_anim.commands.push_back(0);
+    strip_anim.commands={
+        // CMD_PEN_COLOR_RND  , 0,255 , 0,0 , 0,0 ,
+        CMD_PEN_COLOR_RND  , 0,255 , 0,255 , 0,255 ,
+        CMD_PEN_FADE_SPEED_RND , 1 , 10 ,
+        CMD_PEN_FADE_MODE  , FADE_FROM_FAST ,
+        CMD_PEN_WIDTH_RND      , 1 , 10 ,
+        CMD_LED_NR_16_RND  , 0,0 , 255,255    ,
+        CMD_PEN_DRAW       ,
 
-    strip_anim.commands.push_back(CMD_LED_SET_NEXT);
-    strip_anim.commands.push_back(0);
-    strip_anim.commands.push_back(0);
-    strip_anim.commands.push_back(255);
+    };
 
+
+    struct timespec now;
+    struct timespec prev;
+    int count=0;
+
+    // //pure performance test without graphics:
+    // while(1)
+    // {
+    //     strip_anim.step();
+    //     count++;
+    //     clock_gettime(CLOCK_REALTIME,&now);
+    //     if (now.tv_sec!=prev.tv_sec)
+    //     {
+    //         std::cout << "step/s: " << count << "\n";
+    //         count=0;
+    //         prev.tv_sec=now.tv_sec;
+    //     }
+    // }
 
 
 
@@ -95,6 +113,7 @@ int main(int, char**){
             	}
 
             }
+
         }
 
         //this loop basicly runs at monitor refresh speed
@@ -106,6 +125,17 @@ int main(int, char**){
     			quit = true;
     		}
         }
+
+        // FPS
+        count++;
+        clock_gettime(CLOCK_REALTIME,&now);
+        if (now.tv_sec!=prev.tv_sec)
+        {
+            std::cout << "fps: " << count << "\n";
+            count=0;
+            prev.tv_sec=now.tv_sec;
+        }
+
 
     }
 

@@ -72,10 +72,21 @@ class led_anim_c
         //fade from specified level back to current to level, by stepsize
         void fade_from_fast(uint16_t led, CRGB level, uint8_t stepsize)
         {
-            led_alternate_level[led]=led_level[led];
-            led_level[led]=level;
-            led_mode[led]=MODE_FADE_FAST;
-            led_param1[led]=stepsize;
+            // already fading to something?
+            if (led_mode[led]==MODE_FADE_FAST || led_mode[led]==MODE_FADE_SLOW)
+            {
+                //keep fading to it, but now from a different level
+                led_level[led]=level;
+                led_mode[led]=MODE_FADE_FAST;
+                led_param1[led]=stepsize;
+            }
+            else
+            {
+                led_alternate_level[led]=led_level[led];
+                led_level[led]=level;
+                led_mode[led]=MODE_FADE_FAST;
+                led_param1[led]=stepsize;
+            }
         }
 
 
