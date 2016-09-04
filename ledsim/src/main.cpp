@@ -61,28 +61,28 @@ int main(int, char**){
         CMD_REPEAT_END         ,
     };
 
-    //fire animation, we try to make the indirect light on the ground look like fire.
-    strip_anim.commands={
-        //glowing red background
-        CMD_REPEAT_BEGIN       , 0,100,
-        CMD_PEN_COLOR_RND      , 20,127 , 0,0 , 0,0 ,
-        CMD_PEN_FADE_SPEED     , 1  ,
-        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
-        CMD_PEN_WIDTH          , 1,
-        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
-        CMD_PEN_DRAW           ,
-        CMD_REPEAT_END         ,
-
-        //bright yellow flames
-        CMD_REPEAT_BEGIN       , 0,2,
-        CMD_PEN_COLOR_RND      , 200,255 , 100,200 , 0,0 ,
-        CMD_PEN_FADE_SPEED_RND , 10 , 30 ,
-        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
-        CMD_PEN_WIDTH_RND      , 1 , 3,
-        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
-        CMD_PEN_DRAW           ,
-        CMD_REPEAT_END         ,
-    };
+    // //fire animation, we try to make the indirect light on the ground look like fire.
+    // strip_anim.commands={
+    //     //glowing red background
+    //     CMD_REPEAT_BEGIN       , 0,100,
+    //     CMD_PEN_COLOR_RND      , 20,127 , 0,0 , 0,0 ,
+    //     CMD_PEN_FADE_SPEED     , 1  ,
+    //     CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+    //     CMD_PEN_WIDTH          , 1,
+    //     CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_REPEAT_END         ,
+    //
+    //     //bright yellow flames
+    //     CMD_REPEAT_BEGIN       , 0,2,
+    //     CMD_PEN_COLOR_RND      , 200,255 , 100,200 , 0,0 ,
+    //     CMD_PEN_FADE_SPEED_RND , 10 , 30 ,
+    //     CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+    //     CMD_PEN_WIDTH_RND      , 1 , 3,
+    //     CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_REPEAT_END         ,
+    // };
 
 
     //KITT knightrider radar
@@ -107,68 +107,68 @@ int main(int, char**){
         CMD_DELAY_8            , 8 ,
         CMD_REPEAT_END         ,
     };
-
-    //police lights
-    strip_anim.commands={
-        CMD_PEN_WIDTH          , 10,
-        CMD_PEN_CLONE_COUNT    , 0,5 ,
-        CMD_PEN_CLONE_OFFSET   , 0,20,
-
-        ///////////////////////// left red
-
-
-        //left red short
-        CMD_LED_NR_8           , 0,
-        CMD_PEN_COLOR          , 255 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 4,
-
-        //left off
-        CMD_LED_NR_8           , 0,
-        CMD_PEN_COLOR          , 0 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 2,
-
-
-        //left red long
-        CMD_LED_NR_8           , 0,
-        CMD_PEN_COLOR          , 255 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 14,
-
-        //left off
-        CMD_LED_NR_8           , 0,
-        CMD_PEN_COLOR          , 0 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-
-        ///////////////////////// right blue
-
-        //right blue short
-        CMD_LED_NR_8           , 10,
-        CMD_PEN_COLOR          , 0, 0 , 255 ,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 4,
-
-        //right off
-        CMD_LED_NR_8           , 10,
-        CMD_PEN_COLOR          , 0 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 2,
-
-
-        //right blue long
-        CMD_LED_NR_8           , 10,
-        CMD_PEN_COLOR          , 0 , 0 , 255,
-        CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 14,
-
-        //right off
-        CMD_LED_NR_8           , 10,
-        CMD_PEN_COLOR          , 0 , 0 , 0 ,
-        CMD_PEN_DRAW           ,
-
-
-    };
+    //
+    // //police lights
+    // strip_anim.commands={
+    //     CMD_PEN_WIDTH          , 10,
+    //     CMD_PEN_CLONE_COUNT    , 0,5 ,
+    //     CMD_PEN_CLONE_OFFSET   , 0,20,
+    //
+    //     ///////////////////////// left red
+    //
+    //
+    //     //left red short
+    //     CMD_LED_NR_8           , 0,
+    //     CMD_PEN_COLOR          , 255 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 4,
+    //
+    //     //left off
+    //     CMD_LED_NR_8           , 0,
+    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 2,
+    //
+    //
+    //     //left red long
+    //     CMD_LED_NR_8           , 0,
+    //     CMD_PEN_COLOR          , 255 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 14,
+    //
+    //     //left off
+    //     CMD_LED_NR_8           , 0,
+    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //
+    //     ///////////////////////// right blue
+    //
+    //     //right blue short
+    //     CMD_LED_NR_8           , 10,
+    //     CMD_PEN_COLOR          , 0, 0 , 255 ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 4,
+    //
+    //     //right off
+    //     CMD_LED_NR_8           , 10,
+    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 2,
+    //
+    //
+    //     //right blue long
+    //     CMD_LED_NR_8           , 10,
+    //     CMD_PEN_COLOR          , 0 , 0 , 255,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_DELAY_8            , 14,
+    //
+    //     //right off
+    //     CMD_LED_NR_8           , 10,
+    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
+    //     CMD_PEN_DRAW           ,
+    //
+    //
+    // };
 
 
     struct timespec now;

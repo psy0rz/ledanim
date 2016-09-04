@@ -19,7 +19,7 @@ find_package(SDL2 REQUIRED)
 #work around for bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=822210
 string(STRIP "${SDL2_LIBRARIES}" stripped_SDL2_LIBRARIES)
 
-include_directories(${SDL2_INCLUDE_DIRS} src lib)
+include_directories(${SDL2_INCLUDE_DIRS} src ../lib)
 
 
 set(SOURCE_FILES src/main.cpp)
