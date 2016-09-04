@@ -29,6 +29,7 @@ enum led_commands_t
     CMD_LED_SET_NEXT,
     CMD_PEN_COLOR,
     CMD_PEN_COLOR_RND,
+    CMD_PEN_STEP,
     CMD_PEN_WIDTH,
     CMD_PEN_WIDTH_RND,
     CMD_PEN_DRAW,
@@ -72,11 +73,13 @@ class strip_anim_c
         //current pen color
         CRGB pen_color;
 
+
+
         //current pen width
         uint16_t pen_width;
 
-        //current pen_skip
-        uint16_t pen_skip;
+        //current pen_step
+        int8_t pen_step;
 
         //current pen fade mode and speed
         uint8_t pen_fade_mode;
@@ -91,7 +94,7 @@ class strip_anim_c
             led=0;
             pen_color=CRGB(255,255,255);
             pen_width=1;
-            pen_skip=0;
+            pen_step=1;
             pen_fade_mode=FADE_NONE;
             repeat_begin=0;
             repeat_count=0;
@@ -222,7 +225,7 @@ class strip_anim_c
                         DEBUG_LOG("CMD_LED_NR_16_RND: " << led);
                         break;
 
-                    //set current led to specified color and goes to next led
+                    //set current led to specified color and goes to next led (direction will be pen_step)
                     case CMD_LED_SET_NEXT:
                         {
                             CRGB rgb;
@@ -231,9 +234,7 @@ class strip_anim_c
                             rgb.b=get_next8();
                             DEBUG_LOG("CMD_LED_SET_NEXT (" << (int)rgb.r << " , " << (int)rgb.g << " , " << (int)rgb.b << ")  led=" << led);
                             led_anim.set(led, rgb);
-                            led++;
-                            if (led>= LED_COUNT)
-                                led=0;
+                            led=(led+pen_step)%LED_COUNT;
                             break;
                         }
 
@@ -259,6 +260,13 @@ class strip_anim_c
                         pen_color.b=get_random(min, max);
                         DEBUG_LOG("CMD_PEN_COLOR_RND (" << (int)pen_color.r << " , " << (int)pen_color.g << " , " << (int)pen_color.b << ")");
                         break;
+
+                    //set current pen step size, can be negative to go to the left!
+                    case CMD_PEN_STEP:
+                        pen_step=get_next8();
+                        DEBUG_LOG("CMD_PEN_STEP (" << (int)pen_step << ")");
+                        break;
+
 
                     //set current pen width
                     case CMD_PEN_WIDTH:
@@ -296,27 +304,30 @@ class strip_anim_c
 
                     //draw with the current pen-settings
                     case CMD_PEN_DRAW:
-                        for (uint16_t i=0; i<pen_width; i++)
                         {
-                            switch (pen_fade_mode)
+                            uint16_t tmp_led=led;
+                            for (uint16_t i=0; i<pen_width; i++)
                             {
-                                case FADE_NONE:
-                                    led_anim.set(led, pen_color);
-                                    break;
-                                case FADE_TO_FAST:
-                                    led_anim.fade_to_fast(led, pen_color, pen_fade_speed);
-                                    break;
-                                case FADE_FROM_FAST:
-                                    led_anim.fade_from_fast(led, pen_color, pen_fade_speed);
-                                    break;
-                                default:
-                                    break;
+                                switch (pen_fade_mode)
+                                {
+                                    case FADE_NONE:
+                                        led_anim.set(tmp_led, pen_color);
+                                        break;
+                                    case FADE_TO_FAST:
+                                        led_anim.fade_to_fast(tmp_led, pen_color, pen_fade_speed);
+                                        break;
+                                    case FADE_FROM_FAST:
+                                        led_anim.fade_from_fast(tmp_led, pen_color, pen_fade_speed);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                tmp_led++;
+                                if (tmp_led>=LED_COUNT)
+                                    tmp_led=0;
                             }
-                            led++;
-                            if (led>=LED_COUNT)
-                                led=0;
                         }
-                        led=(led+pen_skip)%LED_COUNT;
+                        led=(led+pen_step)%LED_COUNT;
                         break;
 
 

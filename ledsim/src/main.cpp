@@ -85,6 +85,27 @@ int main(int, char**){
     };
 
 
+    //KITT knightrider radar
+    strip_anim.commands={
+        CMD_PEN_COLOR          , 255 , 0 , 0 ,
+        CMD_PEN_FADE_SPEED     , 5  ,
+        CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
+
+        //to the right
+        CMD_PEN_STEP           , 1 ,
+        CMD_REPEAT_BEGIN       , 0,6,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 8 ,
+        CMD_REPEAT_END         ,
+
+        //to the left
+        CMD_PEN_STEP           , (uint8_t)-1 ,
+        CMD_REPEAT_BEGIN       , 0,6,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 8 ,
+        CMD_REPEAT_END         ,
+   };
+
     struct timespec now;
     struct timespec prev;
     int count=0;
