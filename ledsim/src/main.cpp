@@ -108,6 +108,68 @@ int main(int, char**){
         CMD_REPEAT_END         ,
     };
 
+    //police lights
+    strip_anim.commands={
+        CMD_PEN_WIDTH          , 10,
+        CMD_PEN_CLONE_COUNT    , 0,1 ,
+        CMD_PEN_CLONE_OFFSET   , 0,20,
+
+        ///////////////////////// left red
+
+
+        //left red short
+        CMD_LED_NR_8           , 0,
+        CMD_PEN_COLOR          , 255 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 4,
+
+        //left off
+        CMD_LED_NR_8           , 0,
+        CMD_PEN_COLOR          , 0 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 2,
+
+
+        //left red long
+        CMD_LED_NR_8           , 0,
+        CMD_PEN_COLOR          , 255 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 14,
+
+        //left off
+        CMD_LED_NR_8           , 0,
+        CMD_PEN_COLOR          , 0 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+
+        ///////////////////////// right blue
+
+        //right blue short
+        CMD_LED_NR_8           , 10,
+        CMD_PEN_COLOR          , 0, 0 , 255 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 4,
+
+        //right off
+        CMD_LED_NR_8           , 10,
+        CMD_PEN_COLOR          , 0 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 2,
+
+
+        //right blue long
+        CMD_LED_NR_8           , 10,
+        CMD_PEN_COLOR          , 0 , 0 , 255,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 14,
+
+        //right off
+        CMD_LED_NR_8           , 10,
+        CMD_PEN_COLOR          , 0 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+
+
+    };
+
 
     struct timespec now;
     struct timespec prev;
