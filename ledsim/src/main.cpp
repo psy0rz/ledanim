@@ -41,25 +41,25 @@ int main(int, char**){
     SDL_RenderClear(ren);
 
     #define COLS 40
-    #define ROWS 4
+    #define ROWS 40
     #define LED_COUNT ROWS*COLS
 
     strip_anim_c<LED_COUNT> strip_anim;
 
 
-    //random noise to test various functions
-    strip_anim.commands={
-        CMD_REPEAT_BEGIN_RND   , 0,0  , 0,10  ,
-        CMD_PEN_COLOR_RND      , 0,255 , 0,255 , 0,255 ,
-        CMD_PEN_FADE_SPEED_RND , 1 , 10 ,
-        CMD_PEN_WIDTH_RND      , 1 , 10 ,
-        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
-        CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
-        CMD_PEN_DRAW           ,
-        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
-        CMD_PEN_DRAW           ,
-        CMD_REPEAT_END         ,
-    };
+    // //random noise to test various functions
+    // strip_anim.commands={
+    //     CMD_REPEAT_BEGIN_RND   , 0,0  , 0,10  ,
+    //     CMD_PEN_COLOR_RND      , 0,255 , 0,255 , 0,255 ,
+    //     CMD_PEN_FADE_SPEED_RND , 1 , 10 ,
+    //     CMD_PEN_WIDTH_RND      , 1 , 10 ,
+    //     CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
+    //     CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+    //     CMD_PEN_DRAW           ,
+    //     CMD_REPEAT_END         ,
+    // };
 
     // //fire animation, we try to make the indirect light on the ground look like fire.
     // strip_anim.commands={
@@ -90,12 +90,12 @@ int main(int, char**){
         CMD_PEN_COLOR          , 255 , 0 , 0 ,
         CMD_PEN_FADE_SPEED     , 5  ,
         CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
-        CMD_PEN_CLONE_COUNT    , 0,3 ,
+        CMD_PEN_CLONE_COUNT    , 0,0 ,
         CMD_PEN_CLONE_OFFSET   , 0,9 ,
 
         //to the right
         CMD_PEN_STEP           , 1 ,
-        CMD_REPEAT_BEGIN       , 0,6,
+        CMD_REPEAT_BEGIN       , 0,6 ,
         CMD_PEN_DRAW           ,
         CMD_DELAY_8            , 8 ,
         CMD_REPEAT_END         ,
