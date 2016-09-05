@@ -61,6 +61,14 @@ class led_anim_c
 
         }
 
+        void clear(CRGB rgb=CRGB(0,0,0))
+        {
+            for (int i; i<LED_COUNT;i++)
+            {
+                led_level[i]=rgb;
+            }
+        }
+
         //fade from current to specified level, by stepsize
         void fade_to_fast(uint16_t led, CRGB level, uint8_t stepsize)
         {

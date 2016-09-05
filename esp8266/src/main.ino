@@ -3,202 +3,196 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
+#include "FS.h"
+
 
 #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
 #include <FastLED.h>
 #include "strip_anim.hpp"
 
-const char* ssid = "*****";
-const char* password = "******";
-MDNSResponder mdns;
+
 
 ESP8266WebServer server(80);
 
 
 void handleRoot() {
-  server.send(200, "text/plain", "hello from esp8266!");
+    server.send(200, "text/plain", "hello from esp8266!");
 }
 
 void handleNotFound(){
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET)?"GET":"POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i=0; i<server.args(); i++){
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-  server.send(404, "text/plain", message);
+    String message = "File Not Found\n\n";
+    message += "URI: ";
+    message += server.uri();
+    message += "\nMethod: ";
+    message += (server.method() == HTTP_GET)?"GET":"POST";
+    message += "\nArguments: ";
+    message += server.args();
+    message += "\n";
+    for (uint8_t i=0; i<server.args(); i++){
+        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+    }
+    server.send(404, "text/plain", message);
 }
 
-#define LED_COUNT 160
+void wifi_config()
+{
+    File wifi_config_fh = SPIFFS.open("/wifi.txt", "r");
+    if (!wifi_config_fh) {
+        Serial.println("cannot load wifi config.");
+    }
+    else
+    {
+        String ssid=wifi_config_fh.readStringUntil('\n');
+        String password=wifi_config_fh.readStringUntil('\n');
 
+        Serial.print("Wifi connecting to: ");
+        Serial.println(ssid.c_str());
+        WiFi.begin(ssid.c_str(), password.c_str());
+    }
+}
+
+
+
+#define LED_COUNT 160
 strip_anim_c<LED_COUNT> strip_anim;
 
 void setup(void){
+    Serial.begin(115200);
+
+    Serial.println();
+    Serial.println("LEDanim 1.0 booting...");
 
 
-    //fire animation, we try to make the indirect light on the ground look like fire.
+    //idle lights, testing rgb order
     strip_anim.commands={
-        //glowing red background
-        CMD_REPEAT_BEGIN       , 0,100,
-        CMD_PEN_COLOR_RND      , 20,127 , 0,0 , 0,0 ,
-        CMD_PEN_FADE_SPEED     , 1  ,
-        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
-        CMD_PEN_WIDTH          , 1,
-        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
-        CMD_PEN_DRAW           ,
-        CMD_REPEAT_END         ,
+        CMD_LED_NR_8           , 0,
 
-        //bright yellow flames
-        CMD_REPEAT_BEGIN       , 0,2,
-        CMD_PEN_COLOR_RND      , 200,255 , 100,200 , 0,0 ,
-        CMD_PEN_FADE_SPEED_RND , 10 , 30 ,
-        CMD_LED_NR_16_RND      , 0,0 , 255,255 ,
-        CMD_PEN_WIDTH_RND      , 1 , 3,
-        CMD_PEN_FADE_MODE      , FADE_TO_FAST ,
+        //R
+        CMD_PEN_COLOR          , 255 , 0 , 0 ,
         CMD_PEN_DRAW           ,
-        CMD_REPEAT_END         ,
+        CMD_DELAY_8            , 60,
+
+        //G
+        CMD_PEN_COLOR          , 0 , 255 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 60,
+
+        //G
+        CMD_PEN_COLOR          , 0 , 0, 255 ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 60,
+
+        //all off
+        CMD_LED_NR_8           , 0,
+        CMD_PEN_COLOR          , 0 , 0 , 0 ,
+        CMD_PEN_DRAW           ,
+        CMD_PEN_DRAW           ,
+        CMD_PEN_DRAW           ,
+        CMD_DELAY_8            , 60,
+
     };
-
-
-    // //KITT knightrider radar
-    // strip_anim.commands={
-    //     CMD_PEN_COLOR          , 255 , 0 , 0 ,
-    //     CMD_PEN_FADE_SPEED     , 5  ,
-    //     CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
-    //     CMD_PEN_CLONE_COUNT    , 0,3 ,
-    //     CMD_PEN_CLONE_OFFSET   , 0,9 ,
-    //
-    //     //to the right
-    //     CMD_PEN_STEP           , 1 ,
-    //     CMD_REPEAT_BEGIN       , 0,6,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 8 ,
-    //     CMD_REPEAT_END         ,
-    //
-    //     //to the left
-    //     CMD_PEN_STEP           , (uint8_t)-1 ,
-    //     CMD_REPEAT_BEGIN       , 0,6,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 8 ,
-    //     CMD_REPEAT_END         ,
-    // };
-    //
-    // //police lights
-    // strip_anim.commands={
-    //     CMD_PEN_WIDTH          , 10,
-    //     CMD_PEN_CLONE_COUNT    , 0,5 ,
-    //     CMD_PEN_CLONE_OFFSET   , 0,20,
-    //
-    //     ///////////////////////// left red
-    //
-    //
-    //     //left red short
-    //     CMD_LED_NR_8           , 0,
-    //     CMD_PEN_COLOR          , 255 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 4,
-    //
-    //     //left off
-    //     CMD_LED_NR_8           , 0,
-    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 2,
-    //
-    //
-    //     //left red long
-    //     CMD_LED_NR_8           , 0,
-    //     CMD_PEN_COLOR          , 255 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 14,
-    //
-    //     //left off
-    //     CMD_LED_NR_8           , 0,
-    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //
-    //     ///////////////////////// right blue
-    //
-    //     //right blue short
-    //     CMD_LED_NR_8           , 10,
-    //     CMD_PEN_COLOR          , 0, 0 , 255 ,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 4,
-    //
-    //     //right off
-    //     CMD_LED_NR_8           , 10,
-    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 2,
-    //
-    //
-    //     //right blue long
-    //     CMD_LED_NR_8           , 10,
-    //     CMD_PEN_COLOR          , 0 , 0 , 255,
-    //     CMD_PEN_DRAW           ,
-    //     CMD_DELAY_8            , 14,
-    //
-    //     //right off
-    //     CMD_LED_NR_8           , 10,
-    //     CMD_PEN_COLOR          , 0 , 0 , 0 ,
-    //     CMD_PEN_DRAW           ,
-    //
-    //
-    // };
 
     //data, clock
     FastLED.addLeds<LPD8806, 7,5, GRB >(strip_anim.led_anim.led_level, LED_COUNT);
+    FastLED.setDither(DISABLE_DITHER);
     strip_anim.step();
 
-  Serial.begin(115200);
-  return;
 
-  WiFi.begin(ssid, password);
-  Serial.println("");
+    if (!SPIFFS.begin())
+        Serial.println("SPIFFS: error while mounting");
 
-  // // Wait for connection
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(500);
-  //   Serial.print(".");
-  // }
-  // Serial.println("");
-  // Serial.print("Connected to ");
-  // Serial.println(ssid);
-  // Serial.print("IP address: ");
-  // Serial.println(WiFi.localIP());
+    wifi_config();
 
-  if (mdns.begin("esp8266", WiFi.localIP())) {
-    Serial.println("MDNS responder started");
-  }
+    server.on("/", handleRoot);
 
-  server.on("/", handleRoot);
+    server.on("/inline", [](){
+        server.send(200, "text/plain", "this works as well");
+    });
 
-  server.on("/inline", [](){
-    server.send(200, "text/plain", "this works as well");
-  });
+    server.onNotFound(handleNotFound);
 
-  server.onNotFound(handleNotFound);
+    server.begin();
 
-  server.begin();
-  Serial.println("HTTP server started");
+
+    // Port defaults to 8266
+    // ArduinoOTA.setPort(8266);
+
+    // Hostname defaults to esp8266-[ChipID]
+    // ArduinoOTA.setHostname("myesp8266");
+
+    // No authentication by default
+    // ArduinoOTA.setPassword((const char *)"123");
+
+    ArduinoOTA.onStart([]() {
+        Serial.println("OTA: Start");
+        SPIFFS.end(); //important
+        strip_anim.led_anim.clear(CRGB(255,0,0));
+        FastLED.show();
+    });
+    ArduinoOTA.onEnd([]() {
+        Serial.println("\nOTA: End");
+        strip_anim.led_anim.clear(CRGB(0,255,0));
+        FastLED.show();
+        ESP.restart();
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+
+        Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+        strip_anim.led_anim.set((progress*LED_COUNT)/total, CRGB(255,255,0));
+        FastLED.show();
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+        Serial.printf("Error[%u]: ", error);
+        if (error == OTA_AUTH_ERROR) Serial.println("OTA: Auth Failed");
+        else if (error == OTA_BEGIN_ERROR) Serial.println("OTA: Begin Failed");
+        else if (error == OTA_CONNECT_ERROR) Serial.println("OTA: Connect Failed");
+        else if (error == OTA_RECEIVE_ERROR) Serial.println("OTA: Receive Failed");
+        else if (error == OTA_END_ERROR) Serial.println("OTA: End Failed");
+    });
+    ArduinoOTA.begin();
+
+
+    Serial.println("boot complete");
 }
 
 
 unsigned long last_micros=0;
+int last_wifi_status=-1;
+
 void loop(void){
-  // Serial.println("lup");
-  server.handleClient();
-  strip_anim.step();
+    // Serial.println("lup");
+    server.handleClient();
 
-  //limit to 60 fps
-  while (micros()-last_micros < 16666);
-  // while (micros()-last_micros < 1000000);
-  last_micros=micros();
+    if (WiFi.status() != last_wifi_status)
+    {
+        last_wifi_status=WiFi.status();
+        if (last_wifi_status==WL_CONNECTED)
+        {
+            Serial.print("Wifi connected IP address: ");
+            Serial.print(WiFi.localIP());
+            Serial.print(", strength: ");
+            Serial.println(WiFi.RSSI());
+        }
+        else
+        {
+            Serial.print("Wifi disconnected, status:");
+            Serial.println(last_wifi_status);
+        }
 
-  FastLED.show();
+    }
+
+    ArduinoOTA.handle();
+
+    strip_anim.step();
+
+    //limit to 60 fps
+    while (micros()-last_micros < 16666);
+    // while (micros()-last_micros < 1000000);
+    last_micros=micros();
+
+    FastLED.show();
+
 
 }
