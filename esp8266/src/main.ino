@@ -64,6 +64,9 @@ void setup(void){
     Serial.println();
     Serial.println("LEDanim 1.0 booting...");
 
+    // Serial.println(ESP.getSketchSize());
+    // Serial.println(ESP.getFreeSketchSpace());
+
 
     //idle lights, testing rgb order
     strip_anim.commands={
@@ -122,24 +125,30 @@ void setup(void){
     // Hostname defaults to esp8266-[ChipID]
     // ArduinoOTA.setHostname("myesp8266");
 
+
     // No authentication by default
     // ArduinoOTA.setPassword((const char *)"123");
 
     ArduinoOTA.onStart([]() {
         Serial.println("OTA: Start");
         SPIFFS.end(); //important
-        strip_anim.led_anim.clear(CRGB(255,0,0));
+        strip_anim.led_anim.clear(CRGB(0,255,0)); //still safe
         FastLED.show();
     });
     ArduinoOTA.onEnd([]() {
         Serial.println("\nOTA: End");
-        strip_anim.led_anim.clear(CRGB(0,255,0));
+        //"dangerous": if you reset during flash you have to reflash via serial
+        //so dont touch device until restart is complete
+        strip_anim.led_anim.clear(CRGB(255,0,0));
         FastLED.show();
-        ESP.restart();
+        Serial.println("\nOTA: DO NOT RESET OR POWER OFF UNTIL BOOT+FLASH IS COMPLETE.");
+        delay(1000);
+        ESP.reset();
     });
     ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
 
         Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+        //getting more "dangerous"
         strip_anim.led_anim.set((progress*LED_COUNT)/total, CRGB(255,255,0));
         FastLED.show();
     });
