@@ -13,31 +13,31 @@
 
 enum led_commands_t
 {
-    CMD_EOF,         //end of program
-    CMD_UPDATE,
-    CMD_DELAY_8,      //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
-    CMD_DELAY_16,     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
+    CMD_EOF=0,         //end of program
+    CMD_UPDATE=1,
+    CMD_DELAY_8=2,      //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
+    CMD_DELAY_16=3,     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
 
-    CMD_REPEAT_BEGIN,
-    CMD_REPEAT_BEGIN_RND,
-    CMD_REPEAT_END,
+    CMD_REPEAT_BEGIN=4,
+    CMD_REPEAT_BEGIN_RND=5,
+    CMD_REPEAT_END=6,
 
-    CMD_LED_NR_8,
-    CMD_LED_NR_8_RND,
-    CMD_LED_NR_16,
-    CMD_LED_NR_16_RND,
-    CMD_LED_SET_NEXT,
-    CMD_PEN_COLOR,
-    CMD_PEN_COLOR_RND,
-    CMD_PEN_STEP,
-    CMD_PEN_WIDTH,
-    CMD_PEN_WIDTH_RND,
-    CMD_PEN_DRAW,
-    CMD_PEN_FADE_MODE,
-    CMD_PEN_FADE_SPEED,
-    CMD_PEN_FADE_SPEED_RND,
-    CMD_PEN_CLONE_COUNT,
-    CMD_PEN_CLONE_OFFSET,
+    CMD_LED_NR_8=7,
+    CMD_LED_NR_8_RND=8,
+    CMD_LED_NR_16=9,
+    CMD_LED_NR_16_RND=10,
+    CMD_LED_SET_NEXT=11,
+    CMD_PEN_COLOR=12,
+    CMD_PEN_COLOR_RND=13,
+    CMD_PEN_STEP=14,
+    CMD_PEN_WIDTH=15,
+    CMD_PEN_WIDTH_RND=16,
+    CMD_PEN_DRAW=17,
+    CMD_PEN_FADE_MODE=18,
+    CMD_PEN_FADE_SPEED=19,
+    CMD_PEN_FADE_SPEED_RND=20,
+    CMD_PEN_CLONE_COUNT=21,
+    CMD_PEN_CLONE_OFFSET=22,
 
 };
 

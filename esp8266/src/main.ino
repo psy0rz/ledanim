@@ -61,6 +61,7 @@ strip_anim_c<LED_COUNT> strip_anim;
 void setup(void){
     Serial.begin(115200);
 
+    delay(100);
     Serial.println();
     Serial.println("LEDanim 1.0 booting...");
 
@@ -71,6 +72,8 @@ void setup(void){
     //idle lights, testing rgb order
     strip_anim.commands={
         CMD_LED_NR_8           , 0,
+        CMD_PEN_FADE_MODE      , FADE_TO_FAST,
+        CMD_PEN_FADE_SPEED     , 5,
 
         //R
         CMD_PEN_COLOR          , 255 , 0 , 0 ,
@@ -93,7 +96,7 @@ void setup(void){
         CMD_PEN_DRAW           ,
         CMD_PEN_DRAW           ,
         CMD_PEN_DRAW           ,
-        CMD_DELAY_8            , 60,
+        CMD_DELAY_8            , 120,
 
     };
 
