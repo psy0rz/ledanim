@@ -90,6 +90,11 @@ class strip_anim_c
         uint8_t pen_fade_mode;
         uint8_t pen_fade_speed;
 
+        CRGB & get_led(uint16_t led)
+        {
+            return (led_anim.led_level[led]);
+        }
+
 
         //reset strip_anim and restart current program
         void reset()
@@ -105,6 +110,32 @@ class strip_anim_c
             repeat_count=0;
             pen_clone_offset=0;
             pen_clone_count=0;
+
+
+            //KITT knightrider radar
+            commands={
+                CMD_PEN_COLOR          , 255 , 0 , 0 ,
+                CMD_PEN_FADE_SPEED     , 5  ,
+                CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
+                CMD_PEN_CLONE_COUNT    , 0,3 ,
+                CMD_PEN_CLONE_OFFSET   , 0,9 ,
+
+                //to the right
+                CMD_PEN_STEP           , 1 ,
+                CMD_REPEAT_BEGIN       , 0,6,
+                CMD_PEN_DRAW           ,
+                CMD_DELAY_8            , 8 ,
+                CMD_REPEAT_END         ,
+
+                //to the left
+                CMD_PEN_STEP           , (uint8_t)-1 ,
+                CMD_REPEAT_BEGIN       , 0,6,
+                CMD_PEN_DRAW           ,
+                CMD_DELAY_8            , 8 ,
+                CMD_REPEAT_END         ,
+            };
+
+
         }
 
         strip_anim_c()

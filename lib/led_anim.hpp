@@ -3,7 +3,6 @@
 #ifndef LED_ANIM_H
 #define LED_ANIM_H
 
-#include <array>
 // #include <iostream>
 
 //fallback for when you're compiling without fastled.h

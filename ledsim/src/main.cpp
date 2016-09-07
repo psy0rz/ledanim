@@ -1,12 +1,89 @@
 #include <iostream>
 #include <SDL.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 
 #include "strip_anim.hpp"
 
 #include <iostream>
 
 #include <time.h>
+
+#define COLS 10
+#define ROWS 6
+#define LED_COUNT ROWS*COLS
+
+strip_anim_c<LED_COUNT> strip_anim;
+SDL_Renderer *ren;
+bool quit=false;
+
+void step()
+{
+    SDL_Event e;
+    struct timespec now;
+    static struct timespec prev;
+    static int count=0;
+
+    // FPS
+    count++;
+    clock_gettime(CLOCK_REALTIME,&now);
+    if (now.tv_sec!=prev.tv_sec)
+    {
+        std::cout << "fps: " << count << "\n";
+        count=0;
+        prev.tv_sec=now.tv_sec;
+    }
+
+
+    strip_anim.step();
+
+    //draw leds
+
+    for (uint16_t row=0; row<ROWS; row++)
+    {
+        for (uint16_t col=0; col<COLS; col++)
+        {
+            uint16_t led=(row*COLS) + col;
+
+            SDL_SetRenderDrawColor(
+                ren,
+                strip_anim.led_anim.led_level[led].r,
+                strip_anim.led_anim.led_level[led].g,
+                strip_anim.led_anim.led_level[led].b,
+                SDL_ALPHA_OPAQUE
+            );
+            SDL_Rect rect;
+            rect.x=(col+1)*12;
+            rect.y=(row+1)*12;
+            rect.h=10;
+            rect.w=10;
+
+
+            if (SDL_RenderFillRect(ren, &rect))
+            {
+                std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
+            }
+
+        }
+
+    }
+
+    //this loop basicly runs at monitor refresh speed
+    SDL_RenderPresent(ren);
+
+    while (SDL_PollEvent(&e))
+    {
+        if (e.type == SDL_QUIT){
+            quit=true;
+        }
+    }
+
+
+
+}
 
 /*
  * Lesson 0: Test to make sure SDL is setup properly
@@ -24,8 +101,8 @@ int main(int, char**){
         return 1;
     }
 
-    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    // SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED );
+    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    // ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED );
     if (ren == NULL){
         SDL_DestroyWindow(win);
         std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -40,11 +117,7 @@ int main(int, char**){
     SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ren);
 
-    #define COLS 40
-    #define ROWS 40
-    #define LED_COUNT ROWS*COLS
 
-    strip_anim_c<LED_COUNT> strip_anim;
 
 
     // //random noise to test various functions
@@ -90,7 +163,7 @@ int main(int, char**){
         CMD_PEN_COLOR          , 255 , 0 , 0 ,
         CMD_PEN_FADE_SPEED     , 5  ,
         CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
-        CMD_PEN_CLONE_COUNT    , 0,0 ,
+        CMD_PEN_CLONE_COUNT    , 0,3 ,
         CMD_PEN_CLONE_OFFSET   , 0,9 ,
 
         //to the right
@@ -171,9 +244,6 @@ int main(int, char**){
     // };
 
 
-    struct timespec now;
-    struct timespec prev;
-    int count=0;
 
     // //pure performance test without graphics:
     // while(1)
@@ -191,65 +261,13 @@ int main(int, char**){
 
 
 
-    SDL_Event e;
-    bool quit = false;
-    while (!quit){
-
-        strip_anim.step();
-
-        //draw leds
-
-        for (uint16_t row=0; row<ROWS; row++)
-        {
-            for (uint16_t col=0; col<COLS; col++)
-            {
-                uint16_t led=(row*COLS) + col;
-
-                SDL_SetRenderDrawColor(
-                    ren,
-                    strip_anim.led_anim.led_level[led].r,
-                    strip_anim.led_anim.led_level[led].g,
-                    strip_anim.led_anim.led_level[led].b,
-                    SDL_ALPHA_OPAQUE
-                );
-                SDL_Rect rect;
-                rect.x=(col+1)*12;
-                rect.y=(row+1)*12;
-                rect.h=10;
-                rect.w=10;
-
-
-                if (SDL_RenderFillRect(ren, &rect))
-                {
-                    std::cout << "SDL_RenderDrawRect Error: " << SDL_GetError() << std::endl;
-                }
-
-            }
-
-        }
-
-        //this loop basicly runs at monitor refresh speed
-        SDL_RenderPresent(ren);
-
-        while (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT){
-                quit = true;
-            }
-        }
-
-        // FPS
-        count++;
-        clock_gettime(CLOCK_REALTIME,&now);
-        if (now.tv_sec!=prev.tv_sec)
-        {
-            std::cout << "fps: " << count << "\n";
-            count=0;
-            prev.tv_sec=now.tv_sec;
-        }
-
-
-    }
+#ifdef __EMSCRIPTEN__
+      // void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
+      emscripten_set_main_loop(step, 60, 1);
+#else
+    //main loop
+    while(!quit) step() ;
+#endif
 
 
 
