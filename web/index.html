@@ -1,10 +1,36 @@
 <!doctype html>
 <html>
+  <head>
+  </head>
+  <body>
+      <h1>hoi</h1>
+      <canvas id="ledsim" width=400 height=400></canvas>
+
+  </body>
+
+
   <script src="strip_anim_bindings.js"></script>
   <script>
     var strip_anim=new Module.strip_anim_c();
-    strip_anim.step();
-    console.log(Module.MAX_LEDS);
-    console.log(strip_anim.get_led(0));
+    var MAX_LEDS=Module.MAX_LEDS;
+    var c=document.getElementById("ledsim");
+    var ctx=c.getContext("2d");
+
+    function step()
+    {
+        requestAnimationFrame(step);
+        strip_anim.step();
+        // console.log(strip_anim.get_led(0));
+        var rgb;
+        for (led=0;led<40;led++)
+        {
+            rgb=strip_anim.get_led(led);
+            ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+            ctx.fillRect(led*12, 10, 10,10);
+        }
+    }
+    step();
+
+
   </script>
 </html>
