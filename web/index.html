@@ -1,36 +1,90 @@
 <!doctype html>
 <html>
-  <head>
-  </head>
-  <body>
-      <h1>hoi</h1>
-      <canvas id="ledsim" width=400 height=400></canvas>
+    <head>
+        <style>
 
-  </body>
+            body {
+                background: #000000;
+            }
+
+            #ledsim {
+                width: 100%;
+                border-style: solid;
+                border-color: gray;
+                border-width: 1px;
+                image-rendering:-moz-crisp-edges;          /* Firefox        */
+                image-rendering:-o-crisp-edges;            /* Opera          */
+                image-rendering:-webkit-optimize-contrast; /* Safari         */
+                image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+                image-rendering:crisp-edges;               /* CSS4 Proposed  */
+                image-rendering:pixelated;                 /* CSS4 Proposed  */
+                -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="ledsim" width=50 height=5></canvas>
+    </body>
 
 
-  <script src="strip_anim_bindings.js"></script>
-  <script>
-    var strip_anim=new Module.strip_anim_c();
-    var MAX_LEDS=Module.MAX_LEDS;
-    var c=document.getElementById("ledsim");
-    var ctx=c.getContext("2d");
+    <script src="strip_anim_bindings.js"></script>
+    <script>
+        var strip_anim=new Module.strip_anim_c();
+        var MAX_LEDS=Module.MAX_LEDS;
 
-    function step()
-    {
-        requestAnimationFrame(step);
-        strip_anim.step();
-        // console.log(strip_anim.get_led(0));
-        var rgb;
-        for (led=0;led<40;led++)
+        //fast pixel manipulation code borrowed from http://jsfiddle.net/andrewjbaker/Fnx2w/
+        var canvas = document.getElementById('ledsim');
+        var canvasWidth  = canvas.width;
+        var canvasHeight = canvas.height;
+        var ctx = canvas.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+
+        var buf = new ArrayBuffer(imageData.data.length);
+        var buf8 = new Uint8ClampedArray(buf);
+        var data = new Uint32Array(buf);
+
+        // Determine whether Uint32 is little- or big-endian.
+        data[1] = 0x0a0b0c0d;
+
+        var isLittleEndian = true;
+        if (buf[4] === 0x0a && buf[5] === 0x0b && buf[6] === 0x0c && buf[7] === 0x0d)
         {
-            rgb=strip_anim.get_led(led);
-            ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-            ctx.fillRect(led*12, 10, 10,10);
+            isLittleEndian = false;
         }
-    }
-    step();
 
 
-  </script>
+
+        function step()
+        {
+            requestAnimationFrame(step);
+            strip_anim.step();
+
+
+            var rgb;
+            for (led=0;led<MAX_LEDS;led++)
+            {
+                rgb=strip_anim.get_led(led);
+                // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+                // ctx.fillRect(led*12, 10, 10,10);
+                if (isLittleEndian) {
+                    data[led*2] =
+                    (255   << 24) |    // alpha
+                    (rgb.b << 16) |    // blue
+                    (rgb.g <<  8) |    // green
+                    rgb.r;            // red
+                } else {
+                    data[led*2] =
+                    (rgb.r << 24) |    // red
+                    (rgb.g << 16) |    // green
+                    (rgb.b <<  8) |    // blue
+                    255;              // alpha
+                }
+            }
+
+            imageData.data.set(buf8);
+            ctx.putImageData(imageData, 0, 0);
+
+        }
+        step();
+    </script>
 </html>
