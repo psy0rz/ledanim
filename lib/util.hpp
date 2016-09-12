@@ -5,9 +5,12 @@
 #ifdef DEBUG_OUTPUT
 #include <iostream>
 #define DEBUG_LOG(s) std::cout << s << std::endl;
+
+
 #else
 #define DEBUG_LOG(s)
 #endif
+
 
 //get random number in range min to max (inclusive)
 #include <stdint.h>

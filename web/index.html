@@ -52,6 +52,10 @@
             isLittleEndian = false;
         }
 
+        var commands=new Module.commands_t();
+        commands.push_back(1);
+        strip_anim.set_commands(commands);
+
 
 
         function step()

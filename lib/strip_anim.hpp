@@ -6,7 +6,7 @@
 
 #include <array>
 #include <stdint.h>
-#include <led_anim.hpp>
+#include "led_anim.hpp"
 #include <vector>
 #include "util.hpp"
 
@@ -58,7 +58,8 @@ class strip_anim_c
         led_anim_c<LED_COUNT> led_anim;
 
         //commands
-        std::vector<uint8_t> commands;
+        typedef std::vector<uint8_t> commands_t;
+        commands_t commands;
 
         //current proram counter.
         uint16_t pc;
@@ -110,32 +111,6 @@ class strip_anim_c
             repeat_count=0;
             pen_clone_offset=0;
             pen_clone_count=0;
-
-
-            //KITT knightrider radar
-            commands={
-                CMD_PEN_COLOR          , 255 , 0 , 0 ,
-                CMD_PEN_FADE_SPEED     , 5  ,
-                CMD_PEN_FADE_MODE      , FADE_FROM_FAST ,
-                CMD_PEN_CLONE_COUNT    , 0,3 ,
-                CMD_PEN_CLONE_OFFSET   , 0,9 ,
-
-                //to the right
-                CMD_PEN_STEP           , 1 ,
-                CMD_REPEAT_BEGIN       , 0,6,
-                CMD_PEN_DRAW           ,
-                CMD_DELAY_8            , 8 ,
-                CMD_REPEAT_END         ,
-
-                //to the left
-                CMD_PEN_STEP           , (uint8_t)-1 ,
-                CMD_REPEAT_BEGIN       , 0,6,
-                CMD_PEN_DRAW           ,
-                CMD_DELAY_8            , 8 ,
-                CMD_REPEAT_END         ,
-            };
-
-
         }
 
         strip_anim_c()
@@ -143,8 +118,14 @@ class strip_anim_c
             reset();
         }
 
+        void set_commands(commands_t commands)
+        {
+            this->commands=commands;
+            reset();
+        }
+
         //get next command byte
-        uint8_t get_next8()
+        inline uint8_t get_next8()
         {
             uint8_t ret;
 
@@ -169,6 +150,8 @@ class strip_anim_c
         }
 
 
+
+        //we could have made coded the interpreter more abstract, but that would probably lead to slower execution.
         void execute_commands()
         {
             uint8_t command;
