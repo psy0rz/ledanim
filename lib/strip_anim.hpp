@@ -246,6 +246,7 @@ class strip_anim_c
                         break;
 
                     //set current led to specified color and goes to next led (direction will be pen_step)
+                    //this is more lowlevel, and doesnt use effects like the PEN commands
                     case CMD_LED_SET_NEXT:
                         {
                             CRGB rgb;

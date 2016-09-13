@@ -27,6 +27,22 @@ function convert_uint8(value, command_def, commands)
     commands.push_back(value);
 }
 
+function convert_int8(value, command_def, commands)
+{
+    value=Number(value);
+
+    if (command_def.max==undefined)
+        command_def.max=127;
+    if (command_def.min==undefined)
+        command_def.min=-127;
+
+    check=verify_number(value, command_def);
+    if (check)
+        return(check);
+
+    commands.push_back(value);
+}
+
 function convert_uint16(value, command_def, commands)
 {
     value=Number(value);
@@ -127,20 +143,150 @@ command_defs=
             },
         ],
     },
+    "led_set_next": {
+        "desc"  : "Set current led to specified color, without effects. And go to next led. (determined by pen_step)",
+        "nr"   : 11,
+        "pars"  : [
+            {
+                "desc": "red",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "green",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "blue",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+    "pen_color": {
+        "desc"  : "Set pen color",
+        "nr"   : 12,
+        "pars"  : [
+            {
+                "desc": "red",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "green",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "blue",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+
+    "pen_color_rnd": {
+        "desc"  : "Set pen color randomly",
+        "nr"   : 13,
+        "pars"  : [
+            {
+                "desc": "red min",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "red max",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "green min",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "green max",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "blue min",
+                "convert": convert_uint8,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "blue max",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+    "pen_step": {
+        "desc"  : "Stepsize taken after drawing a pixel with the pen.",
+        "nr"   : 14,
+        "pars"  : [
+            {
+                "desc": "Step size (can be negative to step to the left)",
+                "convert": convert_int8,
+            },
+        ],
+    },
+
+    "pen_width": {
+        "desc"  : "Width of one pixel of the pen.",
+        "nr"   : 15,
+        "pars"  : [
+            {
+                "desc": "Width",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+    "pen_width_rnd": {
+        "desc"  : "Set width of pen randomly",
+        "nr"   : 16,
+        "pars"  : [
+            {
+                "desc": "Min width",
+                "convert": convert_uint8,
+            },
+            {
+                "desc": "Max width",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+    "pen_fade_mode": {
+        "desc"  : "Fade mode of pixels that are drawn by pen.",
+        "nr"   : 18,
+        "pars"  : [
+            {
+                "desc": "Fade mode",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
 }
 
-// CMD_LED_SET_NEXT=11,
-// CMD_PEN_COLOR=12,
-// CMD_PEN_COLOR_RND=13,
-// CMD_PEN_STEP=14,
-// CMD_PEN_WIDTH=15,
-// CMD_PEN_WIDTH_RND=16,
-// CMD_PEN_DRAW=17,
 // CMD_PEN_FADE_MODE=18,
 // CMD_PEN_FADE_SPEED=19,
 // CMD_PEN_FADE_SPEED_RND=20,
 // CMD_PEN_CLONE_COUNT=21,
 // CMD_PEN_CLONE_OFFSET=22,
+// CMD_PEN_DRAW=17,
 
 
 
