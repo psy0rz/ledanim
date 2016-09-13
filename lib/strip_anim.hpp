@@ -163,6 +163,12 @@ class strip_anim_c
                 command=get_next8();
                 switch (command)
                 {
+                    //end of program. update ledstrip and loop.
+                    case CMD_EOF:
+                        pc=0;
+                        DEBUG_LOG("CMD_EOF");
+                        return;
+
                     //send output and continue execution. execution continues when step-time is complete.
                     case CMD_UPDATE:
                         DEBUG_LOG("CMD_UPDATE");
@@ -180,13 +186,6 @@ class strip_anim_c
                         DEBUG_LOG("CMD_DELAY_16: " << delay);
                         return;
 
-
-
-                    //end of program. update ledstrip and loop.
-                    case CMD_EOF:
-                        pc=0;
-                        DEBUG_LOG("CMD_EOF");
-                        return;
 
                     //start of a repeating loop
                     case CMD_REPEAT_BEGIN:

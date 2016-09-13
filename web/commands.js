@@ -66,14 +66,87 @@ command_defs=
                 "convert": convert_uint16,
             },
         ],
-    }
+    },
+
+    "repeat_begin": {
+        "desc"  : "Repeat this block of commands.",
+        "nr"   : 4,
+        "pars"  : [
+            {
+                "desc": "Times to repeat",
+                "convert": convert_uint16,
+            },
+        ],
+    },
+    "repeat_begin": {
+        "desc"  : "Repeat this block of commands a random number of times.",
+        "nr"   : 5,
+        "pars"  : [
+            {
+                "desc": "Minimum times to repeat",
+                "convert": convert_uint16,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "Maximum times to repeat",
+                "convert": convert_uint16,
+            },
+        ],
+    },
+    "repeat_end": {
+        "desc"  : "End of repeat block.",
+        "nr"   : 6,
+        "pars"  : [ ],
+    },
+
+
+    "led_nr": {
+        "desc"  : "Change current lednr",
+        "nr"   : 9,
+        "pars"  : [
+            {
+                "desc": "Led nr",
+                "convert": convert_uint16,
+            },
+        ],
+    },
+    "led_nr_rnd": {
+        "desc"  : "Change current led nr to random led.",
+        "nr"   : 10,
+        "pars"  : [
+            {
+                "desc": "Minimum lednr to choose",
+                "convert": convert_uint16,
+            },
+        ],
+        "pars"  : [
+            {
+                "desc": "Maximum led nr to choose",
+                "convert": convert_uint16,
+            },
+        ],
+    },
 }
 
+// CMD_LED_SET_NEXT=11,
+// CMD_PEN_COLOR=12,
+// CMD_PEN_COLOR_RND=13,
+// CMD_PEN_STEP=14,
+// CMD_PEN_WIDTH=15,
+// CMD_PEN_WIDTH_RND=16,
+// CMD_PEN_DRAW=17,
+// CMD_PEN_FADE_MODE=18,
+// CMD_PEN_FADE_SPEED=19,
+// CMD_PEN_FADE_SPEED_RND=20,
+// CMD_PEN_CLONE_COUNT=21,
+// CMD_PEN_CLONE_OFFSET=22,
 
 
 
 
-function compile_command_string(input_text, commands)
+
+function assemble_commands(input_text, commands)
 {
     var lines=input_text.split("\n");
     for (line_nr in lines)
