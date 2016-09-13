@@ -28,6 +28,7 @@
 
 
     <script src="strip_anim_bindings.js"></script>
+    <script src="commands.js"></script>
     <script>
         var strip_anim=new Module.strip_anim_c();
         var MAX_LEDS=Module.MAX_LEDS;
@@ -52,9 +53,6 @@
             isLittleEndian = false;
         }
 
-        var commands=new Module.commands_t();
-        commands.push_back(1);
-        strip_anim.set_commands(commands);
 
 
 
@@ -89,6 +87,15 @@
             ctx.putImageData(imageData, 0, 0);
 
         }
+        // step();
+
+        var commands=new Module.commands_t();
+        var error=compile_command_string("\
+            delay 10\n\
+            delay 60\n\
+        ", commands);
+        console.log(error);
+        strip_anim.set_commands(commands);
         step();
     </script>
 </html>
