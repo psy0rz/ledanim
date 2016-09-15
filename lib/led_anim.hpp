@@ -62,8 +62,9 @@ class led_anim_c
 
         void clear(CRGB rgb=CRGB(0,0,0))
         {
-            for (int i; i<LED_COUNT;i++)
+            for (int i=0; i<LED_COUNT;i++)
             {
+                led_mode[i]=0;
                 led_level[i]=rgb;
             }
         }

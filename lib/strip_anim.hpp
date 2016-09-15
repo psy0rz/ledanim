@@ -111,6 +111,7 @@ class strip_anim_c
             repeat_count=0;
             pen_clone_offset=0;
             pen_clone_count=0;
+            led_anim.clear();
         }
 
         strip_anim_c()

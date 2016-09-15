@@ -45,6 +45,7 @@ function convert_int8(value, command_def, commands)
 
 function convert_uint16(value, command_def, commands)
 {
+
     value=Number(value);
 
     if (command_def.max==undefined)
@@ -62,6 +63,7 @@ function convert_uint16(value, command_def, commands)
 
 function convert_enum(value, command_def, commands)
 {
+
     value=Number(value);
 
     if (value<0 || value>=command_def.enum.length)
@@ -111,8 +113,6 @@ command_defs=
                 "desc": "Minimum times to repeat",
                 "convert": convert_uint16,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "Maximum times to repeat",
                 "convert": convert_uint16,
@@ -126,7 +126,7 @@ command_defs=
     },
 
 
-    "led_nr": {
+    "led": {
         "desc"  : "Change current lednr",
         "nr"   : 9,
         "pars"  : [
@@ -136,7 +136,7 @@ command_defs=
             },
         ],
     },
-    "led_nr_rnd": {
+    "led_rnd": {
         "desc"  : "Change current led nr to random led.",
         "nr"   : 10,
         "pars"  : [
@@ -144,8 +144,6 @@ command_defs=
                 "desc": "Minimum lednr to choose",
                 "convert": convert_uint16,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "Maximum led nr to choose",
                 "convert": convert_uint16,
@@ -160,14 +158,10 @@ command_defs=
                 "desc": "red",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "green",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "blue",
                 "convert": convert_uint8,
@@ -183,14 +177,10 @@ command_defs=
                 "desc": "red",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "green",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "blue",
                 "convert": convert_uint8,
@@ -207,32 +197,22 @@ command_defs=
                 "desc": "red min",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "red max",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "green min",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "green max",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "blue min",
                 "convert": convert_uint8,
             },
-        ],
-        "pars"  : [
             {
                 "desc": "blue max",
                 "convert": convert_uint8,
@@ -356,6 +336,7 @@ command_defs=
 function assemble_commands(input_text, commands)
 {
     var lines=input_text.split("\n");
+
     for (line_nr in lines)
     {
         //cleanup line
@@ -379,9 +360,19 @@ function assemble_commands(input_text, commands)
 
         for (par_nr in command_def.pars)
         {
-            var error=command_def.pars[par_nr].convert(words[par_nr], command_def, commands);
+            var error="";
+
+            if (words[par_nr] === undefined)
+            {
+                error="Missing parameter.";
+            }
+            else
+            {
+                error=command_def.pars[par_nr].convert(words[par_nr], command_def, commands);
+            }
+
             if (error)
-                return("Error in line " + line_nr +": "+ error);
+                return("Error in line " + line_nr + ", parameter " + par_nr + " (" + command_def.pars[par_nr].desc + ")  : "+ error);
         }
     }
 }

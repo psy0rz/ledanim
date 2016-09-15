@@ -1,6 +1,6 @@
 #include <emscripten/bind.h>
 
-#define DEBUG_OUTPUT
+// #define DEBUG_OUTPUT
 #include "strip_anim.hpp"
 #include "crgb.h"
 #include <stdint.h>
