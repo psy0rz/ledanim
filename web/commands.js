@@ -60,6 +60,15 @@ function convert_uint16(value, command_def, commands)
     commands.push_back(value & 0xff);
 }
 
+function convert_enum(value, command_def, commands)
+{
+    value=Number(value);
+
+    if (value<0 || value>=command_def.enum.length)
+        return("Invalid choice");
+
+    commands.push_back(value);
+}
 
 command_defs=
 {
@@ -268,25 +277,77 @@ command_defs=
         ],
     },
 
+    "pen_draw": {
+        "desc"  : "Draw one 'pixel' with current pen settings.",
+        "nr"   : 17,
+        "pars"  : [ ],
+    },
+
     "pen_fade_mode": {
         "desc"  : "Fade mode of pixels that are drawn by pen.",
         "nr"   : 18,
         "pars"  : [
             {
                 "desc": "Fade mode",
+                "convert": convert_enum,
+                "enum": [
+                    "No fading",
+                    "Fade to pen color",
+                    "Fade from pen color",
+                ]
+            },
+        ],
+    },
+
+    "pen_fade_speed": {
+        "desc"  : "Set fade speed, in color-levels per step.",
+        "nr"   : 19,
+        "pars"  : [
+            {
+                "desc": "Speed",
                 "convert": convert_uint8,
             },
         ],
     },
 
+    "pen_fade_speed_rnd": {
+        "desc"  : "Set fade speed randomly",
+        "nr"   : 20,
+        "pars"  : [
+            {
+                "desc": "Min fade speed",
+                "convert": convert_uint8,
+            },
+            {
+                "desc": "Max fade speed",
+                "convert": convert_uint8,
+            },
+        ],
+    },
+
+    "pen_clone_count": {
+        "desc"  : "Clone pen this number of times by clone offset.",
+        "nr"   : 21,
+        "pars"  : [
+            {
+                "desc": "Number of clones",
+                "convert": convert_uint16,
+            },
+        ],
+    },
+
+    "pen_clone_offset": {
+        "desc"  : "Offset between clones",
+        "nr"   : 22,
+        "pars"  : [
+            {
+                "desc": "Offset",
+                "convert": convert_uint16,
+            },
+        ],
+    },
 }
 
-// CMD_PEN_FADE_MODE=18,
-// CMD_PEN_FADE_SPEED=19,
-// CMD_PEN_FADE_SPEED_RND=20,
-// CMD_PEN_CLONE_COUNT=21,
-// CMD_PEN_CLONE_OFFSET=22,
-// CMD_PEN_DRAW=17,
 
 
 

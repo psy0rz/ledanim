@@ -44,11 +44,11 @@ enum led_commands_t
 
 enum pen_fade_mode_t
 {
-    FADE_NONE,
-    FADE_TO_FAST,
-    FADE_TO_SLOW,
-    FADE_FROM_FAST,
-    FADE_FROM_SLOW,
+    FADE_NONE=0,
+    FADE_TO_FAST=1,
+    FADE_FROM_FAST=2,
+    FADE_TO_SLOW=3,
+    FADE_FROM_SLOW=4,
 };
 
 template <uint16_t LED_COUNT>
@@ -324,7 +324,7 @@ class strip_anim_c
                     //set current pen clone count and offset.
                     case CMD_PEN_CLONE_OFFSET:
                         pen_clone_offset=get_next16();
-                        DEBUG_LOG("CMD_PEN_CLONE_SIZE (" << (int)pen_clone_offset << ")");
+                        DEBUG_LOG("CMD_PEN_CLONE_OFFSET (" << (int)pen_clone_offset << ")");
                         break;
 
                     case CMD_PEN_CLONE_COUNT:
