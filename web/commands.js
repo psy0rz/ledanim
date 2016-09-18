@@ -64,7 +64,6 @@ function convert_uint16(value, command_def, commands)
 function convert_enum(value, command_def, commands)
 {
 
-console.log(command_def);
     value=Number(value);
 
     if (value<0 || value>=command_def.enum.length)

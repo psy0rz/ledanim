@@ -7,22 +7,6 @@
                 background: #000000;
                 color: #ffffff;
             }
-            #editor {
-                width: 50%;
-                height: 100em;
-               }
-
-            #compiler_msg
-            {
-                color: green;
-                font-family: monospace;
-            }
-
-            #compiler_msg.error
-            {
-                color: red;
-            }
-
             #ledsim {
                 width: 100%;
                 border-style: solid;
@@ -36,9 +20,48 @@
                 image-rendering:pixelated;                 /* CSS4 Proposed  */
                 -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
             }
+
+            #editor {
+                width: 50%;
+                height: 100em;
+                display: inline-block;
+                margin: 0;
+               }
+
+            #compiler_msg
+            {
+                color: green;
+                font-family: monospace;
+            }
+
+            #compiler_msg.error
+            {
+                color: red;
+            }
+
+            #menu
+            {
+                display: inline-block;
+                width: 45%;
+                margin: 0;
+                vertical-align: top;
+            }
+
+            .quick_load_template
+            {
+                display: none;
+            }
+
+            .quick_load
+            {
+                margin: 2px;
+            }
+
+
+
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="strip_anim_bindings.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="commands.js"></script>
         <script src="controller.js"></script>
         <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -47,6 +70,21 @@
         <canvas id="ledsim" width=50 height=5></canvas>
         <div id="compiler_msg"></div>
         <div id="editor"></div>
+        <div id="menu">
+            <fieldset>
+                <legend>Current program</legend>
+                Name: <input id='program_name' type='text'></input>
+                <button id='save'>Save</button>
+                <button id='delete'>Delete</button>
+                <button id='download'>Download...</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Programs</legend>
+                <button class='quick_load_template'>template</button>
+
+            </fieldset>
+        </div>
 
 
     </body>

@@ -69,11 +69,9 @@ $(document).ready(function()
     // var last_program="";
     function compile_editor(editor)
     {
-        // if ($("#commands").val() != last_program)
-        // {
         var lines=editor.getSession().getDocument().getAllLines();
-        localStorage.setItem("commands", editor.getValue());
-            // last_program=$("#commands").val();
+        localStorage.setItem("current_program", editor.getValue());
+        localStorage.setItem("current_program_name", $("#program_name").val());
         var commands=new Module.commands_t();
         var error=assemble_commands(lines, commands);
         if (error)
@@ -87,8 +85,6 @@ $(document).ready(function()
                 text: error[2],
                 type: "error" // also warning and information
             }]);
-
-
         }
         else
         {
@@ -101,12 +97,60 @@ $(document).ready(function()
         // }
     }
 
+    //download a string as a textfile
+    //from http://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
+    function download(filename, data) {
+        var blob = new Blob([data], {type: 'text/plain'});
+        if(window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveBlob(blob, filename);
+        }
+        else{
+            var elem = window.document.createElement('a');
+            elem.href = window.URL.createObjectURL(blob);
+            elem.download = filename;
+            document.body.appendChild(elem);
+            elem.click();
+            document.body.removeChild(elem);
+        }
+    }
+
+    function update_quickload_list()
+    {
+        $(".quick_load").remove();
+        $.each(Object.keys(localStorage), function(nr, key)
+        {
+            if (key.match("^program "))
+            {
+                var clone=$(".quick_load_template").clone();
+                clone.removeClass("quick_load_template");
+                clone.addClass("quick_load");
+                clone.insertAfter($(".quick_load_template")).text(key.replace(/^program /, ""));
+            }
+        });
+        // localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
+
+    }
+
+    //// INITIALISATION
+
     //ace editor
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
-    // editor.session.setMode("ace/mode/javascript");
+    editor.$blockScrolling = Infinity;
 
-    // when user changes the program, recompile it after one second
+    //load last editor contents from localstorage
+    if (localStorage.hasOwnProperty("current_program"))
+    {
+        editor.setValue(localStorage.getItem("current_program"),1);
+        $("#program_name").val(localStorage.getItem("current_program_name"));
+    }
+
+    update_quickload_list();
+    compile_editor(editor);
+
+    start_ledsim();
+
+    ////EVENT when user changes the program, recompile and save it after a short delay
     var wto;
     editor.on("change", function() {
      $("#compiler_msg").html("&nbsp;");
@@ -117,8 +161,35 @@ $(document).ready(function()
     }, 300);
     });
 
-    if (localStorage.hasOwnProperty("commands"))
-        editor.setValue(localStorage.getItem("commands"),1);
-    compile_editor(editor);
-    start_ledsim();
+
+    ///EVENT download button
+    $("#download").click(function(){
+        download($("#program_name").val()+".txt", editor.getValue());
+    });
+
+    ///EVENT save button
+    $("#save").click(function(){
+        if ($("#program_name").val())
+        {
+            localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
+            update_quickload_list();
+        }
+    });
+
+
+    ///EVENT quick load button
+    $("body").on("click", ".quick_load", function()
+    {
+        editor.setValue(localStorage.getItem("program "+$(this).text()),1);
+        $("#program_name").val($(this).text());
+
+    });
+
+    ///EVENT quick delete
+    $("#delete").click(function()
+    {
+        localStorage.removeItem("program "+$("#program_name").val());
+        update_quickload_list();
+    });
+
 });
