@@ -338,9 +338,9 @@ class strip_anim_c
                     case CMD_PEN_DRAW:
                         {
                             uint16_t tmp_led=led;
-                            for (uint16_t clone_count=0; clone_count<pen_clone_count+1; clone_count++)
+                            for (uint16_t clone_count=0; clone_count<pen_clone_count+1 && tmp_led<LED_COUNT; clone_count++)
                             {
-                                for (uint16_t width_count=0; width_count<pen_width; width_count++)
+                                for (uint16_t width_count=0; width_count<pen_width && tmp_led<LED_COUNT; width_count++)
                                 {
                                     switch (pen_fade_mode)
                                     {
@@ -357,8 +357,6 @@ class strip_anim_c
                                             break;
                                     }
                                     tmp_led++;
-                                    if (tmp_led>=LED_COUNT)
-                                        tmp_led=0;
                                 }
                                 tmp_led=(led+pen_clone_offset*(clone_count+1))%LED_COUNT;
                             }

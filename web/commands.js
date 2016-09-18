@@ -106,7 +106,7 @@ command_defs=
             },
         ],
     },
-    "repeat_begin": {
+    "repeat_begin_rnd": {
         "desc"  : "Repeat this block of commands a random number of times.",
         "nr"   : 5,
         "pars"  : [
@@ -340,6 +340,8 @@ function assemble_commands(lines, commands)
 
     for (line_nr in lines)
     {
+        line_nr=Number(line_nr);
+
         //cleanup line
         var line=lines[line_nr];
         line=line.trim()
@@ -355,17 +357,18 @@ function assemble_commands(lines, commands)
         var command_def=command_defs[command_name];
         if (!command_def)
         {
-            return("Command '"+ command_name +"' on line " + line_nr + " not found.");
+            return([ line_nr+1, 0, "Command '"+ command_name +"' on line " + (line_nr+1) + " not found."]);
         }
         commands.push_back(command_def.nr);
 
         for (par_nr in command_def.pars)
         {
+            par_nr=Number(par_nr);
             var error="";
 
             if (words[par_nr] === undefined)
             {
-                error="Missing parameter.";
+                error="Missing parameter "+(par_nr+1)+": "+command_def.pars[par_nr].desc;
             }
             else
             {
@@ -373,7 +376,7 @@ function assemble_commands(lines, commands)
             }
 
             if (error)
-                return("Error in line " + line_nr + ", parameter " + par_nr + " (" + command_def.pars[par_nr].desc + ")  : "+ error);
+                return([ line_nr+1, par_nr+1, error ]);
         }
     }
 }

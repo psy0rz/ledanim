@@ -44,13 +44,13 @@ $(document).ready(function()
                 // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
                 // ctx.fillRect(led*12, 10, 10,10);
                 if (isLittleEndian) {
-                    data[led*2] =
+                    data[led] =
                     (255   << 24) |    // alpha
                     (rgb.b << 16) |    // blue
                     (rgb.g <<  8) |    // green
                     rgb.r;            // red
                 } else {
-                    data[led*2] =
+                    data[led] =
                     (rgb.r << 24) |    // red
                     (rgb.g << 16) |    // green
                     (rgb.b <<  8) |    // blue
@@ -72,19 +72,34 @@ $(document).ready(function()
         // if ($("#commands").val() != last_program)
         // {
         var lines=editor.getSession().getDocument().getAllLines();
+        localStorage.setItem("commands", editor.getValue());
             // last_program=$("#commands").val();
         var commands=new Module.commands_t();
         var error=assemble_commands(lines, commands);
         if (error)
-            console.error(error);
+        {
+            $("#compiler_msg").text(error[2]);
+            $("#compiler_msg").addClass("error");
+
+            editor.getSession().setAnnotations([{
+                row: error[0]-1,
+                column: 0,
+                text: error[2],
+                type: "error" // also warning and information
+            }]);
+
+
+        }
         else
+        {
+            $("#compiler_msg").text("Compiled ok.");
+            $("#compiler_msg").removeClass("error");
+            editor.getSession().clearAnnotations();
             strip_anim.set_commands(commands);
+        }
         commands.delete();
         // }
     }
-
-
-
 
     //ace editor
     var editor = ace.edit("editor");
@@ -94,14 +109,16 @@ $(document).ready(function()
     // when user changes the program, recompile it after one second
     var wto;
     editor.on("change", function() {
+     $("#compiler_msg").html("&nbsp;");
+     $("#compiler_msg").removeClass("error");
      clearTimeout(wto);
      wto = setTimeout(function() {
          compile_editor(editor);
     }, 300);
     });
 
-
-    // compile_editor();
+    if (localStorage.hasOwnProperty("commands"))
+        editor.setValue(localStorage.getItem("commands"),1);
+    compile_editor(editor);
     start_ledsim();
-
 });

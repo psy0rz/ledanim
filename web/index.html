@@ -11,11 +11,17 @@
                 width: 50%;
                 height: 100em;
                }
-            /*textarea {
-                color: #ffffff;
-                background: #222222;
+
+            #compiler_msg
+            {
+                color: green;
                 font-family: monospace;
-            }*/
+            }
+
+            #compiler_msg.error
+            {
+                color: red;
+            }
 
             #ledsim {
                 width: 100%;
@@ -39,12 +45,8 @@
     </head>
     <body>
         <canvas id="ledsim" width=50 height=5></canvas>
-
-        <div id="editor">
-            delay 10
-            pen_color 255 0 0
-            pen_draw
-        </div>
+        <div id="compiler_msg"></div>
+        <div id="editor"></div>
 
 
     </body>
