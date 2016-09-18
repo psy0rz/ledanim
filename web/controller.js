@@ -66,31 +66,42 @@ $(document).ready(function()
     }
 
     //get current program from editor and compile it
-    function compile_editor()
+    // var last_program="";
+    function compile_editor(editor)
     {
+        // if ($("#commands").val() != last_program)
+        // {
+        var lines=editor.getSession().getDocument().getAllLines();
+            // last_program=$("#commands").val();
         var commands=new Module.commands_t();
-
-        var error=assemble_commands($("#commands").val(), commands);
+        var error=assemble_commands(lines, commands);
         if (error)
             console.error(error);
         else
             strip_anim.set_commands(commands);
         commands.delete();
+        // }
     }
 
 
-    //when user changes the program, recompile it after one second
+
+
+    //ace editor
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    // editor.session.setMode("ace/mode/javascript");
+
+    // when user changes the program, recompile it after one second
     var wto;
-    $('#commands').on("change paste", function() {
-        clearTimeout(wto);
-        wto = setTimeout(function() {
-            compile_editor();
-      }, 300);
+    editor.on("change", function() {
+     clearTimeout(wto);
+     wto = setTimeout(function() {
+         compile_editor(editor);
+    }, 300);
     });
 
 
-
-    compile_editor();
+    // compile_editor();
     start_ledsim();
 
 });

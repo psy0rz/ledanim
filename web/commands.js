@@ -64,6 +64,7 @@ function convert_uint16(value, command_def, commands)
 function convert_enum(value, command_def, commands)
 {
 
+console.log(command_def);
     value=Number(value);
 
     if (value<0 || value>=command_def.enum.length)
@@ -333,9 +334,9 @@ command_defs=
 
 
 
-function assemble_commands(input_text, commands)
+function assemble_commands(lines, commands)
 {
-    var lines=input_text.split("\n");
+    // var lines=input_text.split("\n");
 
     for (line_nr in lines)
     {
@@ -368,7 +369,7 @@ function assemble_commands(input_text, commands)
             }
             else
             {
-                error=command_def.pars[par_nr].convert(words[par_nr], command_def, commands);
+                error=command_def.pars[par_nr].convert(words[par_nr], command_def.pars[par_nr], commands);
             }
 
             if (error)

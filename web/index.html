@@ -7,12 +7,15 @@
                 background: #000000;
                 color: #ffffff;
             }
-
-            textarea {
+            #editor {
+                width: 50%;
+                height: 100em;
+               }
+            /*textarea {
                 color: #ffffff;
                 background: #222222;
                 font-family: monospace;
-            }
+            }*/
 
             #ledsim {
                 width: 100%;
@@ -32,14 +35,17 @@
         <script src="strip_anim_bindings.js"></script>
         <script src="commands.js"></script>
         <script src="controller.js"></script>
+        <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
     </head>
     <body>
         <canvas id="ledsim" width=50 height=5></canvas>
 
-        <textarea id='commands' col=20 rows=50>
-delay 10
-pen_color 255 0 0
-pen_draw
-        </textarea>
+        <div id="editor">
+            delay 10
+            pen_color 255 0 0
+            pen_draw
+        </div>
+
+
     </body>
 </html>
