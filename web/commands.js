@@ -32,7 +32,7 @@ function convert_int8(value, command_def, commands)
     value=Number(value);
 
     if (command_def.max==undefined)
-        command_def.max=127;
+        command_def.max=255;
     if (command_def.min==undefined)
         command_def.min=-127;
 

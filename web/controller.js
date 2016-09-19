@@ -73,7 +73,16 @@ $(document).ready(function()
         localStorage.setItem("current_program", editor.getValue());
         localStorage.setItem("current_program_name", $("#program_name").val());
         var commands=new Module.commands_t();
-        var error=assemble_commands(lines, commands);
+
+        try
+        {
+            var error=assemble_commands(lines, commands);
+        }
+        catch(e)
+        {
+            var error=[ 0, 0, String(e) ];
+        }
+
         if (error)
         {
             $("#compiler_msg").text(error[2]);
