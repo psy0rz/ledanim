@@ -113,7 +113,7 @@ $(document).ready(function()
         }
         else
         {
-            $("#compiler_msg").text("Compiled ok.");
+            $("#compiler_msg").text("Compiled ok, "+anim.commands.size()+" bytes.");
             $("#compiler_msg").removeClass("error");
             // editor.getSession().clearAnnotations();
             strip_anim.set_commands(anim.commands);
@@ -161,6 +161,8 @@ $(document).ready(function()
     //ace editor
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
+    editor.getSession().setMode("ace/mode/javascript");
+
     editor.$blockScrolling = Infinity;
 
     //load last editor contents from localstorage
