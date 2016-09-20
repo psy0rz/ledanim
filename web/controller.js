@@ -78,7 +78,7 @@ $(document).ready(function()
 
         try
         {
-            anim.clear_commmands();
+            pen.clear_commmands();
             eval(editor.getValue());
             error="";
         }
@@ -112,10 +112,10 @@ $(document).ready(function()
         }
         else
         {
-            $("#compiler_msg").text("Compiled ok, "+anim.commands.size()+" bytes.");
+            $("#compiler_msg").text("Compiled ok, "+pen.commands.size()+" bytes.");
             $("#compiler_msg").removeClass("error");
             // editor.getSession().clearAnnotations();
-            strip_anim.set_commands(anim.commands);
+            strip_anim.set_commands(pen.commands);
         }
         // commands.delete();
         // }
