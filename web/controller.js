@@ -74,6 +74,8 @@ $(document).ready(function()
         localStorage.setItem("current_program", editor.getValue());
         localStorage.setItem("current_program_name", $("#program_name").val());
 
+
+
         try
         {
             anim.clear_commmands();
@@ -82,9 +84,6 @@ $(document).ready(function()
         }
         catch(e)
         {
-            ding=e;
-            // global ding;
-            // ding=e;
             error=String(e);
         }
 
