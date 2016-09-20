@@ -67,10 +67,16 @@
         <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
     </head>
     <body>
-        <canvas id="ledsim" width=50 height=5></canvas>
+        <canvas id="ledsim" width=50 height=1></canvas>
         <div id="compiler_msg"></div>
         <div id="editor"></div>
         <div id="menu">
+            <fieldset>
+                <legend>Led strip</legend>
+                Rows: <input id='rows' type='text' value='1'></input>
+                Cols: <input id='cols' type='text' value='160'></input>
+            </fieldset>
+
             <fieldset>
                 <legend>Current program</legend>
                 Name: <input id='program_name' type='text'></input>

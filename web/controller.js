@@ -69,11 +69,15 @@ $(document).ready(function()
     // var last_program="";
     function compile_editor(editor)
     {
-        // var lines=editor.getSession().getDocument().getAllLines();
+        var cols=$("#cols").val();
+        var rows=$("#rows").val();
+        var leds=rows*cols;
+
 
         localStorage.setItem("current_program", editor.getValue());
         localStorage.setItem("current_program_name", $("#program_name").val());
-
+        localStorage.setItem("rows", rows);
+        localStorage.setItem("cols", cols);
 
 
         try
@@ -87,38 +91,20 @@ $(document).ready(function()
             error=String(e);
         }
 
-        // var commands=new Module.commands_t();
-        //
-        // try
-        // {
-        //     var error=assemble_commands(lines, commands);
-        // }
-        // catch(e)
-        // {
-        //     var error=[ 0, 0, String(e) ];
-        // }
-        //
         if (error)
         {
             $("#compiler_msg").text(error);
             $("#compiler_msg").addClass("error");
 
-            // editor.getSession().setAnnotations([{
-            //     row: error[0]-1,
-            //     column: 0,
-            //     text: error[2],
-            //     type: "error" // also warning and information
-            // }]);
         }
         else
         {
             $("#compiler_msg").text("Compiled ok, "+pen.commands.size()+" bytes.");
             $("#compiler_msg").removeClass("error");
-            // editor.getSession().clearAnnotations();
+            $("#ledsim").attr("height", rows);
+            $("#ledsim").attr("width", cols);
             strip_anim.set_commands(pen.commands);
         }
-        // commands.delete();
-        // }
     }
 
     //download a string as a textfile
@@ -155,13 +141,19 @@ $(document).ready(function()
 
     }
 
+    var timeout;
+    function delayed(func)
+    {
+        clearTimeout(timeout);
+        timeout = setTimeout(func, 300);
+    }
+
     //// INITIALISATION
 
     //ace editor
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
     editor.getSession().setMode("ace/mode/javascript");
-
     editor.$blockScrolling = Infinity;
 
     //load last editor contents from localstorage
@@ -171,26 +163,43 @@ $(document).ready(function()
         $("#program_name").val(localStorage.getItem("current_program_name"));
     }
 
+    //load led setings
+    if (localStorage.hasOwnProperty("rows"))
+    {
+        $("#rows").val(localStorage.getItem("rows"));
+        $("#cols").val(localStorage.getItem("cols"));
+    }
+
+
     update_quickload_list();
     compile_editor(editor);
 
     start_ledsim();
 
+
+    ////EVENT change led config
+    $("#rows,#cols").on("keyup", function() {
+        delayed(function(){
+            compile_editor(editor);
+        })
+    });
+
     ////EVENT when user changes the program, recompile and save it after a short delay
-    var wto;
     editor.on("change", function() {
      $("#compiler_msg").html("&nbsp;");
      $("#compiler_msg").removeClass("error");
-     clearTimeout(wto);
-     wto = setTimeout(function() {
+     clearTimeout(timeout);
+     timeout = setTimeout(function() {
          compile_editor(editor);
     }, 300);
     });
 
 
+
+
     ///EVENT download button
     $("#download").click(function(){
-        download($("#program_name").val()+".txt", editor.getValue());
+        download($("#program_name").val()+".js", editor.getValue());
     });
 
     ///EVENT save button
