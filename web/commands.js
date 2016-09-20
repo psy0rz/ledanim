@@ -36,7 +36,7 @@ anim.add_uint8=function(value, min,max)
     if (min==undefined)
         min=0;
 
-    check=verify_number(value, min, max);
+    check=this.verify_number(value, min, max);
     if (check)
         return(check);
 
@@ -52,7 +52,7 @@ anim.add_int8=function(value, min, max)
     if (min==undefined)
         min=-127;
 
-    check=verify_number(value, min, max);
+    check=this.verify_number(value, min, max);
     if (check)
         return(check);
 
@@ -69,7 +69,7 @@ anim.add_uint16=function(value, min, max)
     if (min==undefined)
         min=0;
 
-    check=verify_number(value, min, max);
+    check=this.verify_number(value, min, max);
     if (check)
         return(check);
 

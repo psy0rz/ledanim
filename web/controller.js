@@ -76,10 +76,15 @@ $(document).ready(function()
 
         try
         {
+            anim.clear_commmands();
             eval(editor.getValue());
+            error="";
         }
         catch(e)
         {
+            ding=e;
+            // global ding;
+            // ding=e;
             error=String(e);
         }
 
@@ -94,19 +99,19 @@ $(document).ready(function()
         //     var error=[ 0, 0, String(e) ];
         // }
         //
-        // if (error)
-        // {
-        //     $("#compiler_msg").text(error[2]);
-        //     $("#compiler_msg").addClass("error");
-        //
-        //     editor.getSession().setAnnotations([{
-        //         row: error[0]-1,
-        //         column: 0,
-        //         text: error[2],
-        //         type: "error" // also warning and information
-        //     }]);
-        // }
-        // else
+        if (error)
+        {
+            $("#compiler_msg").text(error);
+            $("#compiler_msg").addClass("error");
+
+            // editor.getSession().setAnnotations([{
+            //     row: error[0]-1,
+            //     column: 0,
+            //     text: error[2],
+            //     type: "error" // also warning and information
+            // }]);
+        }
+        else
         {
             $("#compiler_msg").text("Compiled ok.");
             $("#compiler_msg").removeClass("error");
