@@ -69,40 +69,51 @@ $(document).ready(function()
     // var last_program="";
     function compile_editor(editor)
     {
-        var lines=editor.getSession().getDocument().getAllLines();
+        // var lines=editor.getSession().getDocument().getAllLines();
+
         localStorage.setItem("current_program", editor.getValue());
         localStorage.setItem("current_program_name", $("#program_name").val());
-        var commands=new Module.commands_t();
 
         try
         {
-            var error=assemble_commands(lines, commands);
+            eval(editor.getValue());
         }
         catch(e)
         {
-            var error=[ 0, 0, String(e) ];
+            error=String(e);
         }
 
-        if (error)
-        {
-            $("#compiler_msg").text(error[2]);
-            $("#compiler_msg").addClass("error");
-
-            editor.getSession().setAnnotations([{
-                row: error[0]-1,
-                column: 0,
-                text: error[2],
-                type: "error" // also warning and information
-            }]);
-        }
-        else
+        // var commands=new Module.commands_t();
+        //
+        // try
+        // {
+        //     var error=assemble_commands(lines, commands);
+        // }
+        // catch(e)
+        // {
+        //     var error=[ 0, 0, String(e) ];
+        // }
+        //
+        // if (error)
+        // {
+        //     $("#compiler_msg").text(error[2]);
+        //     $("#compiler_msg").addClass("error");
+        //
+        //     editor.getSession().setAnnotations([{
+        //         row: error[0]-1,
+        //         column: 0,
+        //         text: error[2],
+        //         type: "error" // also warning and information
+        //     }]);
+        // }
+        // else
         {
             $("#compiler_msg").text("Compiled ok.");
             $("#compiler_msg").removeClass("error");
-            editor.getSession().clearAnnotations();
-            strip_anim.set_commands(commands);
+            // editor.getSession().clearAnnotations();
+            strip_anim.set_commands(anim.commands);
         }
-        commands.delete();
+        // commands.delete();
         // }
     }
 

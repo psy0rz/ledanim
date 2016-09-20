@@ -1,333 +1,263 @@
-function verify_number(value, command_def)
+anim={}
+
+anim.clear_commmands=function()
 {
-    if (value > command_def.max)
+    if (this.commands)
+        this.commands.delete();
+
+    this.commands=new Module.commands_t();
+
+};
+
+anim.verify_number=function(value, min, max)
+{
+    if (value > max)
     {
         return ("value too big");
     }
 
-    if (value < command_def.min)
+    if (value < min)
     {
         return ("value too small");
     }
 }
 
-function convert_uint8(value, command_def, commands)
+anim.add=function(nr)
+{
+    this.commands.push_back(nr);
+}
+
+anim.add_uint8=function(value, min,max)
 {
     value=Number(value);
 
-    if (command_def.max==undefined)
-        command_def.max=255;
-    if (command_def.min==undefined)
-        command_def.min=0;
+    if (max==undefined)
+        max=255;
+    if (min==undefined)
+        min=0;
 
-    check=verify_number(value, command_def);
+    check=verify_number(value, min, max);
     if (check)
         return(check);
 
-    commands.push_back(value);
+    this.add(value);
 }
 
-function convert_int8(value, command_def, commands)
+anim.add_int8=function(value, min, max)
 {
     value=Number(value);
 
-    if (command_def.max==undefined)
-        command_def.max=255;
-    if (command_def.min==undefined)
-        command_def.min=-127;
+    if (max==undefined)
+        max=255;
+    if (min==undefined)
+        min=-127;
 
-    check=verify_number(value, command_def);
+    check=verify_number(value, min, max);
     if (check)
         return(check);
 
-    commands.push_back(value);
+    this.add(value);
 }
 
-function convert_uint16(value, command_def, commands)
+anim.add_uint16=function(value, min, max)
 {
 
     value=Number(value);
 
-    if (command_def.max==undefined)
-        command_def.max=65535;
-    if (command_def.min==undefined)
-        command_def.min=0;
+    if (max==undefined)
+        max=65535;
+    if (min==undefined)
+        min=0;
 
-    check=verify_number(value, command_def);
+    check=verify_number(value, min, max);
     if (check)
         return(check);
 
-    commands.push_back(value >> 8);
-    commands.push_back(value & 0xff);
+    this.add(value >> 8);
+    this.add(value & 0xff);
 }
 
-function convert_enum(value, command_def, commands)
+// anim.convert_enum(value, command_def, commands)
+// {
+//
+//     value=Number(value);
+//
+//     if (value<0 || value>=command_def.enum.length)
+//         return("Invalid choice");
+//
+//     commands.push_back(value);
+// }
+
+
+anim.eof=function()
 {
-
-    value=Number(value);
-
-    if (value<0 || value>=command_def.enum.length)
-        return("Invalid choice");
-
-    commands.push_back(value);
+    this.add(0);
 }
+anim.eof.desc="End of program";
 
-command_defs=
+anim.update=function()
 {
-    "eof": {
-        "desc"  :"End of program",
-        "nr"   : 0,
-        "pars"  : []
-    },
-    "update": {
-        "desc"  : "Update led strip with current values",
-        "nr"   : 1,
-        "pars"  : []
-    },
-    "delay": {
-        "desc"  : "Delay program and update led strip and delay for this many steps.",
-        "nr"   : 3,
-        "pars"  : [
-            {
-                "desc": "delay in steps (60 steps/s)",
-                "convert": convert_uint16,
-            },
-        ],
-    },
+    this.add(1);
 
-    "repeat_begin": {
-        "desc"  : "Repeat this block of commands.",
-        "nr"   : 4,
-        "pars"  : [
-            {
-                "desc": "Times to repeat",
-                "convert": convert_uint16,
-            },
-        ],
-    },
-    "repeat_begin_rnd": {
-        "desc"  : "Repeat this block of commands a random number of times.",
-        "nr"   : 5,
-        "pars"  : [
-            {
-                "desc": "Minimum times to repeat",
-                "convert": convert_uint16,
-            },
-            {
-                "desc": "Maximum times to repeat",
-                "convert": convert_uint16,
-            },
-        ],
-    },
-    "repeat_end": {
-        "desc"  : "End of repeat block.",
-        "nr"   : 6,
-        "pars"  : [ ],
-    },
+}
+anim.update.desc="Update led strip with current values";
 
 
-    "led": {
-        "desc"  : "Change current lednr",
-        "nr"   : 9,
-        "pars"  : [
-            {
-                "desc": "Led nr",
-                "convert": convert_uint16,
-            },
-        ],
-    },
-    "led_rnd": {
-        "desc"  : "Change current led nr to random led.",
-        "nr"   : 10,
-        "pars"  : [
-            {
-                "desc": "Minimum lednr to choose",
-                "convert": convert_uint16,
-            },
-            {
-                "desc": "Maximum led nr to choose",
-                "convert": convert_uint16,
-            },
-        ],
-    },
-    "led_set_next": {
-        "desc"  : "Set current led to specified color, without effects. And go to next led. (determined by pen_step)",
-        "nr"   : 11,
-        "pars"  : [
-            {
-                "desc": "red",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "green",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "blue",
-                "convert": convert_uint8,
-            },
-        ],
-    },
+anim.delay=function(steps)
+{
+    this.add(3);
+    this.add_uint16(steps);
 
-    "pen_color": {
-        "desc"  : "Set pen color",
-        "nr"   : 12,
-        "pars"  : [
-            {
-                "desc": "red",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "green",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "blue",
-                "convert": convert_uint8,
-            },
-        ],
-    },
+}
+anim.delay.desc="Delay program and update led strip and delay for this many steps.";
 
 
-    "pen_color_rnd": {
-        "desc"  : "Set pen color randomly",
-        "nr"   : 13,
-        "pars"  : [
-            {
-                "desc": "red min",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "red max",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "green min",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "green max",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "blue min",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "blue max",
-                "convert": convert_uint8,
-            },
-        ],
-    },
+anim.repeat_begin=function(times)
+{
+    this.add(4);
+    this.add_uint16(steps);
+}
+anim.repeat_begin.desc="Repeat this block of commands.";
 
-    "pen_step": {
-        "desc"  : "Stepsize taken after drawing a pixel with the pen.",
-        "nr"   : 14,
-        "pars"  : [
-            {
-                "desc": "Step size (can be negative to step to the left)",
-                "convert": convert_int8,
-            },
-        ],
-    },
+anim.repeat_begin_rnd=function(min, max)
+{
+    this.add(5);
+    this.add_uint16(min);
+    this.add_uint16(max);
+}
+anim.repeat_begin_rnd.desc="Repeat this block of commands a random number of times.";
 
-    "pen_width": {
-        "desc"  : "Width of one pixel of the pen.",
-        "nr"   : 15,
-        "pars"  : [
-            {
-                "desc": "Width",
-                "convert": convert_uint8,
-            },
-        ],
-    },
 
-    "pen_width_rnd": {
-        "desc"  : "Set width of pen randomly",
-        "nr"   : 16,
-        "pars"  : [
-            {
-                "desc": "Min width",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "Max width",
-                "convert": convert_uint8,
-            },
-        ],
-    },
+anim.repeat_end=function()
+{
+    this.add(6);
+}
+anim.repeat_end.desc="End repeat block";
 
-    "pen_draw": {
-        "desc"  : "Draw one 'pixel' with current pen settings.",
-        "nr"   : 17,
-        "pars"  : [ ],
-    },
 
-    "pen_fade_mode": {
-        "desc"  : "Fade mode of pixels that are drawn by pen.",
-        "nr"   : 18,
-        "pars"  : [
-            {
-                "desc": "Fade mode",
-                "convert": convert_enum,
-                "enum": [
-                    "No fading",
-                    "Fade to pen color",
-                    "Fade from pen color",
-                ]
-            },
-        ],
-    },
+anim.led=function(nr)
+{
+    this.add(9);
+    this.add_uint16(nr);
+}
+anim.led.desc="Change current lednr";
 
-    "pen_fade_speed": {
-        "desc"  : "Set fade speed, in color-levels per step.",
-        "nr"   : 19,
-        "pars"  : [
-            {
-                "desc": "Speed",
-                "convert": convert_uint8,
-            },
-        ],
-    },
 
-    "pen_fade_speed_rnd": {
-        "desc"  : "Set fade speed randomly",
-        "nr"   : 20,
-        "pars"  : [
-            {
-                "desc": "Min fade speed",
-                "convert": convert_uint8,
-            },
-            {
-                "desc": "Max fade speed",
-                "convert": convert_uint8,
-            },
-        ],
-    },
-
-    "pen_clone_count": {
-        "desc"  : "Clone pen this number of times by clone offset.",
-        "nr"   : 21,
-        "pars"  : [
-            {
-                "desc": "Number of clones",
-                "convert": convert_uint16,
-            },
-        ],
-    },
-
-    "pen_clone_offset": {
-        "desc"  : "Offset between clones",
-        "nr"   : 22,
-        "pars"  : [
-            {
-                "desc": "Offset",
-                "convert": convert_uint16,
-            },
-        ],
-    },
+anim.led_rnd=function(min, max)
+{
+    this.add(10);
+    this.add_uint16(min);
+    this.add_uint16(max);
 }
 
+anim.led_rnd.desc="Change current led nr to random led.";
+
+
+anim.led_set_next=function(r,g,b)
+{
+    this.add(11);
+    this.add_uint8(r);
+    this.add_uint8(g);
+    this.add_uint8(b);
+}
+anim.led_set_next.desc="Set current led to specified color, without effects. And go to next led. (determined by pen_step)";
+
+
+anim.color=function(r,g,b)
+{
+    this.add(12);
+    this.add_uint8(r);
+    this.add_uint8(g);
+    this.add_uint8(b);
+}
+anim.color.desc="Set pen color";
+
+
+anim.color_rnd=function(r_min, r_max, g_min, g_max, b_min, b_max)
+{
+    this.add(13);
+    this.add_uint8(r_min);
+    this.add_uint8(r_max);
+    this.add_uint8(g_min);
+    this.add_uint8(g_max);
+    this.add_uint8(b_min);
+    this.add_uint8(b_max);
+}
+anim.color.desc="Set pen color randomly";
+
+
+anim.step=function(offset)
+{
+    this.add(14);
+    this.add_int8(offset);
+}
+anim.step.desc="Stepsize taken after drawing a pixel with the pen.";
+
+
+
+anim.width=function(width)
+{
+    this.add(15);
+    this.add_uint8(width);
+}
+anim.width.desc="Width of one pixel of the pen";
+
+
+anim.width_rnd=function(min, max)
+{
+    this.add(16);
+    this.add_uint8(min);
+    this.add_uint8(max);
+}
+anim.width.desc="Set width of pen randomly";
+
+
+anim.draw=function()
+{
+    this.add(17);
+}
+anim.width.desc="Draw one 'pixel' with current pen settings.";
+
+
+anim.fade_mode=function(mode)
+{
+    this.add(18);
+    this.add_uint8(mode);
+}
+anim.fade_mode.desc="Set fade mode for next pixels.";
+
+
+anim.fade_speed=function(levels)
+{
+    this.add(19);
+    this.add_uint8(levels);
+}
+anim.fade_speed.desc="Set fade speed, in color-levels per step.";
+
+
+anim.fade_speed_rnd=function(min, max)
+{
+    this.add(20);
+    this.add_uint8(min);
+    this.add_uint8(max);
+}
+anim.fade_speed.desc="Set fade speed randomly";
+
+
+anim.clone_count=function(count)
+{
+    this.add(21);
+    this.add_uint16(count);
+}
+anim.clone_count.desc="Clone pen this number of times by clone offset.";
+
+
+anim.clone_offset=function(offset)
+{
+    this.add(22);
+    this.add_uint16(offset);
+}
+anim.clone_offset.desc="Offset between clones";
 
 
 
