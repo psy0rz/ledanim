@@ -107,6 +107,7 @@ class strip_anim_c
             pen_width=1;
             pen_step=1;
             pen_fade_mode=FADE_NONE;
+            pen_fade_speed=1;
             repeat_begin=0;
             repeat_count=0;
             pen_clone_offset=0;
