@@ -1,4 +1,5 @@
 //wait until emscripten is ready:
+Module={};
 Module['onRuntimeInitialized']=function()
 {
 
