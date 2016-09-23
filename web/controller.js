@@ -10,7 +10,37 @@ Module['onRuntimeInitialized']=function()
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
         var MAX_LEDS=Module.MAX_LEDS;
-        
+
+
+
+        // start ledstrip simulator via canvas
+        function init_canvas(){
+
+            /////////////////////////////////// prepare canvas
+
+            //fast pixel manipulation code borrowed from http://jsfiddle.net/andrewjbaker/Fnx2w/
+            var canvas = document.getElementById('ledsim');
+            var canvasWidth  = canvas.width;
+            var canvasHeight = canvas.height;
+            canvas_context = canvas.getContext('2d');
+            image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
+
+            var image_buf = new ArrayBuffer(image_data.data.length);
+            image_buf8 = new Uint8ClampedArray(image_buf);
+            image_data32 = new Uint32Array(image_buf);
+
+            // Determine whether Uint32 is little- or big-endian.
+            image_data32[1] = 0x0a0b0c0d;
+
+            is_little_endian = true;
+            if (image_buf[4] === 0x0a && image_buf[5] === 0x0b && image_buf[6] === 0x0c && image_buf[7] === 0x0d)
+            {
+                is_little_endian = false;
+            }
+
+
+        }
+
 
         /// animate one step and update canvas
         function step()
@@ -44,48 +74,18 @@ Module['onRuntimeInitialized']=function()
             canvas_context.putImageData(image_data, 0, 0);
         }
 
-        // start ledstrip simulator via canvas
-        function start_ledsim(){
-
-            /////////////////////////////////// prepare canvas
-
-            //fast pixel manipulation code borrowed from http://jsfiddle.net/andrewjbaker/Fnx2w/
-            var canvas = document.getElementById('ledsim');
-            var canvasWidth  = canvas.width;
-            var canvasHeight = canvas.height;
-            canvas_context = canvas.getContext('2d');
-            image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
-
-            var image_buf = new ArrayBuffer(image_data.data.length);
-            image_buf8 = new Uint8ClampedArray(image_buf);
-            image_data32 = new Uint32Array(image_buf);
-
-            // Determine whether Uint32 is little- or big-endian.
-            image_data32[1] = 0x0a0b0c0d;
-
-            is_little_endian = true;
-            if (image_buf[4] === 0x0a && image_buf[5] === 0x0b && image_buf[6] === 0x0c && image_buf[7] === 0x0d)
-            {
-                is_little_endian = false;
-            }
-
-            step(); //start
-
-        }
 
         //get current program from editor and compile it
         // var last_program="";
         function compile_editor(editor)
         {
-            var cols=$("#cols").val();
-            var rows=$("#rows").val();
-            var leds=rows*cols;
 
 
             localStorage.setItem("current_program", editor.getValue());
             localStorage.setItem("current_program_name", $("#program_name").val());
-            localStorage.setItem("rows", rows);
-            localStorage.setItem("cols", cols);
+            var cols=$("#cols").val();
+            var rows=$("#rows").val();
+            var leds=rows*cols;
 
 
             try
@@ -109,8 +109,6 @@ Module['onRuntimeInitialized']=function()
             {
                 $("#compiler_msg").text("Compiled ok, "+pen.commands.size()+" bytes.");
                 $("#compiler_msg").removeClass("error");
-                $("#ledsim").attr("height", rows);
-                $("#ledsim").attr("width", cols);
                 strip_anim.set_commands(pen.commands);
             }
         }
@@ -171,25 +169,49 @@ Module['onRuntimeInitialized']=function()
             $("#program_name").val(localStorage.getItem("current_program_name"));
         }
 
-        //load led setings
-        if (localStorage.hasOwnProperty("rows"))
+        //load led setings?
+        if (localStorage.hasOwnProperty("settings_rows"))
         {
-            $("#rows").val(localStorage.getItem("rows"));
-            $("#cols").val(localStorage.getItem("cols"));
+            rows=localStorage.getItem("settings_rows");
+            cols=localStorage.getItem("settings_cols");
         }
+        else
+        {
+            //get defaults
+            rows=$("#ledsim").attr("height");
+            cols=$("#ledsim").attr("width");
+        }
+
+        leds=rows*cols;
+        $("#settings_rows").val(rows);
+        $("#settings_cols").val(cols);
+        $("#ledsim").attr("height", rows);
+        $("#ledsim").attr("width", cols);
 
 
         update_quickload_list();
         compile_editor(editor);
 
-        start_ledsim();
+        init_canvas();
+        step();
 
 
         ////EVENT change led config
-        $("#rows,#cols").on("keyup", function() {
-            delayed(function(){
-                compile_editor(editor);
-            })
+        $("#settings_update").on("click", function() {
+            var cols=$("#settings_cols").val();
+            var rows=$("#settings_rows").val();
+
+            if (cols * rows > Module.MAX_LEDS)
+            {
+                $("#settings_error").text("Total number of leds cannot be more than "+Module.MAX_LEDS);
+            }
+            else
+            {
+                localStorage.setItem("settings_rows", rows);
+                localStorage.setItem("settings_cols", cols);
+                document.location=document.location;
+
+            }
         });
 
         ////EVENT when user changes the program, recompile and save it after a short delay

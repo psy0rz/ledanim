@@ -5,7 +5,7 @@
 #include "crgb.h"
 #include <stdint.h>
 
-#define MAX_LEDS 200
+#define MAX_LEDS 1000
 
 
 EMSCRIPTEN_BINDINGS(strip_anim_bindings) {

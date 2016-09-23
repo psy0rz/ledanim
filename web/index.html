@@ -34,7 +34,7 @@
                 font-family: monospace;
             }
 
-            #compiler_msg.error
+            .error
             {
                 color: red;
             }
@@ -67,14 +67,17 @@
         <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
     </head>
     <body>
-        <canvas id="ledsim" width=50 height=1></canvas>
+        <canvas id="ledsim" width=160 height=1></canvas>
         <div id="compiler_msg"></div>
         <div id="editor"></div>
         <div id="menu">
             <fieldset>
                 <legend>Led strip</legend>
-                Rows: <input id='rows' type='text' value='1'></input>
-                Cols: <input id='cols' type='text' value='160'></input>
+                Rows: <input id='settings_rows' type='text' value=''></input>
+                Cols: <input id='settings_cols' type='text' value=''></input>
+                <div id='settings_error' class='error'></div>
+
+                <button id='settings_update'>Update</button>
             </fieldset>
 
             <fieldset>
