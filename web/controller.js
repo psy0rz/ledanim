@@ -50,18 +50,23 @@ Module['onRuntimeInitialized']=function()
 
 
             var rgb;
-            for (led=0;led<MAX_LEDS;led++)
+            if (is_little_endian)
             {
-                rgb=strip_anim.get_led(led);
-                // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-                // ctx.fillRect(led*12, 10, 10,10);
-                if (is_little_endian) {
+                //optimized a bit to make loop cheaper
+                for (led=0;led<leds;led++)
+                {
+                    rgb=strip_anim.get_led(led);
                     image_data32[led] =
                     (255   << 24) |    // alpha
                     (rgb.b << 16) |    // blue
                     (rgb.g <<  8) |    // green
                     rgb.r;            // red
-                } else {
+                }
+            }
+            else
+            {
+                for (led=0;led<leds;led++)
+                {
                     image_data32[led] =
                     (rgb.r << 24) |    // red
                     (rgb.g << 16) |    // green
@@ -83,9 +88,6 @@ Module['onRuntimeInitialized']=function()
 
             localStorage.setItem("current_program", editor.getValue());
             localStorage.setItem("current_program_name", $("#program_name").val());
-            var cols=$("#cols").val();
-            var rows=$("#rows").val();
-            var leds=rows*cols;
 
 
             try
@@ -202,9 +204,11 @@ Module['onRuntimeInitialized']=function()
             var rows=$("#settings_rows").val();
 
             if (cols * rows > Module.MAX_LEDS)
-            {
                 $("#settings_error").text("Total number of leds cannot be more than "+Module.MAX_LEDS);
-            }
+            else if ( cols < 10 )
+                $("#settings_error").text("Colums should be greater than 10");
+            else if ( rows < 1 )
+                $("#settings_error").text("Rows should be at least 1");
             else
             {
                 localStorage.setItem("settings_rows", rows);
