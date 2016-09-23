@@ -53,7 +53,7 @@ Module['onRuntimeInitialized']=function()
             if (is_little_endian)
             {
                 //optimized a bit to make loop cheaper
-                for (led=0;led<leds;led++)
+                for (var led=0;led<leds;led++)
                 {
                     rgb=strip_anim.get_led(led);
                     image_data32[led] =
@@ -65,7 +65,7 @@ Module['onRuntimeInitialized']=function()
             }
             else
             {
-                for (led=0;led<leds;led++)
+                for (var led=0;led<leds;led++)
                 {
                     image_data32[led] =
                     (rgb.r << 24) |    // red
@@ -92,7 +92,7 @@ Module['onRuntimeInitialized']=function()
 
             try
             {
-                pen.clear_commmands();
+                led.clear_commmands();
                 eval(editor.getValue());
                 error="";
             }
@@ -109,9 +109,9 @@ Module['onRuntimeInitialized']=function()
             }
             else
             {
-                $("#compiler_msg").text("Compiled ok, "+pen.commands.size()+" bytes.");
+                $("#compiler_msg").text("Compiled ok, "+led.commands.size()+" bytes.");
                 $("#compiler_msg").removeClass("error");
-                strip_anim.set_commands(pen.commands);
+                strip_anim.set_commands(led.commands);
             }
         }
 

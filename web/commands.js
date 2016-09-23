@@ -1,6 +1,6 @@
-pen={}
+led={}
 
-pen.clear_commmands=function()
+led.clear_commmands=function()
 {
     if (this.commands)
         this.commands.delete();
@@ -9,7 +9,7 @@ pen.clear_commmands=function()
 
 };
 
-pen.verify_number=function(value, min, max)
+led.verify_number=function(value, min, max)
 {
     if (value > max)
     {
@@ -22,12 +22,12 @@ pen.verify_number=function(value, min, max)
     }
 }
 
-pen.add=function(nr)
+led.add=function(nr)
 {
     this.commands.push_back(nr);
 }
 
-pen.add_uint8=function(value, min,max)
+led.add_uint8=function(value, min,max)
 {
     value=Number(value);
 
@@ -43,7 +43,7 @@ pen.add_uint8=function(value, min,max)
     this.add(value);
 }
 
-pen.add_int8=function(value, min, max)
+led.add_int8=function(value, min, max)
 {
     value=Number(value);
 
@@ -59,7 +59,7 @@ pen.add_int8=function(value, min, max)
     this.add(value);
 }
 
-pen.add_uint16=function(value, min, max)
+led.add_uint16=function(value, min, max)
 {
 
     value=Number(value);
@@ -77,7 +77,7 @@ pen.add_uint16=function(value, min, max)
     this.add(value & 0xff);
 }
 
-// pen.convert_enum(value, command_def, commands)
+// led.convert_enum(value, command_def, commands)
 // {
 //
 //     value=Number(value);
@@ -89,91 +89,91 @@ pen.add_uint16=function(value, min, max)
 // }
 
 
-pen.eof=function()
+led.eof=function()
 {
     this.add(0);
 }
-pen.eof.desc="End of program";
+led.eof.desc="End of program";
 
-pen.update=function()
+led.update=function()
 {
     this.add(1);
 
 }
-pen.update.desc="Update led strip with current values";
+led.update.desc="Update led strip with current values";
 
 
-pen.delay=function(steps)
+led.delay=function(steps)
 {
     this.add(3);
     this.add_uint16(steps);
 
 }
-pen.delay.desc="Delay program and update led strip and delay for this many steps.";
+led.delay.desc="Delay program and update led strip and delay for this many steps.";
 
 
-pen.repeat_begin=function(times)
+led.repeat_begin=function(times)
 {
     this.add(4);
     this.add_uint16(steps);
 }
-pen.repeat_begin.desc="Repeat this block of commands.";
+led.repeat_begin.desc="Repeat this block of commands.";
 
-pen.repeat_begin_rnd=function(min, max)
+led.repeat_begin_rnd=function(min, max)
 {
     this.add(5);
     this.add_uint16(min);
     this.add_uint16(max);
 }
-pen.repeat_begin_rnd.desc="Repeat this block of commands a random number of times.";
+led.repeat_begin_rnd.desc="Repeat this block of commands a random number of times.";
 
 
-pen.repeat_end=function()
+led.repeat_end=function()
 {
     this.add(6);
 }
-pen.repeat_end.desc="End repeat block";
+led.repeat_end.desc="End repeat block";
 
 
-pen.led=function(nr)
+led.led=function(nr)
 {
     this.add(9);
     this.add_uint16(nr);
 }
-pen.led.desc="Change current lednr";
+led.led.desc="Change current lednr";
 
 
-pen.led_rnd=function(min, max)
+led.led_rnd=function(min, max)
 {
     this.add(10);
     this.add_uint16(min);
     this.add_uint16(max);
 }
 
-pen.led_rnd.desc="Change current led nr to random led.";
+led.led_rnd.desc="Change current led nr to random led.";
 
 
-pen.led_set_next=function(r,g,b)
+led.led_set_next=function(r,g,b)
 {
     this.add(11);
     this.add_uint8(r);
     this.add_uint8(g);
     this.add_uint8(b);
 }
-pen.led_set_next.desc="Set current led to specified color, without effects. And go to next led. (determined by pen_step)";
+led.led_set_next.desc="Set current led to specified color, without effects. And go to next led. (determined by pen_step)";
 
 
-pen.color=function(r,g,b)
+led.color=function(r,g,b)
 {
     this.add(12);
     this.add_uint8(r);
     this.add_uint8(g);
     this.add_uint8(b);
 }
-pen.color.desc="Set pen color";
+led.color.desc="Set pen color";
 
 
-pen.color_rnd=function(r_min, r_max, g_min, g_max, b_min, b_max)
+led.color_rnd=function(r_min, r_max, g_min, g_max, b_min, b_max)
 {
     this.add(13);
     this.add_uint8(r_min);
@@ -183,81 +183,81 @@ pen.color_rnd=function(r_min, r_max, g_min, g_max, b_min, b_max)
     this.add_uint8(b_min);
     this.add_uint8(b_max);
 }
-pen.color.desc="Set pen color randomly";
+led.color.desc="Set pen color randomly";
 
 
-pen.step=function(offset)
+led.step=function(offset)
 {
     this.add(14);
     this.add_int8(offset);
 }
-pen.step.desc="Stepsize taken after drawing a pixel with the pen.";
+led.step.desc="Stepsize taken after drawing a pixel with the led.";
 
 
 
-pen.width=function(width)
+led.width=function(width)
 {
     this.add(15);
     this.add_uint8(width);
 }
-pen.width.desc="Width of one pixel of the pen";
+led.width.desc="Width of one pixel of the pen";
 
 
-pen.width_rnd=function(min, max)
+led.width_rnd=function(min, max)
 {
     this.add(16);
     this.add_uint8(min);
     this.add_uint8(max);
 }
-pen.width.desc="Set width of pen randomly";
+led.width.desc="Set width of pen randomly";
 
 
-pen.draw=function()
+led.draw=function()
 {
     this.add(17);
 }
-pen.width.desc="Draw one 'pixel' with current pen settings.";
+led.width.desc="Draw one 'pixel' with current pen settings.";
 
 
-pen.fade_mode=function(mode)
+led.fade_mode=function(mode)
 {
     this.add(18);
     this.add_uint8(mode);
 }
-pen.fade_mode.desc="Set fade mode for next pixels.";
+led.fade_mode.desc="Set fade mode for next pixels.";
 
 
-pen.fade_speed=function(levels)
+led.fade_speed=function(levels)
 {
     this.add(19);
     this.add_uint8(levels);
 }
-pen.fade_speed.desc="Set fade speed, in color-levels per step.";
+led.fade_speed.desc="Set fade speed, in color-levels per step.";
 
 
-pen.fade_speed_rnd=function(min, max)
+led.fade_speed_rnd=function(min, max)
 {
     this.add(20);
     this.add_uint8(min);
     this.add_uint8(max);
 }
-pen.fade_speed.desc="Set fade speed randomly";
+led.fade_speed.desc="Set fade speed randomly";
 
 
-pen.clone_count=function(count)
+led.clone_count=function(count)
 {
     this.add(21);
     this.add_uint16(count);
 }
-pen.clone_count.desc="Clone pen this number of times by clone offset.";
+led.clone_count.desc="Clone pen this number of times by clone offset.";
 
 
-pen.clone_offset=function(offset)
+led.clone_offset=function(offset)
 {
     this.add(22);
     this.add_uint16(offset);
 }
-pen.clone_offset.desc="Offset between clones";
+led.clone_offset.desc="Offset between clones";
 
 
 
