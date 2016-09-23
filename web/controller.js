@@ -9,64 +9,66 @@ Module['onRuntimeInitialized']=function()
 
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
+        var MAX_LEDS=Module.MAX_LEDS;
+        
+
+        /// animate one step and update canvas
+        function step()
+        {
+            requestAnimationFrame(step);
+            strip_anim.step();
+
+
+            var rgb;
+            for (led=0;led<MAX_LEDS;led++)
+            {
+                rgb=strip_anim.get_led(led);
+                // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+                // ctx.fillRect(led*12, 10, 10,10);
+                if (is_little_endian) {
+                    image_data32[led] =
+                    (255   << 24) |    // alpha
+                    (rgb.b << 16) |    // blue
+                    (rgb.g <<  8) |    // green
+                    rgb.r;            // red
+                } else {
+                    image_data32[led] =
+                    (rgb.r << 24) |    // red
+                    (rgb.g << 16) |    // green
+                    (rgb.b <<  8) |    // blue
+                    255;              // alpha
+                }
+            }
+
+            image_data.data.set(image_buf8);
+            canvas_context.putImageData(image_data, 0, 0);
+        }
 
         // start ledstrip simulator via canvas
         function start_ledsim(){
 
             /////////////////////////////////// prepare canvas
-            var MAX_LEDS=Module.MAX_LEDS;
 
             //fast pixel manipulation code borrowed from http://jsfiddle.net/andrewjbaker/Fnx2w/
             var canvas = document.getElementById('ledsim');
             var canvasWidth  = canvas.width;
             var canvasHeight = canvas.height;
-            var canvas_context = canvas.getContext('2d');
-            var image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
+            canvas_context = canvas.getContext('2d');
+            image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
 
             var image_buf = new ArrayBuffer(image_data.data.length);
-            var image_buf8 = new Uint8ClampedArray(image_buf);
-            var image_data32 = new Uint32Array(image_buf);
+            image_buf8 = new Uint8ClampedArray(image_buf);
+            image_data32 = new Uint32Array(image_buf);
 
             // Determine whether Uint32 is little- or big-endian.
             image_data32[1] = 0x0a0b0c0d;
 
-            var is_little_endian = true;
+            is_little_endian = true;
             if (image_buf[4] === 0x0a && image_buf[5] === 0x0b && image_buf[6] === 0x0c && image_buf[7] === 0x0d)
             {
                 is_little_endian = false;
             }
 
-            /// animate one step and update canvas
-            function step()
-            {
-                requestAnimationFrame(step);
-                strip_anim.step();
-
-
-                var rgb;
-                for (led=0;led<MAX_LEDS;led++)
-                {
-                    rgb=strip_anim.get_led(led);
-                    // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-                    // ctx.fillRect(led*12, 10, 10,10);
-                    if (is_little_endian) {
-                        image_data32[led] =
-                        (255   << 24) |    // alpha
-                        (rgb.b << 16) |    // blue
-                        (rgb.g <<  8) |    // green
-                        rgb.r;            // red
-                    } else {
-                        image_data32[led] =
-                        (rgb.r << 24) |    // red
-                        (rgb.g << 16) |    // green
-                        (rgb.b <<  8) |    // blue
-                        255;              // alpha
-                    }
-                }
-
-                image_data.data.set(image_buf8);
-                canvas_context.putImageData(image_data, 0, 0);
-            }
             step(); //start
 
         }
