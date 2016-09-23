@@ -20,20 +20,20 @@ Module['onRuntimeInitialized']=function()
             var canvas = document.getElementById('ledsim');
             var canvasWidth  = canvas.width;
             var canvasHeight = canvas.height;
-            var ctx = canvas.getContext('2d');
-            var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+            var canvas_context = canvas.getContext('2d');
+            var image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
 
-            var buf = new ArrayBuffer(imageData.data.length);
-            var buf8 = new Uint8ClampedArray(buf);
-            var data = new Uint32Array(buf);
+            var image_buf = new ArrayBuffer(image_data.data.length);
+            var image_buf8 = new Uint8ClampedArray(image_buf);
+            var image_data32 = new Uint32Array(image_buf);
 
             // Determine whether Uint32 is little- or big-endian.
-            data[1] = 0x0a0b0c0d;
+            image_data32[1] = 0x0a0b0c0d;
 
-            var isLittleEndian = true;
-            if (buf[4] === 0x0a && buf[5] === 0x0b && buf[6] === 0x0c && buf[7] === 0x0d)
+            var is_little_endian = true;
+            if (image_buf[4] === 0x0a && image_buf[5] === 0x0b && image_buf[6] === 0x0c && image_buf[7] === 0x0d)
             {
-                isLittleEndian = false;
+                is_little_endian = false;
             }
 
             /// animate one step and update canvas
@@ -49,14 +49,14 @@ Module['onRuntimeInitialized']=function()
                     rgb=strip_anim.get_led(led);
                     // ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
                     // ctx.fillRect(led*12, 10, 10,10);
-                    if (isLittleEndian) {
-                        data[led] =
+                    if (is_little_endian) {
+                        image_data32[led] =
                         (255   << 24) |    // alpha
                         (rgb.b << 16) |    // blue
                         (rgb.g <<  8) |    // green
                         rgb.r;            // red
                     } else {
-                        data[led] =
+                        image_data32[led] =
                         (rgb.r << 24) |    // red
                         (rgb.g << 16) |    // green
                         (rgb.b <<  8) |    // blue
@@ -64,8 +64,8 @@ Module['onRuntimeInitialized']=function()
                     }
                 }
 
-                imageData.data.set(buf8);
-                ctx.putImageData(imageData, 0, 0);
+                image_data.data.set(image_buf8);
+                canvas_context.putImageData(image_data, 0, 0);
             }
             step(); //start
 
