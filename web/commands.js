@@ -56,7 +56,11 @@ led.add_int8=function(value, min, max)
     if (check)
         return(check);
 
-    this.add(value);
+    if (value>=0)
+        this.add(value);
+    else {
+        this.add(value+256); //abuse uints for int
+    }
 }
 
 led.add_uint16=function(value, min, max)
@@ -112,7 +116,7 @@ led.delay=function(steps)
 led.delay.desc="Delay program and update led strip and delay for this many steps.";
 
 
-led.repeat_begin=function(times)
+led.repeat_begin=function(steps)
 {
     this.add(4);
     this.add_uint16(steps);

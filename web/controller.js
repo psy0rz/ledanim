@@ -10,6 +10,7 @@ Module['onRuntimeInitialized']=function()
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
         var MAX_LEDS=Module.MAX_LEDS;
+        animation_id=0;
 
 
 
@@ -45,7 +46,7 @@ Module['onRuntimeInitialized']=function()
         /// animate one step and update canvas
         function step()
         {
-            requestAnimationFrame(step);
+            animation_id=requestAnimationFrame(step);
             strip_anim.step();
 
 
@@ -84,8 +85,8 @@ Module['onRuntimeInitialized']=function()
         // var last_program="";
         function compile_editor(editor)
         {
-
-
+            if (animation_id)
+                cancelAnimationFrame(animation_id);
             localStorage.setItem("current_program", editor.getValue());
             localStorage.setItem("current_program_name", $("#program_name").val());
 
@@ -112,6 +113,7 @@ Module['onRuntimeInitialized']=function()
                 $("#compiler_msg").text("Compiled ok, "+led.commands.size()+" bytes.");
                 $("#compiler_msg").removeClass("error");
                 strip_anim.set_commands(led.commands);
+                step();
             }
         }
 
@@ -192,10 +194,9 @@ Module['onRuntimeInitialized']=function()
 
 
         update_quickload_list();
-        compile_editor(editor);
-
         init_canvas();
-        step();
+
+        compile_editor(editor);
 
 
         ////EVENT change led config
@@ -220,12 +221,11 @@ Module['onRuntimeInitialized']=function()
 
         ////EVENT when user changes the program, recompile and save it after a short delay
         editor.on("change", function() {
-         $("#compiler_msg").html("&nbsp;");
-         $("#compiler_msg").removeClass("error");
-         clearTimeout(timeout);
-         timeout = setTimeout(function() {
-             compile_editor(editor);
-        }, 300);
+            delayed(function() {
+                $("#compiler_msg").html("&nbsp;");
+                $("#compiler_msg").removeClass("error");
+                compile_editor(editor);
+            });
         });
 
 
