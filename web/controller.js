@@ -151,6 +151,33 @@ Module['onRuntimeInitialized']=function()
 
         }
 
+        //clones specified jquery element template
+        function clone_template(element)
+        {
+            var clone=element.clone();
+            clone.removeClass("template");
+            clone.insertAfter(element);
+            return(clone);
+        }
+
+        function update_animation_list(repo)
+        {
+            for(category in repo)
+            {
+                var category_element=clone_template($(".category.template"));
+                $(".category_title", category_element).text(category);
+                for(animation in repo[category])
+                {
+                    console.log(animation);
+                    var animation_element=clone_template($(".animation.template", category_element));
+                    $(".animation_name", animation_element).text(animation);
+                    $(".animation_desc", animation_element).text(repo[category][animation]);
+
+
+                }
+            }
+        }
+
         var timeout;
         function delayed(func)
         {
@@ -257,13 +284,6 @@ Module['onRuntimeInitialized']=function()
 
         ///EVENT save button
         $("#save").click(function(){
-            $.ajax("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/xmas/sparkle.js",
-            {
-                succces:function(data)
-                {
-                    console.log("gok", data);
-                }
-            })
             if ($("#program_name").val())
             {
                 localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
@@ -288,6 +308,7 @@ Module['onRuntimeInitialized']=function()
         });
 
 
+        //create tabs. ace editor needs extra attention
         $("#tabs").tabs({
             activate : function(event, ui) {
                 if ($("a",ui.newTab).attr("href")=="#tab-edit")
@@ -299,6 +320,24 @@ Module['onRuntimeInitialized']=function()
                 }
 
             }
+        });
+
+        //load animation repo
+        var animations_repo="https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/"
+        var index_url=animations_repo+"index.json";
+        $("#animations_status").text("Downloading index...");
+        $.ajax(index_url,
+        {
+            dataType: "json",
+            error: function(xhr, status, text)
+            {
+                $("#animations_status").text("Error while loading "+index_url+": "+ text);
+            },
+            // succces:
+        }).done(function(data)
+        {
+            update_animation_list(data);
+            $("#animations_status").text("");
         });
 
 

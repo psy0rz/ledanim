@@ -1,88 +1,93 @@
 <!doctype html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
 
-body {
-    background: #000000;
-    color: #ffffff;
-}
-#ledsim {
-    border-style: solid;
-    border-color: gray;
-    border-width: 1px;
-    image-rendering:-moz-crisp-edges;          /* Firefox        */
-    image-rendering:-o-crisp-edges;            /* Opera          */
-    image-rendering:-webkit-optimize-contrast; /* Safari         */
-    image-rendering:optimize-contrast;         /* CSS3 Proposed  */
-    image-rendering:crisp-edges;               /* CSS4 Proposed  */
-    image-rendering:pixelated;                 /* CSS4 Proposed  */
-    -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
-}
+    body {
+        background: #000000;
+        color: #ffffff;
+    }
+    #ledsim {
+        border-style: solid;
+        border-color: gray;
+        border-width: 1px;
+        image-rendering:-moz-crisp-edges;          /* Firefox        */
+        image-rendering:-o-crisp-edges;            /* Opera          */
+        image-rendering:-webkit-optimize-contrast; /* Safari         */
+        image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+        image-rendering:crisp-edges;               /* CSS4 Proposed  */
+        image-rendering:pixelated;                 /* CSS4 Proposed  */
+        -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+    }
 
-#compiler_msg
-{
-    color: green;
-    font-family: monospace;
-}
+    #compiler_msg
+    {
+        color: green;
+        font-family: monospace;
+    }
 
-.error
-{
-    color: red !important;
-}
-
-
-.quick_load_template
-{
-    display: none;
-}
-
-.quick_load
-{
-    margin: 2px;
-}
-
-#main-container
-{
-    display: flex;
-    flex-direction: column;
-    position:absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-#tabs
-{
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
+    .error
+    {
+        color: red !important;
+    }
 
 
-#tab-edit
-{
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding: 0.1em;
-}
+    .quick_load_template, .template
+    {
+        display: none;
+    }
 
-#editor {
-    /*margin: auto;/*/
-    flex-grow: 1;
-}
+    .quick_load
+    {
+        margin: 2px;
+    }
 
-</style>
-<script src="controller.js"></script>
-<script src="strip_anim_bindings.js"></script>
-<script src="jslib/jquery-3.1.0.min.js"></script>
-<script src="jslib/jquery-ui-1.12.1/jquery-ui.js"></script>
-<link rel="stylesheet" href="jslib/jquery-ui-1.12.1/jquery-ui.css">
-<script src="commands.js"></script>
-<script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    #main-container
+    {
+        display: flex;
+        flex-direction: column;
+        position:absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    #tabs
+    {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+
+    #tab-edit
+    {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 0.1em;
+    }
+
+    #editor {
+        flex-grow: 1;
+    }
+
+    .animation_desc
+    {
+        color: gray;
+        font-style:italic;
+    }
+
+    </style>
+    <script src="controller.js"></script>
+    <script src="strip_anim_bindings.js"></script>
+    <script src="jslib/jquery-3.1.0.min.js"></script>
+    <script src="jslib/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="jslib/jquery-ui-1.12.1/jquery-ui.css">
+    <script src="commands.js"></script>
+    <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
     <div id='main-container'>
@@ -90,19 +95,30 @@ body {
 
         <div id="tabs">
             <ul>
-                <li><a href="#tab-edit">Edit</a></li>
-                <li><a href="#tab-files">Files</a></li>
                 <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-control">Control</a></li>
+                <li><a href="#tab-edit">Edit</a></li>
+                <li><a href="#tab-files">Files</a></li>
                 <li><a href="#tab-settings">Settings</a></li>
             </ul>
+
+            <div id="tab-animations" style='overflow: auto;'>
+                <span id='animations_status' class='error'>Loading...</a></span>
+
+                <div class='category template'>
+                    <h1 class='category_title'></h1>
+                    <ul>
+                        <li class='animation template'><a class='animation_name' href='#'></a> <span class='animation_desc'></span></li>
+                    </ul>
+                </div>
+            </div>
 
             <div id="tab-control">
             </div>
 
             <div id="tab-edit" >
-                    <div  id="compiler_msg"></div>
-                    <div  id="editor"></div>
+                <div  id="compiler_msg"></div>
+                <div  id="editor"></div>
 
             </div>
 
