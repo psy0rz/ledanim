@@ -1,86 +1,95 @@
 <!doctype html>
 <html>
-    <head>
-        <style>
+<head>
+<style>
 
-            body {
-                background: #000000;
-                color: #ffffff;
-            }
-            #ledsim {
-                width: 100%;
-                border-style: solid;
-                border-color: gray;
-                border-width: 1px;
-                image-rendering:-moz-crisp-edges;          /* Firefox        */
-                image-rendering:-o-crisp-edges;            /* Opera          */
-                image-rendering:-webkit-optimize-contrast; /* Safari         */
-                image-rendering:optimize-contrast;         /* CSS3 Proposed  */
-                image-rendering:crisp-edges;               /* CSS4 Proposed  */
-                image-rendering:pixelated;                 /* CSS4 Proposed  */
-                -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
-            }
+body {
+    background: #000000;
+    color: #ffffff;
+}
+#ledsim {
+    width: 100%;
+    border-style: solid;
+    border-color: gray;
+    border-width: 1px;
+    image-rendering:-moz-crisp-edges;          /* Firefox        */
+    image-rendering:-o-crisp-edges;            /* Opera          */
+    image-rendering:-webkit-optimize-contrast; /* Safari         */
+    image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+    image-rendering:crisp-edges;               /* CSS4 Proposed  */
+    image-rendering:pixelated;                 /* CSS4 Proposed  */
+    -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+}
 
-            #editor {
-                width: 50%;
-                height: 100em;
-                display: inline-block;
-                margin: 0;
-               }
+#editor {
+    margin: 0;
+    min-height: 100em;
+}
 
-            #compiler_msg
-            {
-                color: green;
-                font-family: monospace;
-            }
+#compiler_msg
+{
+    color: green;
+    font-family: monospace;
+}
 
-            .error
-            {
-                color: red !important;
-            }
+.error
+{
+    color: red !important;
+}
 
-            #menu
-            {
-                display: inline-block;
-                width: 45%;
-                margin: 0;
-                vertical-align: top;
-            }
+#menu
+{
+    display: inline-block;
+    width: 45%;
+    margin: 0;
+    vertical-align: top;
+}
 
-            .quick_load_template
-            {
-                display: none;
-            }
+.quick_load_template
+{
+    display: none;
+}
 
-            .quick_load
-            {
-                margin: 2px;
-            }
+.quick_load
+{
+    margin: 2px;
+}
 
 
 
-        </style>
-        <script src="controller.js"></script>
-        <script src="strip_anim_bindings.js"></script>
-        <script src="jslib/jquery-3.1.0.min.js"></script>
-        <script src="commands.js"></script>
-        <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-    </head>
-    <body>
-        <canvas id="ledsim" width=160 height=1></canvas>
-        <div id="compiler_msg"></div>
-        <div id="editor"></div>
-        <div id="menu">
-            <fieldset>
-                <legend>Led strip</legend>
-                Rows: <input id='settings_rows' type='text' value=''></input>
-                Cols: <input id='settings_cols' type='text' value=''></input>
-                <div id='settings_error' class='error'></div>
+</style>
+<script src="controller.js"></script>
+<script src="strip_anim_bindings.js"></script>
+<script src="jslib/jquery-3.1.0.min.js"></script>
+<script src="jslib/jquery-ui-1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="jslib/jquery-ui-1.12.1/jquery-ui.css">
+<script src="commands.js"></script>
+<script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+    <canvas id="ledsim" width=160 height=1></canvas>
+    <div class="tabs">
+        <ul>
+            <li><a class='on-click-editor-resize' href="#tab-edit">Edit</a></li>
+            <li><a href="#tab-files">Files</a></li>
+            <li><a href="#tab-animations">Animations</a></li>
+            <li><a href="#tab-control">Control</a></li>
+            <li><a href="#tab-settings">Settings</a></li>
+        </ul>
 
-                <button id='settings_update'>Update</button>
-            </fieldset>
+        <div id="tab-control">
+        </div>
 
-            <fieldset>
+        <div id="tab-edit">
+            <div id="compiler_msg"></div>
+            <div id="editor"></div>
+
+
+
+        </div>
+
+        <div id="tab-files">
+            <fieldset >
                 <legend>Current program</legend>
                 Name: <input id='program_name' type='text'></input>
                 <button id='save'>Save</button>
@@ -90,11 +99,24 @@
 
             <fieldset>
                 <legend>Programs</legend>
-                <button class='quick_load_template'>template</button>
+                <a href='#' class='quick_load_template'>template</a>
 
             </fieldset>
         </div>
 
+        <div id="tab-settings">
+            <fieldset>
+                <legend>Led strip</legend>
+                Rows: <input id='settings_rows' type='text' value=''></input>
+                Cols: <input id='settings_cols' type='text' value=''></input>
+                <div id='settings_error' class='error'></div>
 
-    </body>
+                <button id='settings_update'>Update</button>
+            </fieldset>
+        </fieldset>
+
+    </div>
+
+
+</body>
 </html>

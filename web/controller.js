@@ -86,7 +86,7 @@ Module['onRuntimeInitialized']=function()
         function compile_editor(editor)
         {
             if (animation_id)
-                cancelAnimationFrame(animation_id);
+            cancelAnimationFrame(animation_id);
             localStorage.setItem("current_program", editor.getValue());
             localStorage.setItem("current_program_name", $("#program_name").val());
 
@@ -160,6 +160,11 @@ Module['onRuntimeInitialized']=function()
 
         //// INITIALISATION
 
+        ///jquery ui stuff
+        $(".tabs").tabs();
+        $("button").button();
+
+
         //ace editor
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/twilight");
@@ -206,11 +211,11 @@ Module['onRuntimeInitialized']=function()
             var rows=$("#settings_rows").val();
 
             if (cols * rows > Module.MAX_LEDS)
-                $("#settings_error").text("Total number of leds cannot be more than "+Module.MAX_LEDS);
+            $("#settings_error").text("Total number of leds cannot be more than "+Module.MAX_LEDS);
             else if ( cols < 10 )
-                $("#settings_error").text("Colums should be greater than 10");
+            $("#settings_error").text("Colums should be greater than 10");
             else if ( rows < 1 )
-                $("#settings_error").text("Rows should be at least 1");
+            $("#settings_error").text("Rows should be at least 1");
             else
             {
                 localStorage.setItem("settings_rows", rows);
@@ -261,6 +266,12 @@ Module['onRuntimeInitialized']=function()
             localStorage.removeItem("program "+$("#program_name").val());
             update_quickload_list();
         });
+
+        $(".on-click-editor-resize").click(function()
+        {
+                editor.resize();
+                console.log("hoi");
+        })
 
     });
 
