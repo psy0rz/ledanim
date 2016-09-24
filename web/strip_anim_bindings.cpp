@@ -25,5 +25,6 @@ EMSCRIPTEN_BINDINGS(strip_anim_bindings) {
         .function("step", &strip_anim_c<MAX_LEDS>::step)
         .function("get_led", &strip_anim_c<MAX_LEDS>::get_led)
         .function("set_commands", &strip_anim_c<MAX_LEDS>::set_commands)
+        .function("set_used_leds", &strip_anim_c<MAX_LEDS>::set_used_leds)
         ;
 }

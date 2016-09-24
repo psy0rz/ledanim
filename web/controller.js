@@ -192,6 +192,7 @@ Module['onRuntimeInitialized']=function()
         $("#ledsim").attr("height", rows);
         $("#ledsim").attr("width", cols);
 
+        strip_anim.set_used_leds(leds);
 
         update_quickload_list();
         init_canvas();

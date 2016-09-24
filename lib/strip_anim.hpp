@@ -51,11 +51,15 @@ enum pen_fade_mode_t
     FADE_FROM_SLOW=4,
 };
 
-template <uint16_t LED_COUNT>
+template <uint16_t MAX_LEDS>
 class strip_anim_c
 {
     public:
-        led_anim_c<LED_COUNT> led_anim;
+        led_anim_c<MAX_LEDS> led_anim;
+
+    private:
+        uint16_t used_leds=MAX_LEDS;
+
 
         //commands
         typedef std::vector<uint8_t> commands_t;
@@ -91,6 +95,7 @@ class strip_anim_c
         uint8_t pen_fade_mode;
         uint8_t pen_fade_speed;
 
+    public:
         CRGB & get_led(uint16_t led)
         {
             return (led_anim.led_level[led]);
@@ -118,6 +123,11 @@ class strip_anim_c
         strip_anim_c()
         {
             reset();
+        }
+
+        void set_used_leds(uint16_t used_leds)
+        {
+            this->used_leds=used_leds;
         }
 
         void set_commands(commands_t commands)
@@ -214,8 +224,8 @@ class strip_anim_c
                     //set led number, 8 bits.
                     case CMD_LED_NR_8:
                         led=get_next8();
-                        if (led>=LED_COUNT)
-                            led=LED_COUNT-1;
+                        if (led>=used_leds)
+                            led=used_leds-1;
                         DEBUG_LOG("CMD_LED_NR_8: " << led);
                         break;
 
@@ -223,8 +233,8 @@ class strip_anim_c
                     case CMD_LED_NR_8_RND:
                         min=get_next8();
                         max=get_next8();
-                        if (max>=LED_COUNT)
-                            max=LED_COUNT;
+                        if (max>=used_leds)
+                            max=used_leds;
                         led=get_random(min,max);
                         DEBUG_LOG("CMD_LED_NR_8_RND: " << led);
                         break;
@@ -232,8 +242,8 @@ class strip_anim_c
                     //set led number, 16 bits
                     case CMD_LED_NR_16:
                         led=get_next16();
-                        if (led>=LED_COUNT)
-                            led=LED_COUNT-1;
+                        if (led>=used_leds)
+                            led=used_leds-1;
                         DEBUG_LOG("CMD_LED_NR_16: " << led);
                         break;
 
@@ -241,8 +251,8 @@ class strip_anim_c
                     case CMD_LED_NR_16_RND:
                         min=get_next16();
                         max=get_next16();
-                        if (max>=LED_COUNT)
-                            max=LED_COUNT;
+                        if (max>=used_leds)
+                            max=used_leds;
                         led=get_random(min,max);
                         DEBUG_LOG("CMD_LED_NR_16_RND: " << led);
                         break;
@@ -258,7 +268,7 @@ class strip_anim_c
                             rgb.b=get_next8();
                             DEBUG_LOG("CMD_LED_SET_NEXT (" << (int)rgb.r << " , " << (int)rgb.g << " , " << (int)rgb.b << ")  led=" << led);
                             led_anim.set(led, rgb);
-                            led=(led+pen_step)%LED_COUNT;
+                            led=(led+pen_step)%used_leds;
                             break;
                         }
 
@@ -360,10 +370,10 @@ class strip_anim_c
                                     }
                                     tmp_led++;
                                 }
-                                tmp_led=(led+pen_clone_offset*(clone_count+1))%LED_COUNT;
+                                tmp_led=(led+pen_clone_offset*(clone_count+1))%used_leds;
                             }
                         }
-                        led=(led+pen_step)%LED_COUNT;
+                        led=(led+pen_step)%used_leds;
                         break;
 
 

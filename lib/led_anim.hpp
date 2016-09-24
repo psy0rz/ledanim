@@ -11,17 +11,19 @@
 
 
 
-template <uint16_t LED_COUNT>
+template <uint16_t MAX_LEDS>
 class led_anim_c
 {
     public:
+        uint16_t used_leds=MAX_LEDS;
 
         //current color levels (this is compatible with FastLED)
-        CRGB led_level[LED_COUNT];
+        CRGB led_level[MAX_LEDS];
 
     private:
+
         //alternate color levels. (used for stuff like fading and blinking)
-        CRGB led_alternate_level[LED_COUNT];
+        CRGB led_alternate_level[MAX_LEDS];
 
         //led mode
         enum led_mode_t
@@ -30,11 +32,11 @@ class led_anim_c
             MODE_FADE_FAST,
             MODE_FADE_SLOW,
         };
-        uint8_t led_mode[LED_COUNT];
+        uint8_t led_mode[MAX_LEDS];
 
         //mode parameters
-        uint8_t led_param1[LED_COUNT];
-        uint8_t led_param2[LED_COUNT];
+        uint8_t led_param1[MAX_LEDS];
+        uint8_t led_param2[MAX_LEDS];
 
         uint16_t clone_size;
 
@@ -43,14 +45,7 @@ class led_anim_c
         //constructor
         led_anim_c()
         {
-            for (uint16_t led=0; led<LED_COUNT; led++)
-            {
-                led_level[led].r=0;
-                led_level[led].g=0;
-                led_level[led].b=0;
-
-                led_mode[led]=MODE_STATIC;
-            }
+            clear();
             clone_size=0;
 
         }
@@ -63,11 +58,16 @@ class led_anim_c
 
         }
 
+        void set_used_leds(uint16_t used_leds)
+        {
+            this->used_leds=used_leds;
+        }
+
         void clear(CRGB rgb=CRGB(0,0,0))
         {
-            for (int i=0; i<LED_COUNT;i++)
+            for (int i=0; i<used_leds;i++)
             {
-                led_mode[i]=0;
+                led_mode[i]=MODE_STATIC;
                 led_level[i]=rgb;
             }
         }
@@ -156,7 +156,7 @@ class led_anim_c
         //pre-execution steps (fading)
         void pre_step()
         {
-            for (uint16_t led=0; led<LED_COUNT && (clone_size==0 || led<clone_size); led++)
+            for (uint16_t led=0; led<used_leds && (clone_size==0 || led<clone_size); led++)
             {
                 switch (led_mode[led])
                 {
@@ -182,7 +182,7 @@ class led_anim_c
         {
             // if (clone_size)
             // {
-            //     for (uint16_t led=0; led<(LED_COUNT)1 && (clone_size==0 || led<clone_size); led++)
+            //     for (uint16_t led=0; led<(MAX_LEDS)1 && (clone_size==0 || led<clone_size); led++)
             //     memcpy(.., &led_level[0], clone_size);
             // }
         }
