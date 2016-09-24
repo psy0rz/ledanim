@@ -1,4 +1,4 @@
-width=leds/4;
+width=led.leds/4;
 
 
 led.width(width);
@@ -23,21 +23,21 @@ led.color(0,0,0);
 led.draw();
 
 //right blue
-led.led(leds-width);
+led.led(led.leds-width);
 led.color(0,0,255);
 led.draw();
 led.delay(4);
 
-led.led(leds-width);
+led.led(led.leds-width);
 led.color(0,0,0); 
 led.draw();
 led.delay(2);
 
-led.led(leds-width);
+led.led(led.leds-width);
 led.color(0,0,255);
 led.draw();
 led.delay(14);
 
-led.led(leds-width);
+led.led(led.leds-width);
 led.color(0,0,0); 
 led.draw();
