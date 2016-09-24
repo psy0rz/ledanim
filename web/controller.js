@@ -233,7 +233,7 @@ Module['onRuntimeInitialized']=function()
             {
                 localStorage.setItem("settings_rows", rows);
                 localStorage.setItem("settings_cols", cols);
-                document.location=document.location;
+                document.location.reload();
 
             }
         });
