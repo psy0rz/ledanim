@@ -378,7 +378,7 @@ class strip_anim_c
 
         void step()
         {
-            led_anim.step();
+            led_anim.pre_step();
 
             if (delay==0)
             {
@@ -390,6 +390,9 @@ class strip_anim_c
             {
                 delay--;
             }
+
+            led_anim.post_step();
+
         }
 };
 

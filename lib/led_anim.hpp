@@ -36,6 +36,8 @@ class led_anim_c
         uint8_t led_param1[LED_COUNT];
         uint8_t led_param2[LED_COUNT];
 
+        uint16_t clone_size;
+
 
     public:
         //constructor
@@ -49,6 +51,7 @@ class led_anim_c
 
                 led_mode[led]=MODE_STATIC;
             }
+            clone_size=0;
 
         }
 
@@ -150,9 +153,10 @@ class led_anim_c
 
 
     public:
-        void step()
+        //pre-execution steps (fading)
+        void pre_step()
         {
-            for (uint16_t led=0; led<LED_COUNT; led++)
+            for (uint16_t led=0; led<LED_COUNT && (clone_size==0 || led<clone_size); led++)
             {
                 switch (led_mode[led])
                 {
@@ -173,7 +177,15 @@ class led_anim_c
             }
         }
 
-
+        //post execution step (cloning)
+        void post_step()
+        {
+            // if (clone_size)
+            // {
+            //     for (uint16_t led=0; led<(LED_COUNT)1 && (clone_size==0 || led<clone_size); led++)
+            //     memcpy(.., &led_level[0], clone_size);
+            // }
+        }
 
 };
 
