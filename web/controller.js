@@ -54,10 +54,10 @@ Module['onRuntimeInitialized']=function()
             if (is_little_endian)
             {
                 //optimized a bit to make loop cheaper
-                for (var led=0;led<leds;led++)
+                for (var l=0;l<led.leds;l++)
                 {
-                    rgb=strip_anim.get_led(led);
-                    image_data32[led] =
+                    rgb=strip_anim.get_led(l);
+                    image_data32[l] =
                     (255   << 24) |    // alpha
                     (rgb.b << 16) |    // blue
                     (rgb.g <<  8) |    // green
@@ -66,9 +66,9 @@ Module['onRuntimeInitialized']=function()
             }
             else
             {
-                for (var led=0;led<leds;led++)
+                for (var l=0;l<led.leds;l++)
                 {
-                    image_data32[led] =
+                    image_data32[l] =
                     (rgb.r << 24) |    // red
                     (rgb.g << 16) |    // green
                     (rgb.b <<  8) |    // blue
@@ -176,23 +176,23 @@ Module['onRuntimeInitialized']=function()
         //load led setings?
         if (localStorage.hasOwnProperty("settings_rows"))
         {
-            rows=localStorage.getItem("settings_rows");
-            cols=localStorage.getItem("settings_cols");
+            led.rows=localStorage.getItem("settings_rows");
+            led.cols=localStorage.getItem("settings_cols");
         }
         else
         {
             //get defaults
-            rows=$("#ledsim").attr("height");
-            cols=$("#ledsim").attr("width");
+            led.rows=$("#ledsim").attr("height");
+            led.cols=$("#ledsim").attr("width");
         }
 
-        leds=rows*cols;
-        $("#settings_rows").val(rows);
-        $("#settings_cols").val(cols);
-        $("#ledsim").attr("height", rows);
-        $("#ledsim").attr("width", cols);
+        led.leds=led.rows*led.cols;
+        $("#settings_rows").val(led.rows);
+        $("#settings_cols").val(led.cols);
+        $("#ledsim").attr("height", led.rows);
+        $("#ledsim").attr("width", led.cols);
 
-        strip_anim.set_used_leds(leds);
+        strip_anim.set_used_leds(led.leds);
 
         update_quickload_list();
         init_canvas();
