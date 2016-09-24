@@ -18,10 +18,10 @@ for (path, dirs, files) in os.walk("."):
                     desc=""
                 repo[category][filename]=desc
 
-        repo[category]=sorted(repo[category].items())
+        repo[category]=OrderedDict(sorted(repo[category].items(), key=lambda t: t[0]))
 
 
-repo=sorted(repo.items())
+repo=OrderedDict(sorted(repo.items(), key=lambda t: t[0]))
 
 with open("index.json",'w') as fh:
     fh.write(json.dumps(repo))

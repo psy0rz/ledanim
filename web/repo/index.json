@@ -1,1 +1,1 @@
-[["ambiance", [["matrix.js", "The Matrix rain code."], ["water.js", ""]]], ["signalling", [["knightrider.js", "knightrider radar(s)"], ["police1.js", ""]]], ["xmas", [["sparkle.js", "sparkly effect for xmas stuff"]]]]
+{"ambiance": {"matrix.js": "The Matrix rain code.", "water.js": ""}, "signalling": {"knightrider.js": "knightrider radar(s)", "police1.js": ""}, "xmas": {"sparkle.js": "sparkly effect for xmas stuff"}}
