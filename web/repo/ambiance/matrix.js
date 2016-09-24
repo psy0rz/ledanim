@@ -1,3 +1,5 @@
+// The Matrix rain code.
+
 tail=30;
 mirror=60;
 

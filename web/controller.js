@@ -257,6 +257,13 @@ Module['onRuntimeInitialized']=function()
 
         ///EVENT save button
         $("#save").click(function(){
+            $.ajax("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/xmas/sparkle.js",
+            {
+                succces:function(data)
+                {
+                    console.log("gok", data);
+                }
+            })
             if ($("#program_name").val())
             {
                 localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
