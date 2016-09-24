@@ -161,7 +161,6 @@ Module['onRuntimeInitialized']=function()
         //// INITIALISATION
 
         ///jquery ui stuff
-        $(".tabs").tabs();
         $("button").button();
 
 
@@ -196,6 +195,10 @@ Module['onRuntimeInitialized']=function()
         $("#settings_cols").val(led.cols);
         $("#ledsim").attr("height", led.rows);
         $("#ledsim").attr("width", led.cols);
+
+        //make sure pixels are square by setting height
+        css_width=$("#ledsim").width();
+        $("#ledsim").css("height",  css_width*led.rows/led.cols );
 
         strip_anim.set_used_leds(led.leds);
 
@@ -267,11 +270,20 @@ Module['onRuntimeInitialized']=function()
             update_quickload_list();
         });
 
-        $(".on-click-editor-resize").click(function()
-        {
-                editor.resize();
-                console.log("hoi");
-        })
+
+        $("#tabs").tabs({
+            activate : function(event, ui) {
+                if ($("a",ui.newTab).attr("href")=="#tab-edit")
+                {
+                    console.log("jo");
+                    editor.resize();
+                    editor.focus();
+
+                }
+
+            }
+        });
+
 
     });
 

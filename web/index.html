@@ -8,7 +8,6 @@ body {
     color: #ffffff;
 }
 #ledsim {
-    width: 100%;
     border-style: solid;
     border-color: gray;
     border-width: 1px;
@@ -19,11 +18,6 @@ body {
     image-rendering:crisp-edges;               /* CSS4 Proposed  */
     image-rendering:pixelated;                 /* CSS4 Proposed  */
     -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
-}
-
-#editor {
-    margin: 0;
-    min-height: 100em;
 }
 
 #compiler_msg
@@ -37,13 +31,6 @@ body {
     color: red !important;
 }
 
-#menu
-{
-    display: inline-block;
-    width: 45%;
-    margin: 0;
-    vertical-align: top;
-}
 
 .quick_load_template
 {
@@ -55,7 +42,37 @@ body {
     margin: 2px;
 }
 
+#main-container
+{
+    display: flex;
+    flex-direction: column;
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 
+#tabs
+{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+
+#tab-edit
+{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0.1em;
+}
+
+#editor {
+    /*margin: auto;/*/
+    flex-grow: 1;
+}
 
 </style>
 <script src="controller.js"></script>
@@ -67,56 +84,56 @@ body {
 <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-    <canvas id="ledsim" width=160 height=1></canvas>
-    <div class="tabs">
-        <ul>
-            <li><a class='on-click-editor-resize' href="#tab-edit">Edit</a></li>
-            <li><a href="#tab-files">Files</a></li>
-            <li><a href="#tab-animations">Animations</a></li>
-            <li><a href="#tab-control">Control</a></li>
-            <li><a href="#tab-settings">Settings</a></li>
-        </ul>
+    <div id='main-container'>
+        <canvas  id="ledsim" width=160 height=1></canvas>
 
-        <div id="tab-control">
-        </div>
+        <div id="tabs">
+            <ul>
+                <li><a href="#tab-edit">Edit</a></li>
+                <li><a href="#tab-files">Files</a></li>
+                <li><a href="#tab-animations">Animations</a></li>
+                <li><a href="#tab-control">Control</a></li>
+                <li><a href="#tab-settings">Settings</a></li>
+            </ul>
 
-        <div id="tab-edit">
-            <div id="compiler_msg"></div>
-            <div id="editor"></div>
+            <div id="tab-control">
+            </div>
 
+            <div id="tab-edit" >
+                    <div  id="compiler_msg"></div>
+                    <div  id="editor"></div>
 
+            </div>
 
-        </div>
+            <div id="tab-files">
+                <fieldset >
+                    <legend>Current program</legend>
+                    Name: <input id='program_name' type='text'></input>
+                    <button id='save'>Save</button>
+                    <button id='delete'>Delete</button>
+                    <button id='download'>Download...</button>
+                </fieldset>
 
-        <div id="tab-files">
-            <fieldset >
-                <legend>Current program</legend>
-                Name: <input id='program_name' type='text'></input>
-                <button id='save'>Save</button>
-                <button id='delete'>Delete</button>
-                <button id='download'>Download...</button>
+                <fieldset>
+                    <legend>Programs</legend>
+                    <a href='#' class='quick_load_template'>template</a>
+
+                </fieldset>
+            </div>
+
+            <div id="tab-settings">
+                <fieldset>
+                    <legend>Led strip</legend>
+                    Rows: <input id='settings_rows' type='text' value=''></input>
+                    Cols: <input id='settings_cols' type='text' value=''></input>
+                    <div id='settings_error' class='error'></div>
+
+                    <button id='settings_update'>Update</button>
+                </fieldset>
             </fieldset>
 
-            <fieldset>
-                <legend>Programs</legend>
-                <a href='#' class='quick_load_template'>template</a>
-
-            </fieldset>
         </div>
-
-        <div id="tab-settings">
-            <fieldset>
-                <legend>Led strip</legend>
-                Rows: <input id='settings_rows' type='text' value=''></input>
-                Cols: <input id='settings_cols' type='text' value=''></input>
-                <div id='settings_error' class='error'></div>
-
-                <button id='settings_update'>Update</button>
-            </fieldset>
-        </fieldset>
-
     </div>
-
 
 </body>
 </html>
