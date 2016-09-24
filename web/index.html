@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+    <!-- (C)2016 Edwin Eefting - edwin@datux.nl -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
 
@@ -74,6 +75,12 @@
         flex-grow: 1;
     }
 
+
+    #animation_status
+    {
+        color: green;
+    }
+
     .animation_desc
     {
         color: gray;
@@ -94,6 +101,7 @@
         <canvas  id="ledsim" width=160 height=1></canvas>
 
         <div id="tabs">
+
             <ul>
                 <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-control">Control</a></li>
@@ -102,25 +110,29 @@
                 <li><a href="#tab-settings">Settings</a></li>
             </ul>
 
+
             <div id="tab-animations" style='overflow: auto;'>
-                <span id='animations_status' class='error'>Loading...</a></span>
+                <span id='animations_status'>Loading...</span>
 
                 <div class='category template'>
                     <h1 class='category_title'></h1>
                     <ul>
-                        <li class='animation template'><a class='animation_name' href='#'></a> <span class='animation_desc'></span></li>
+                        <li class='animation template'><a class='animation_click animation_name' href='#'></a> <span class='animation_desc'></span></li>
                     </ul>
                 </div>
             </div>
 
+
             <div id="tab-control">
             </div>
+
 
             <div id="tab-edit" >
                 <div  id="compiler_msg"></div>
                 <div  id="editor"></div>
 
             </div>
+
 
             <div id="tab-files">
                 <fieldset >
@@ -137,6 +149,7 @@
 
                 </fieldset>
             </div>
+
 
             <div id="tab-settings">
                 <fieldset>
