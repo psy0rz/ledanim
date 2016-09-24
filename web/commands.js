@@ -157,14 +157,14 @@ led.led_rnd=function(min, max)
 led.led_rnd.desc="Change current led nr to random led.";
 
 
-led.led_set_next=function(r,g,b)
+led.set=function(r,g,b)
 {
     this.add(11);
     this.add_uint8(r);
     this.add_uint8(g);
     this.add_uint8(b);
 }
-led.led_set_next.desc="Set current led to specified color, without effects. And go to next led. (determined by pen_step)";
+led.set.desc="Set current led to specified color, without effects. And go to next led. (determined by pen_step)";
 
 
 led.color=function(r,g,b)
