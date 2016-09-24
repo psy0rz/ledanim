@@ -38,7 +38,7 @@ class led_anim_c
         uint8_t led_param1[MAX_LEDS];
         uint8_t led_param2[MAX_LEDS];
 
-        uint16_t clone_size;
+        uint16_t mirror_size;
 
 
     public:
@@ -46,8 +46,16 @@ class led_anim_c
         led_anim_c()
         {
             clear();
-            clone_size=0;
+            mirror_size=0;
 
+        }
+
+        void set_mirror(uint16_t mirror_size)
+        {
+            if (mirror_size>=used_leds)
+                this->mirror_size=0;
+            else
+                this->mirror_size=mirror_size;
         }
 
         //set led to a fixed value without effects
@@ -65,6 +73,7 @@ class led_anim_c
 
         void clear(CRGB rgb=CRGB(0,0,0))
         {
+            set_mirror(0);
             for (int i=0; i<used_leds;i++)
             {
                 led_mode[i]=MODE_STATIC;
@@ -156,7 +165,7 @@ class led_anim_c
         //pre-execution steps (fading)
         void pre_step()
         {
-            for (uint16_t led=0; led<used_leds && (clone_size==0 || led<clone_size); led++)
+            for (uint16_t led=0; led<used_leds && (mirror_size==0 || led<mirror_size); led++)
             {
                 switch (led_mode[led])
                 {
@@ -177,14 +186,20 @@ class led_anim_c
             }
         }
 
-        //post execution step (cloning)
+        //post execution step (mirroring)
         void post_step()
         {
-            // if (clone_size)
-            // {
-            //     for (uint16_t led=0; led<(MAX_LEDS)1 && (clone_size==0 || led<clone_size); led++)
-            //     memcpy(.., &led_level[0], clone_size);
-            // }
+            if (mirror_size)
+            {
+                //OPTIMIZE: with memcpy?
+                for (uint16_t offset=mirror_size; offset<used_leds; offset=offset+mirror_size)
+                {
+                    for (uint16_t led=0; led<mirror_size && offset+led<used_leds; led++)
+                    {
+                        led_level[offset+led]=led_level[led];
+                    }
+                }
+            }
         }
 
 };

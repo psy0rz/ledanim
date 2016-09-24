@@ -27,6 +27,8 @@ enum led_commands_t
     CMD_LED_NR_16=9,
     CMD_LED_NR_16_RND=10,
     CMD_LED_SET_NEXT=11,
+    CMD_LED_MIRROR=23,
+
     CMD_PEN_COLOR=12,
     CMD_PEN_COLOR_RND=13,
     CMD_PEN_STEP=14,
@@ -38,6 +40,7 @@ enum led_commands_t
     CMD_PEN_FADE_SPEED_RND=20,
     CMD_PEN_CLONE_COUNT=21,
     CMD_PEN_CLONE_OFFSET=22,
+
 
 };
 
@@ -245,6 +248,12 @@ class strip_anim_c
                         if (led>=used_leds)
                             led=used_leds-1;
                         DEBUG_LOG("CMD_LED_NR_16: " << led);
+                        break;
+
+
+                    case CMD_LED_MIRROR:
+                        led_anim.set_mirror(get_next16());
+                        DEBUG_LOG("CMD_LED_SET_MIRROR");
                         break;
 
                     //set led number, 16 bits, random

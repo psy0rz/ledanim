@@ -263,6 +263,12 @@ led.clone_offset=function(offset)
 }
 led.clone_offset.desc="Offset between clones";
 
+led.mirror=function(offset)
+{
+    this.add(23);
+    this.add_uint16(offset);
+}
+led.clone_offset.desc="Mirror the first X leds over the entire strip.";
 
 
 
