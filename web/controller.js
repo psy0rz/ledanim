@@ -196,9 +196,19 @@ Module['onRuntimeInitialized']=function()
         $("#ledsim").attr("height", led.rows);
         $("#ledsim").attr("width", led.cols);
 
+
         //make sure pixels are square by setting height
-        css_width=$("#ledsim").width();
-        $("#ledsim").css("height",  css_width*led.rows/led.cols );
+        function scale_canvas()
+        {
+            css_width=$("#ledsim").width();
+            $("#ledsim").css("height",  css_width*led.rows/led.cols );
+        }
+        $(window).resize(function()
+        {
+            scale_canvas();
+        });
+        scale_canvas();
+
 
         strip_anim.set_used_leds(led.leds);
 
