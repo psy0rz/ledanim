@@ -9,12 +9,25 @@ Module['onRuntimeInitialized']=function()
     $( document ).ready( function()
     {
 
+        function status_ok(txt)
+        {
+            $("#status_bar").text(txt).removeClass("status_error status_processing").addClass("status_ok");
+        }
+
+        function status_processing(txt)
+        {
+            $("#status_bar").text(txt).removeClass("status_error status_ok").addClass("status_processing");
+        }
+
+        function status_error(txt)
+        {
+            $("#status_bar").text(txt).removeClass("status_processing status_ok").addClass("status_error");
+        }
+
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
         var MAX_LEDS=Module.MAX_LEDS;
         animation_id=0;
-
-
 
         // start ledstrip simulator via canvas
         function init_canvas()
@@ -96,6 +109,7 @@ Module['onRuntimeInitialized']=function()
 
             try
             {
+                status_processing("Compiling program...");
                 led.clear_commmands();
                 eval(editor.getValue());
                 error="";
@@ -107,14 +121,11 @@ Module['onRuntimeInitialized']=function()
 
             if (error)
             {
-                $("#compiler_msg").text(error);
-                $("#compiler_msg").addClass("error");
-
+                status_error(error);
             }
             else
             {
-                $("#compiler_msg").text("Compiled ok, "+led.commands.size()+" bytes.");
-                $("#compiler_msg").removeClass("error");
+                status_ok("Compiled ok, "+led.commands.size()+" bytes.");
                 strip_anim.set_commands(led.commands);
                 step();
             }
@@ -166,8 +177,6 @@ Module['onRuntimeInitialized']=function()
         }
 
 
-
-
         function update_animation_list(url, repo)
         {
             for(category in repo)
@@ -188,20 +197,20 @@ Module['onRuntimeInitialized']=function()
         function load_animation_repo(url)
         {
             var index_url=url+"index.json";
-            $("#animations_status").text("Downloading index...").removeClass("error");
+            status_processing("Downloading animation list...");
 
             $.ajax(index_url,
                 {
                     dataType: "json",
                     error: function(xhr, status, text)
                     {
-                        $("#animations_status").text("Error while loading "+index_url+": "+ text).addClass("error");
+                        status_error("Error while loading "+index_url+": "+ text);
                     },
                     // succces:
                 }).done(function(data)
                 {
                     update_animation_list(url, data);
-                    $("#animations_status").text("");
+                    status_ok("Animation list downloaded");
                 });
             }
 
@@ -212,6 +221,7 @@ Module['onRuntimeInitialized']=function()
                 clearTimeout(timeout);
                 timeout = setTimeout(func, 300);
             }
+
 
             //// INITIALISATION
 
@@ -296,11 +306,11 @@ Module['onRuntimeInitialized']=function()
                 var rows=$("#settings_rows").val();
 
                 if (cols * rows > Module.MAX_LEDS)
-                $("#settings_error").text("Total number of leds cannot be more than "+Module.MAX_LEDS);
+                status_error("Total number of leds cannot be more than "+Module.MAX_LEDS);
                 else if ( cols < 10 )
-                $("#settings_error").text("Colums should be greater than 10");
+                status_error("Colums should be greater than 10");
                 else if ( rows < 1 )
-                $("#settings_error").text("Rows should be at least 1");
+                status_error("Rows should be at least 1");
                 else
                 {
                     localStorage.setItem("settings_rows", rows);
@@ -313,8 +323,6 @@ Module['onRuntimeInitialized']=function()
             ////EVENT when user changes the program, recompile and save it after a short delay
             editor.on("change", function() {
                 delayed(function() {
-                    $("#compiler_msg").html("&nbsp;");
-                    $("#compiler_msg").removeClass("error");
                     compile_editor(editor);
                 });
             });
@@ -357,20 +365,20 @@ Module['onRuntimeInitialized']=function()
             $("#tab-animations").on("click", ".animation_click", function(e)
             {
                 var url=$(this).data("url");
-                $("#animations_status").text("Downloading animation...").removeClass("error");
+                status_processing("Downloading animation "+url);
 
                 $.ajax(url,
                     {
                         dataType: "text",
                         error: function(xhr, status, text)
                         {
-                            $("#animations_status").text("Error while loading "+url+": "+ text).addClass("error");
+                            status_error("Error while loading "+url+": "+ text);
                         },
                         // succces:
                     }).done(function(data)
                     {
+                        status_ok("Download of animation ok");
                         editor.setValue(data,1);
-                        $("#animations_status").text("");
                     });
 
 

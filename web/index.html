@@ -22,16 +22,6 @@
         -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
     }
 
-    #compiler_msg
-    {
-        color: green;
-        font-family: monospace;
-    }
-
-    .error
-    {
-        color: red !important;
-    }
 
 
     .template
@@ -72,16 +62,37 @@
     }
 
 
-    #animations_status
-    {
-        color: green;
-    }
 
     .animation_desc
     {
         color: gray;
         font-style:italic;
     }
+
+    #status_bar
+    {
+        font-family: monospace;
+        padding-left: 1em;
+        font-weight: bold;
+
+    }
+
+    .status_ok
+    {
+        color: #00FF00;
+    }
+
+    .status_processing
+    {
+        color: yellow;
+    }
+
+    .status_error
+    {
+        color: white;
+        background-color: #ff0000;
+    }
+
 
     </style>
     <script src="controller.js"></script>
@@ -108,7 +119,6 @@
 
             <div id="tab-animations" style='overflow: auto;'>
                 This is a list of online animations.
-                <span id='animations_status'>Loading...</span>
 
                 <div class='category template'>
                     <h1 class='category_title'></h1>
@@ -124,7 +134,6 @@
 
 
             <div id="tab-edit" >
-                <div  id="compiler_msg"></div>
                 <div  id="editor"></div>
 
             </div>
@@ -155,7 +164,6 @@
                     <legend>Led strip</legend>
                     Rows: <input id='settings_rows' type='text' value=''></input>
                     Cols: <input id='settings_cols' type='text' value=''></input>
-                    <div id='settings_error' class='error'></div>
 
                     <button id='settings_update'>Update</button>
                 </fieldset>
@@ -164,5 +172,6 @@
         </div>
     </div>
 
+    <div id="status_bar">Loading...</div>
 </body>
 </html>
