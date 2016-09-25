@@ -81,16 +81,17 @@ bool handleFileRead(String path)
         path += "index.html";
     }
 
-    Serial.println("handleFileRead: " + path);
+    // Serial.println("handleFileRead: " + path);
 
     String contentType = getContentType(path);
 
     path=hashed_gz_path(path);
-    Serial.println("hashed file: " + path);
+    // Serial.println("hashed file: " + path);
 
     if(SPIFFS.exists(path))
     {
         File file = SPIFFS.open(path, "r");
+        server.sendHeader("Cache-Control","max-age=86400");
         size_t sent = server.streamFile(file, contentType);
         file.close();
         return true;
