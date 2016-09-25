@@ -5,7 +5,10 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+
 #include "FS.h"
+
+#include <MD5.h>
 
 
 #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
@@ -41,7 +44,8 @@ void wifi_config()
 
 
 
-String getContentType(String filename){
+String getContentType(String filename)
+{
     if(server.hasArg("download")) return "application/octet-stream";
     else if(filename.endsWith(".htm")) return "text/html";
     else if(filename.endsWith(".html")) return "text/html";
@@ -58,20 +62,43 @@ String getContentType(String filename){
     return "text/plain";
 }
 
-bool handleFileRead(String path){
+//hash to workaround 32 character path-limit
+String hashed_gz_path(String & path)
+{
+    unsigned char* hash=MD5::make_hash(path.c_str());
+    char *md5str = MD5::make_digest(hash, 13);
+    String ret(md5str);
+    ret="/"+ret+".gz";
+    free(md5str);
+    free(hash);
+    return(ret);
+}
+
+bool handleFileRead(String path)
+{
+    if(path.endsWith("/"))
+    {
+        path += "index.html";
+    }
+
     Serial.println("handleFileRead: " + path);
-    if(path.endsWith("/")) path += "index.html";
+
     String contentType = getContentType(path);
-    String pathWithGz = path + ".gz";
-    if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
-        if(SPIFFS.exists(pathWithGz))
-        path += ".gz";
+
+    path=hashed_gz_path(path);
+    Serial.println("hashed file: " + path);
+
+    if(SPIFFS.exists(path))
+    {
         File file = SPIFFS.open(path, "r");
         size_t sent = server.streamFile(file, contentType);
         file.close();
         return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -138,10 +165,18 @@ void setup(void){
     //     server.send(200, "text/plain", "this works as well");
     // });
 
+    // Dir dir = SPIFFS.openDir("/");
+    // while (dir.next()) {
+    //     Serial.println(dir.fileName());
+    // }
+    // FSInfo fs_info;
+    // SPIFFS.info(fs_info);
+    // Serial.println("max path");
+    // Serial.println(fs_info.maxPathLength);
 
 
     server.onNotFound([](){
-        if(!handleFileRead("/public_html"+server.uri()))
+        if(!handleFileRead(server.uri()))
         server.send(404, "text/plain", "FileNotFound");
     });
 
