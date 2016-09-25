@@ -24,6 +24,69 @@ Module['onRuntimeInitialized']=function()
             $("#status_bar").text(txt).removeClass("status_processing status_ok").addClass("status_error");
         }
 
+
+        function load_settings()
+        {
+            var settings_json=localStorage.getItem("settings");
+            if (settings_json)
+            {
+                settings=JSON.parse(settings_json);
+            }
+            else
+            {
+                settings=
+                {
+                    rows: 1,
+                    cols: 160,
+                    auto_send: true,
+                }
+            }
+
+            $("#program_name").val(settings.program_name);
+            $("#settings_rows").val(settings.rows);
+            $("#settings_cols").val(settings.cols);
+
+            //load last editor contents from localstorage
+            if (localStorage.hasOwnProperty("current_program"))
+            {
+                editor.setValue(localStorage.getItem("current_program"),1);
+            }
+
+        }
+
+        function save_settings()
+        {
+            var cols=$("#settings_cols").val();
+            var rows=$("#settings_rows").val();
+
+            if (cols * rows > Module.MAX_LEDS)
+            {
+                status_error("Total number of leds cannot be more than "+Module.MAX_LEDS);
+            }
+            else if ( cols < 10 )
+            {
+                status_error("Colums should be greater than 10");
+            }
+            else if ( rows < 1 )
+            {
+                status_error("Rows should be at least 1");
+            }
+            else
+            {
+                localStorage.setItem("current_program", editor.getValue());
+
+                settings.rows=rows;
+                settings.cols=cols;
+                settings.program_name=$("#program_name").val();
+
+                localStorage.setItem("settings", JSON.stringify(settings));
+                status_ok("settings saved");
+                return(true);
+            }
+            return(false);
+        }
+
+
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
         var MAX_LEDS=Module.MAX_LEDS;
@@ -102,9 +165,10 @@ Module['onRuntimeInitialized']=function()
         function compile_editor(editor)
         {
             if (animation_id)
-            cancelAnimationFrame(animation_id);
-            localStorage.setItem("current_program", editor.getValue());
-            localStorage.setItem("current_program_name", $("#program_name").val());
+            {
+                cancelAnimationFrame(animation_id);
+            }
+            save_settings();
 
 
             try
@@ -190,6 +254,8 @@ Module['onRuntimeInitialized']=function()
                     $(".animation_name", animation_element).text(animation);
                     $(".animation_desc", animation_element).text(repo[category][animation]);
                     $(".animation_click", animation_element).data("url", url+category+"/"+animation);
+                    $(".animation_click", animation_element).data("animation", animation);
+                    $(".animation_click", animation_element).data("category", category);
                 }
             }
         }
@@ -199,197 +265,171 @@ Module['onRuntimeInitialized']=function()
             var index_url=url+"index.json";
             status_processing("Downloading animation list...");
 
-            $.ajax(index_url,
+            $.ajax(index_url, {
+                dataType: "json",
+                error: function(xhr, status, text)
                 {
-                    dataType: "json",
+                    status_error("Error while loading "+index_url+": "+ text);
+                },
+                // succces:
+            }).done(function(data)
+            {
+                update_animation_list(url, data);
+                status_ok("Animation list downloaded");
+            });
+        }
+
+
+        var timeout;
+        function delayed(func)
+        {
+            clearTimeout(timeout);
+            timeout = setTimeout(func, 300);
+        }
+
+
+        //// INITIALISATION
+
+
+        ///jquery ui stuff
+        $("button").button();
+
+
+        //ace editor
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/javascript");
+        editor.$blockScrolling = Infinity;
+
+        load_settings();
+
+
+        led.leds=settings.rows * settings.cols;
+        $("#ledsim").attr("height", settings.rows);
+        $("#ledsim").attr("width", settings.cols);
+
+        //make sure pixels are square by setting height
+        function scale_canvas()
+        {
+            css_width=$("#ledsim").width();
+            $("#ledsim").css("height",  css_width*settings.rows/settings.cols );
+        }
+        $(window).resize(function()
+        {
+            scale_canvas();
+        });
+        scale_canvas();
+
+
+        strip_anim.set_used_leds(led.leds);
+
+        update_local_animation_list();
+
+        init_canvas();
+
+        compile_editor(editor);
+
+        load_animation_repo("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/");
+
+        //create tabs. ace editor needs extra attention
+        $("#tabs").tabs({
+            activate : function(event, ui) {
+                if ($("a",ui.newTab).attr("href")=="#tab-edit")
+                {
+                    console.log("jo");
+                    editor.resize();
+                    editor.focus();
+
+                }
+
+            }
+        });
+
+
+        ////EVENT change led config
+        $("#settings_update").on("click", function() {
+            if (save_settings())
+            {
+                document.location.reload();
+
+            }
+        });
+
+        ////EVENT when user changes the program, recompile and save it after a short delay
+        editor.on("change", function() {
+            delayed(function() {
+                compile_editor(editor);
+            });
+            return false;
+        });
+
+
+
+
+        ///EVENT download button
+        $("#download").click(function(){
+            download($("#program_name").val()+".js", editor.getValue());
+            return false;
+        });
+
+        ///EVENT save button
+        $("#save").click(function(){
+            if ($("#program_name").val())
+            {
+                localStorage.setItem("program "+settings.program_name, editor.getValue());
+                update_local_animation_list();
+                save_settings();
+                status_ok("program saved");
+            }
+            return false;
+        });
+
+
+        ///EVENT local load button
+        $("body").on("click", ".local_animation_click", function()
+        {
+            var animation_name=$(this).data("animation_name");
+            editor.setValue(localStorage.getItem("program "+animation_name),1);
+            $("#program_name").val(animation_name);
+            return false;
+        });
+
+        ///EVENT local delete
+        $("#delete").click(function()
+        {
+            localStorage.removeItem("program "+$("#program_name").val());
+            update_local_animation_list();
+            status_ok("local animation deleted");
+            return false;
+        });
+
+
+        //EVENT user clicked an animation to load
+        $("#tab-animations").on("click", ".animation_click", function(e)
+        {
+            var clicked=$(this);
+            var url=clicked.data("url");
+            status_processing("Downloading animation "+url);
+
+            $.ajax(url,
+                {
+                    dataType: "text",
                     error: function(xhr, status, text)
                     {
-                        status_error("Error while loading "+index_url+": "+ text);
+                        status_error("Error while loading "+url+": "+ text);
                     },
                     // succces:
                 }).done(function(data)
                 {
-                    update_animation_list(url, data);
-                    status_ok("Animation list downloaded");
+                    status_ok("Download of animation ok");
+                    $("#program_name").val(clicked.data("animation"));
+                    editor.setValue(data,1);
                 });
-            }
 
 
-            var timeout;
-            function delayed(func)
-            {
-                clearTimeout(timeout);
-                timeout = setTimeout(func, 300);
-            }
+            })
 
+            return false;
+        });
 
-            //// INITIALISATION
-
-            ///jquery ui stuff
-            $("button").button();
-
-
-            //ace editor
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/twilight");
-            editor.getSession().setMode("ace/mode/javascript");
-            editor.$blockScrolling = Infinity;
-
-            //load last editor contents from localstorage
-            if (localStorage.hasOwnProperty("current_program"))
-            {
-                editor.setValue(localStorage.getItem("current_program"),1);
-                $("#program_name").val(localStorage.getItem("current_program_name"));
-            }
-
-            //load led setings?
-            if (localStorage.hasOwnProperty("settings_rows"))
-            {
-                led.rows=localStorage.getItem("settings_rows");
-                led.cols=localStorage.getItem("settings_cols");
-            }
-            else
-            {
-                //get defaults
-                led.rows=$("#ledsim").attr("height");
-                led.cols=$("#ledsim").attr("width");
-            }
-
-            led.leds=led.rows*led.cols;
-            $("#settings_rows").val(led.rows);
-            $("#settings_cols").val(led.cols);
-            $("#ledsim").attr("height", led.rows);
-            $("#ledsim").attr("width", led.cols);
-
-
-            //make sure pixels are square by setting height
-            function scale_canvas()
-            {
-                css_width=$("#ledsim").width();
-                $("#ledsim").css("height",  css_width*led.rows/led.cols );
-            }
-            $(window).resize(function()
-            {
-                scale_canvas();
-            });
-            scale_canvas();
-
-
-            strip_anim.set_used_leds(led.leds);
-
-            update_local_animation_list();
-
-            init_canvas();
-
-            compile_editor(editor);
-
-            load_animation_repo("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/");
-
-            //create tabs. ace editor needs extra attention
-            $("#tabs").tabs({
-                activate : function(event, ui) {
-                    if ($("a",ui.newTab).attr("href")=="#tab-edit")
-                    {
-                        console.log("jo");
-                        editor.resize();
-                        editor.focus();
-
-                    }
-
-                }
-            });
-
-
-            ////EVENT change led config
-            $("#settings_update").on("click", function() {
-                var cols=$("#settings_cols").val();
-                var rows=$("#settings_rows").val();
-
-                if (cols * rows > Module.MAX_LEDS)
-                status_error("Total number of leds cannot be more than "+Module.MAX_LEDS);
-                else if ( cols < 10 )
-                status_error("Colums should be greater than 10");
-                else if ( rows < 1 )
-                status_error("Rows should be at least 1");
-                else
-                {
-                    localStorage.setItem("settings_rows", rows);
-                    localStorage.setItem("settings_cols", cols);
-                    document.location.reload();
-
-                }
-            });
-
-            ////EVENT when user changes the program, recompile and save it after a short delay
-            editor.on("change", function() {
-                delayed(function() {
-                    compile_editor(editor);
-                });
-                return false;
-            });
-
-
-
-
-            ///EVENT download button
-            $("#download").click(function(){
-                download($("#program_name").val()+".js", editor.getValue());
-                return false;
-            });
-
-            ///EVENT save button
-            $("#save").click(function(){
-                if ($("#program_name").val())
-                {
-                    localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
-                    update_local_animation_list();
-                }
-                return false;
-            });
-
-
-            ///EVENT local load button
-            $("body").on("click", ".local_animation_click", function()
-            {
-                var animation_name=$(this).data("animation_name");
-                editor.setValue(localStorage.getItem("program "+animation_name),1);
-                $("#program_name").val(animation_name);
-                return false;
-            });
-
-            ///EVENT local delete
-            $("#delete").click(function()
-            {
-                localStorage.removeItem("program "+$("#program_name").val());
-                update_local_animation_list();
-                return false;
-            });
-
-
-            //EVENT user clicked an animation to load
-            $("#tab-animations").on("click", ".animation_click", function(e)
-            {
-                var url=$(this).data("url");
-                status_processing("Downloading animation "+url);
-
-                $.ajax(url,
-                    {
-                        dataType: "text",
-                        error: function(xhr, status, text)
-                        {
-                            status_error("Error while loading "+url+": "+ text);
-                        },
-                        // succces:
-                    }).done(function(data)
-                    {
-                        status_ok("Download of animation ok");
-                        editor.setValue(data,1);
-                    });
-
-
-                })
-
-                return false;
-            });
-
-        };
+    };
