@@ -36,15 +36,15 @@ Module['onRuntimeInitialized']=function()
             {
                 settings=
                 {
-                    rows: 1,
-                    cols: 160,
+                    leds: 160,
+                    ledsim_size: 2,
                     auto_send: true,
                 }
             }
 
             $("#program_name").val(settings.program_name);
-            $("#settings_rows").val(settings.rows);
-            $("#settings_cols").val(settings.cols);
+            $("#settings_leds").val(settings.leds);
+            $("#settings_ledsim_size").val(settings.ledsim_size);
 
             //load last editor contents from localstorage
             if (localStorage.hasOwnProperty("current_program"))
@@ -56,40 +56,34 @@ Module['onRuntimeInitialized']=function()
 
         function save_settings()
         {
-            var cols=$("#settings_cols").val();
-            var rows=$("#settings_rows").val();
+            var leds=Number($("#settings_leds").val());
+            if (leds<1 || leds > Module.MAX_LEDS)
+            {
+                status_error("Number of leds should be between 1 and "+Module.MAX_LEDS);
+                return (false);
+            }
 
-            if (cols * rows > Module.MAX_LEDS)
+            var ledsim_size=Number($("#settings_ledsim_size").val());
+            if (ledsim_size<1 || ledsim_size>40)
             {
-                status_error("Total number of leds cannot be more than "+Module.MAX_LEDS);
+                status_error("led size should be between 1 and 40");
+                return (false);
             }
-            else if ( cols < 10 )
-            {
-                status_error("Colums should be greater than 10");
-            }
-            else if ( rows < 1 )
-            {
-                status_error("Rows should be at least 1");
-            }
-            else
-            {
-                localStorage.setItem("current_program", editor.getValue());
 
-                settings.rows=rows;
-                settings.cols=cols;
-                settings.program_name=$("#program_name").val();
+            localStorage.setItem("current_program", editor.getValue());
 
-                localStorage.setItem("settings", JSON.stringify(settings));
-                status_ok("settings saved");
-                return(true);
-            }
-            return(false);
+            settings.leds=leds;
+            settings.ledsim_size=ledsim_size;
+            settings.program_name=$("#program_name").val();
+
+            localStorage.setItem("settings", JSON.stringify(settings));
+            status_ok("settings saved");
+            return(true);
         }
 
 
         //strip_animator class and command array
         var strip_anim=new Module.strip_anim_c();
-        var MAX_LEDS=Module.MAX_LEDS;
         animation_id=0;
 
         // start ledstrip simulator via canvas
@@ -303,21 +297,25 @@ Module['onRuntimeInitialized']=function()
 
         load_settings();
 
+        led.leds=settings.leds;
 
-        led.leds=settings.rows * settings.cols;
-        $("#ledsim").attr("height", settings.rows);
-        $("#ledsim").attr("width", settings.cols);
 
-        //make sure pixels are square by setting height
+        //scale led pixels to correct size
         function scale_canvas()
         {
-            css_width=$("#ledsim").width();
-            $("#ledsim").css("height",  css_width*settings.rows/settings.cols );
+            var screen_width=$("#ledsim").width();
+
+            var canvas_columns=Math.floor(screen_width/settings.ledsim_size);
+            var canvas_rows=Math.floor(settings.leds/canvas_columns)+1;
+
+            $("#ledsim").attr("height", canvas_rows);
+            $("#ledsim").attr("width", canvas_columns);
+            $("#ledsim").css("height",  canvas_rows*settings.ledsim_size );
         }
-        $(window).resize(function()
-        {
-            scale_canvas();
-        });
+        // $(window).resize(function()
+        // {
+        //     scale_canvas();
+        // });
         scale_canvas();
 
 

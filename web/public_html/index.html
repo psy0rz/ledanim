@@ -124,7 +124,10 @@
                 <div class='category template'>
                     <h1 class='category_title'></h1>
                     <ul>
-                        <li class='animation template'><a class='animation_click animation_name' href='#'></a> <span class='animation_desc'></span></li>
+                        <li class='animation template'>
+                            <a class='animation_click animation_name' href='#'></a>
+                            <span class='animation_desc'></span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -163,16 +166,24 @@
             <div id="tab-settings">
                 <fieldset>
                     <legend>Led strip</legend>
-                    Rows: <input id='settings_rows' type='text' value=''></input>
-                    Cols: <input id='settings_cols' type='text' value=''></input>
+                    Number of leds: <input id='settings_leds' type='text' size=4 value=''></input>
 
-                    <button id='settings_update'>Update</button>
                 </fieldset>
-            </fieldset>
+                <p>
+                    <fieldset>
+                        <legend>Led simulator in Web Browser</legend>
+                        Led size: <input id='settings_ledsim_size' type='text' size=4 value=''></input> pixels
 
+                    </fieldset>
+                </p>
+                <p>
+                    <button id='settings_update'>Save</button>
+                </p>
+
+            </div>
         </div>
-    </div>
 
-    <div id="status_bar">Loading...</div>
+        <div id="status_bar">Loading...</div>
+    </div>
 </body>
 </html>
