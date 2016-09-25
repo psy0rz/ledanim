@@ -325,6 +325,7 @@ Module['onRuntimeInitialized']=function()
                 delayed(function() {
                     compile_editor(editor);
                 });
+                return false;
             });
 
 
@@ -333,6 +334,7 @@ Module['onRuntimeInitialized']=function()
             ///EVENT download button
             $("#download").click(function(){
                 download($("#program_name").val()+".js", editor.getValue());
+                return false;
             });
 
             ///EVENT save button
@@ -342,6 +344,7 @@ Module['onRuntimeInitialized']=function()
                     localStorage.setItem("program "+$("#program_name").val(), editor.getValue());
                     update_local_animation_list();
                 }
+                return false;
             });
 
 
@@ -351,6 +354,7 @@ Module['onRuntimeInitialized']=function()
                 var animation_name=$(this).data("animation_name");
                 editor.setValue(localStorage.getItem("program "+animation_name),1);
                 $("#program_name").val(animation_name);
+                return false;
             });
 
             ///EVENT local delete
@@ -358,6 +362,7 @@ Module['onRuntimeInitialized']=function()
             {
                 localStorage.removeItem("program "+$("#program_name").val());
                 update_local_animation_list();
+                return false;
             });
 
 
@@ -384,9 +389,7 @@ Module['onRuntimeInitialized']=function()
 
                 })
 
-
-
-
+                return false;
             });
 
         };
