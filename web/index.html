@@ -34,15 +34,11 @@
     }
 
 
-    .quick_load_template, .template
+    .template
     {
         display: none;
     }
 
-    .quick_load
-    {
-        margin: 2px;
-    }
 
     #main-container
     {
@@ -76,7 +72,7 @@
     }
 
 
-    #animation_status
+    #animations_status
     {
         color: green;
     }
@@ -101,7 +97,6 @@
         <canvas  id="ledsim" width=160 height=1></canvas>
 
         <div id="tabs">
-
             <ul>
                 <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-control">Control</a></li>
@@ -112,6 +107,7 @@
 
 
             <div id="tab-animations" style='overflow: auto;'>
+                This is a list of online animations.
                 <span id='animations_status'>Loading...</span>
 
                 <div class='category template'>
@@ -144,9 +140,12 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend>Programs</legend>
-                    <a href='#' class='quick_load_template'>template</a>
-
+                    <legend>Animations in local storage</legend>
+                    <ul>
+                        <li class='local_animation template'>
+                            <a class='local_animation_click local_animation_name' href='#'></a>
+                        </li>
+                    </ul>
                 </fieldset>
             </div>
 
