@@ -1,3 +1,4 @@
+//(C)2016 Edwin Eefting - edwin@datux.nl
 //class responsible for per-led animations (usually fading and setting)
 
 #ifndef LED_ANIM_H

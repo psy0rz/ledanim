@@ -1,3 +1,4 @@
+//(C)2016 Edwin Eefting - edwin@datux.nl
 //class responsible for animations over the whole strip
 //it has a simple programmaing language to program the animations
 

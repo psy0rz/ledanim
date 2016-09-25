@@ -1,3 +1,4 @@
+//(C)2016 Edwin Eefting - edwin@datux.nl
 led={}
 
 led.clear_commmands=function()
