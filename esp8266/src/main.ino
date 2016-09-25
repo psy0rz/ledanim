@@ -17,24 +17,10 @@
 ESP8266WebServer server(80);
 
 
-void handleRoot() {
-    server.send(200, "text/plain", "hello from esp8266!");
-}
-
-void handleNotFound(){
-    String message = "File Not Found\n\n";
-    message += "URI: ";
-    message += server.uri();
-    message += "\nMethod: ";
-    message += (server.method() == HTTP_GET)?"GET":"POST";
-    message += "\nArguments: ";
-    message += server.args();
-    message += "\n";
-    for (uint8_t i=0; i<server.args(); i++){
-        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-    }
-    server.send(404, "text/plain", message);
-}
+// void handleRoot() {
+//     server.send(200, "text/plain", "hello from esp8266!");
+// }
+//
 
 void wifi_config()
 {
@@ -55,6 +41,40 @@ void wifi_config()
 
 
 
+String getContentType(String filename){
+    if(server.hasArg("download")) return "application/octet-stream";
+    else if(filename.endsWith(".htm")) return "text/html";
+    else if(filename.endsWith(".html")) return "text/html";
+    else if(filename.endsWith(".css")) return "text/css";
+    else if(filename.endsWith(".js")) return "application/javascript";
+    else if(filename.endsWith(".png")) return "image/png";
+    else if(filename.endsWith(".gif")) return "image/gif";
+    else if(filename.endsWith(".jpg")) return "image/jpeg";
+    else if(filename.endsWith(".ico")) return "image/x-icon";
+    else if(filename.endsWith(".xml")) return "text/xml";
+    else if(filename.endsWith(".pdf")) return "application/x-pdf";
+    else if(filename.endsWith(".zip")) return "application/x-zip";
+    else if(filename.endsWith(".gz")) return "application/x-gzip";
+    return "text/plain";
+}
+
+bool handleFileRead(String path){
+    Serial.println("handleFileRead: " + path);
+    if(path.endsWith("/")) path += "index.html";
+    String contentType = getContentType(path);
+    String pathWithGz = path + ".gz";
+    if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
+        if(SPIFFS.exists(pathWithGz))
+        path += ".gz";
+        File file = SPIFFS.open(path, "r");
+        size_t sent = server.streamFile(file, contentType);
+        file.close();
+        return true;
+    }
+    return false;
+}
+
+
 #define LED_COUNT 160
 strip_anim_c<LED_COUNT> strip_anim;
 
@@ -63,14 +83,14 @@ void setup(void){
 
     delay(100);
     Serial.println();
-    Serial.println("LEDanim 1.0 booting...");
+    Serial.println("LEDanim 1.1 booting...");
 
     // Serial.println(ESP.getSketchSize());
     // Serial.println(ESP.getFreeSketchSpace());
 
 
     //idle lights, testing rgb order
-    strip_anim.commands={
+    commands_t commands={
         CMD_LED_NR_8           , 0,
         CMD_PEN_FADE_MODE      , FADE_TO_FAST,
         CMD_PEN_FADE_SPEED     , 5,
@@ -99,6 +119,7 @@ void setup(void){
         CMD_DELAY_8            , 120,
 
     };
+    strip_anim.set_commands(commands);
 
     //data, clock
     FastLED.addLeds<LPD8806, 7,5, GRB >(strip_anim.led_anim.led_level, LED_COUNT);
@@ -107,17 +128,22 @@ void setup(void){
 
 
     if (!SPIFFS.begin())
-        Serial.println("SPIFFS: error while mounting");
+    Serial.println("SPIFFS: error while mounting");
 
     wifi_config();
 
-    server.on("/", handleRoot);
+    // server.on("/", handleRoot);
 
-    server.on("/inline", [](){
-        server.send(200, "text/plain", "this works as well");
+    // server.on("/inline", [](){
+    //     server.send(200, "text/plain", "this works as well");
+    // });
+
+
+
+    server.onNotFound([](){
+        if(!handleFileRead(server.uri()))
+        server.send(404, "text/plain", "FileNotFound");
     });
-
-    server.onNotFound(handleNotFound);
 
     server.begin();
 

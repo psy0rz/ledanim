@@ -3,3 +3,4 @@
 build
 esp8266/data/wifi.txt
 esp8266/lib/FastLED/
+wifi.txt

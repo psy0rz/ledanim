@@ -55,6 +55,8 @@ enum pen_fade_mode_t
     FADE_FROM_SLOW=4,
 };
 
+typedef std::vector<uint8_t> commands_t;
+
 template <uint16_t MAX_LEDS>
 class strip_anim_c
 {
@@ -66,7 +68,6 @@ class strip_anim_c
 
 
         //commands
-        typedef std::vector<uint8_t> commands_t;
         commands_t commands;
 
         //current proram counter.
