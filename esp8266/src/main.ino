@@ -141,7 +141,7 @@ void setup(void){
 
 
     server.onNotFound([](){
-        if(!handleFileRead(server.uri()))
+        if(!handleFileRead("/public_html"+server.uri()))
         server.send(404, "text/plain", "FileNotFound");
     });
 
