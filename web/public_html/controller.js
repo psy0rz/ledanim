@@ -97,7 +97,10 @@ Module['onRuntimeInitialized']=function()
             var canvas = document.getElementById('ledsim');
             var canvasWidth  = canvas.width;
             var canvasHeight = canvas.height;
+
             canvas_context = canvas.getContext('2d');
+
+
             image_data = canvas_context.getImageData(0, 0, canvasWidth, canvasHeight);
 
             var image_buf = new ArrayBuffer(image_data.data.length);
@@ -113,6 +116,11 @@ Module['onRuntimeInitialized']=function()
                 is_little_endian = false;
             }
 
+            //make unused leds gray so you know where the "strip" ends
+            for (var l=0; l< canvasWidth*canvasHeight; l++)
+            {
+                image_data32[l]=0x66666666;
+            }
 
         }
 
