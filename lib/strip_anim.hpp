@@ -239,7 +239,7 @@ class strip_anim_c
                         min=get_next8();
                         max=get_next8();
                         if (max>=used_leds)
-                            max=used_leds;
+                            max=used_leds-1;
                         led=get_random(min,max);
                         DEBUG_LOG("CMD_LED_NR_8_RND: " << led);
                         break;
@@ -263,7 +263,7 @@ class strip_anim_c
                         min=get_next16();
                         max=get_next16();
                         if (max>=used_leds)
-                            max=used_leds;
+                            max=used_leds-1;
                         led=get_random(min,max);
                         DEBUG_LOG("CMD_LED_NR_16_RND: " << led);
                         break;

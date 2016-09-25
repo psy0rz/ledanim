@@ -34,10 +34,11 @@ Module['onRuntimeInitialized']=function()
             }
             else
             {
+                //default settings
                 settings=
                 {
                     leds: 160,
-                    ledsim_size: 2,
+                    ledsim_size: 10,
                     auto_send: true,
                 }
             }
