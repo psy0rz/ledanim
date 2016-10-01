@@ -240,7 +240,7 @@ Module['onRuntimeInitialized']=function()
         {
             var clone=element.clone();
             clone.removeClass("template");
-            clone.insertAfter(element);
+            clone.insertBefore(element);
             return(clone);
         }
 
@@ -394,7 +394,7 @@ Module['onRuntimeInitialized']=function()
 
         ///EVENT download button
         $("#download").click(function(){
-            download($("#program_name").val()+".js", editor.getValue());
+            download($("#program_name").val(), editor.getValue());
             return false;
         });
 
