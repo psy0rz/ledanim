@@ -163,6 +163,23 @@ Module['onRuntimeInitialized']=function()
         }
 
 
+        function upload_commands(commands)
+        {
+            status_processing("Uploading to ESP");
+
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", "/set_commands", true);
+            oReq.onload = function (oEvent) {
+                status_ok("Sent to ESP");
+            };
+
+            // var blob = new Blob(['abc123'], {type: 'text/plain'});
+
+            oReq.send(commands);
+
+
+        }
+
         //get current program from editor and compile it
         // var last_program="";
         function compile_editor(editor)
@@ -195,6 +212,8 @@ Module['onRuntimeInitialized']=function()
                 status_ok("Compiled ok, "+led.commands.size()+" bytes.");
                 strip_anim.set_commands(led.commands);
                 step();
+
+                // upload_commands(led.commands);
             }
         }
 

@@ -42,6 +42,13 @@ void wifi_config()
     }
 }
 
+void handle_set_commands()
+{
+    Serial.println("set commands:");
+    // Serial.println(data);
+
+
+};
 
 
 String getContentType(String filename)
@@ -160,7 +167,7 @@ void setup(void){
 
     wifi_config();
 
-    // server.on("/", handleRoot);
+    server.on("/set_commands", handle_set_commands);
 
     // server.on("/inline", [](){
     //     server.send(200, "text/plain", "this works as well");
