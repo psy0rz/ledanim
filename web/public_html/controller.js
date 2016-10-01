@@ -165,17 +165,23 @@ Module['onRuntimeInitialized']=function()
 
         function upload_commands(commands)
         {
-            status_processing("Uploading to ESP");
+            status_processing("Uploading to ESP, bytes: "+commands.size());
 
             var oReq = new XMLHttpRequest();
             oReq.open("POST", "/set_commands", true);
+            oReq.setRequestHeader('Content-Type', 'application/octet-stream');
             oReq.onload = function (oEvent) {
-                status_ok("Sent to ESP");
+                status_ok("Sent to ESP, bytes: "+commands.size());
             };
 
-            // var blob = new Blob(['abc123'], {type: 'text/plain'});
 
-            oReq.send(commands);
+            var plain_array=new Array();
+            for (var i=0; i<commands.size(); i++)
+            {
+                plain_array[i]=commands.get(i);
+            }
+            var blob=new Uint8Array(plain_array);
+            oReq.send(blob);
 
 
         }
@@ -213,7 +219,7 @@ Module['onRuntimeInitialized']=function()
                 strip_anim.set_commands(led.commands);
                 step();
 
-                // upload_commands(led.commands);
+                upload_commands(led.commands);
             }
         }
 
