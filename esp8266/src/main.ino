@@ -18,6 +18,8 @@
 
 
 ESP8266WebServer server(80);
+#define LED_COUNT 160
+strip_anim_c<LED_COUNT> strip_anim;
 
 
 // void handleRoot() {
@@ -44,11 +46,25 @@ void wifi_config()
 
 void handle_set_commands()
 {
-    Serial.println("set commands:");
-    // Serial.println(data);
+    HTTPUpload& upload = server.upload();
+      if (upload.status == UPLOAD_FILE_START)
+      {
+        Serial.println("Upload started...");
+        Serial.println(upload.filename);
+        strip_anim.clear();
+      } else if (upload.status == UPLOAD_FILE_WRITE){
+        //if(uploadFile) uploadFile.write(upload.buf, upload.currentSize);
+        Serial.print("Upload processing bytes:");
+        Serial.println(upload.currentSize);
+        strip_anim.add_commands(upload.buf, upload.currentSize);
 
-
-};
+      } else if (upload.status == UPLOAD_FILE_END)
+      {
+        Serial.println("Upload done, total:");
+        Serial.print(upload.totalSize);
+        strip_anim.start();
+      }
+}
 
 
 String getContentType(String filename)
@@ -110,8 +126,6 @@ bool handleFileRead(String path)
 }
 
 
-#define LED_COUNT 160
-strip_anim_c<LED_COUNT> strip_anim;
 
 void setup(void){
     Serial.begin(115200);
@@ -167,7 +181,22 @@ void setup(void){
 
     wifi_config();
 
-    server.on("/set_commands", handle_set_commands);
+    // server.on("/set_commands", handle_set_commands);
+    server.on("/set_commands", HTTP_POST, [](){
+        server.send(200, "text/plain", "");
+    }, handle_set_commands);
+
+
+    server.on("/set_commands", HTTP_GET, handle_set_commands);
+
+    server.on("/set_commands", HTTP_OPTIONS, [](){
+        Serial.println("OPTIONS");
+             Serial.println(server.uri());
+             String s=server.header("Referer");
+             Serial.println(s);
+        server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+        server.send(200, "text/plain", "");
+    });
 
     // server.on("/inline", [](){
     //     server.send(200, "text/plain", "this works as well");

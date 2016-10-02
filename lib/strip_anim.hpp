@@ -66,6 +66,7 @@ class strip_anim_c
     private:
         uint16_t used_leds=MAX_LEDS;
 
+        bool stopped;
 
         //commands
         commands_t commands;
@@ -110,6 +111,7 @@ class strip_anim_c
         //reset strip_anim and restart current program
         void reset()
         {
+            stop();
             pc=0;
             delay=0;
             led=0;
@@ -125,6 +127,16 @@ class strip_anim_c
             led_anim.clear();
         }
 
+        void start()
+        {
+            stopped=false;
+        }
+
+        void stop()
+        {
+            stopped=true;
+        }
+
         strip_anim_c()
         {
             reset();
@@ -137,8 +149,24 @@ class strip_anim_c
 
         void set_commands(commands_t commands)
         {
-            this->commands=commands;
             reset();
+            this->commands=commands;
+            start();
+        }
+
+        //stops program, resets and clears command buffer
+        void clear()
+        {
+            reset();
+            this->commands.clear();
+        }
+
+        void add_commands(uint8_t * buf, int buf_size)
+        {
+            for (int i=0; i<buf_size; i++)
+            {
+                commands.push_back(buf[i]);
+            }
         }
 
         //get next command byte
@@ -399,6 +427,9 @@ class strip_anim_c
 
         void step()
         {
+            if (stopped)
+                return;
+
             led_anim.pre_step();
 
             if (delay==0)

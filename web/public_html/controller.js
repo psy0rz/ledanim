@@ -168,20 +168,24 @@ Module['onRuntimeInitialized']=function()
             status_processing("Uploading to ESP, bytes: "+commands.size());
 
             var oReq = new XMLHttpRequest();
-            oReq.open("POST", "/set_commands", true);
-            oReq.setRequestHeader('Content-Type', 'application/octet-stream');
+            oReq.open("POST", "http://192.168.13.247/set_commands", true);
+            // oReq.setRequestHeader('Content-Type', 'application/octet-stream');
             oReq.onload = function (oEvent) {
                 status_ok("Sent to ESP, bytes: "+commands.size());
             };
 
-
+            //some conversion magic to do essentially a raw-data upload
             var plain_array=new Array();
             for (var i=0; i<commands.size(); i++)
             {
                 plain_array[i]=commands.get(i);
             }
-            var blob=new Uint8Array(plain_array);
-            oReq.send(blob);
+            var uint8_array=new Uint8Array(plain_array);
+            var blob = new Blob([uint8_array], { type: "application/octet-binary"});
+            var formData = new FormData();
+            formData.append("file", blob);
+
+            oReq.send(formData);
 
 
         }
