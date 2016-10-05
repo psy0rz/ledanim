@@ -168,7 +168,7 @@ Module['onRuntimeInitialized']=function()
             status_processing("Uploading to ESP, bytes: "+commands.size());
 
             var oReq = new XMLHttpRequest();
-            oReq.open("POST", "http://192.168.13.247/set_commands", true);
+            oReq.open("POST", "/set_commands", true);
             // oReq.setRequestHeader('Content-Type', 'application/octet-stream');
             oReq.onload = function (oEvent) {
                 status_ok("Sent to ESP, bytes: "+commands.size());
@@ -204,8 +204,11 @@ Module['onRuntimeInitialized']=function()
             try
             {
                 status_processing("Compiling program...");
-                led.clear_commmands();
+                control._begin();
+                led._begin();
                 eval(editor.getValue());
+                control._end();
+                led._end();
                 error="";
             }
             catch(e)
@@ -243,17 +246,6 @@ Module['onRuntimeInitialized']=function()
                 document.body.removeChild(elem);
             }
         }
-
-
-        //clones specified jquery element template
-        function clone_template(element)
-        {
-            var clone=element.clone();
-            clone.removeClass("template");
-            clone.insertBefore(element);
-            return(clone);
-        }
-
 
         function update_local_animation_list()
         {
@@ -372,7 +364,6 @@ Module['onRuntimeInitialized']=function()
             activate : function(event, ui) {
                 if ($("a",ui.newTab).attr("href")=="#tab-edit")
                 {
-                    console.log("jo");
                     editor.resize();
                     editor.focus();
 

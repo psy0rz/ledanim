@@ -1,7 +1,7 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 led={}
 
-led.clear_commmands=function()
+led._begin=function()
 {
     if (this.commands)
         this.commands.delete();
@@ -9,6 +9,11 @@ led.clear_commmands=function()
     this.commands=new Module.commands_t();
 
 };
+
+led._end=function()
+{
+    ;
+}
 
 led.verify_number=function(value, min, max)
 {
