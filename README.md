@@ -15,7 +15,7 @@ In future version the control-tab will control certiain variables of the animati
 
 Build something like this:
 
-![schematic](https://github.com/psy0rz/ledanim/blob/master/ledanim.png)
+![schematic](https://github.com/psy0rz/ledanim/blob/master/ledanim.png?2)
  
 ### 2. configure software
 
