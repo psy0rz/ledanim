@@ -19,7 +19,7 @@ Build something like this:
  
 ### 2. configure software
 
-edit config.h and configure
+edit config.h and fill in some sensible values. 
 
 ### 3. wifi configuration
 
