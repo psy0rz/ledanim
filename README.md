@@ -10,5 +10,7 @@ For a demonstration look at: https://rawgit.com/psy0rz/ledanim/master/web/public
 In future version the control-tab will control certiain variables of the animation.
 
 
+## schema
 
-
+![schematic](https://github.com/psy0rz/ledanim/blob/master/ledanim.png)
+ 
