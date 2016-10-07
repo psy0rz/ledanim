@@ -24,9 +24,10 @@ edit config.h and configure
 ### 3. wifi configuration
 
 - create ledsim/esp8266/data/wifi.txt:
- myssid
- mypassword
- 
+```
+myssid
+mypassword
+``` 
  
 - Upload SPIFFS
 
