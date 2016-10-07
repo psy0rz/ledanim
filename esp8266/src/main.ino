@@ -1,3 +1,5 @@
+#include "../config.h"
+
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -11,14 +13,12 @@
 #include <MD5.h>
 
 
-#define FASTLED_ESP8266_NODEMCU_PIN_ORDER
 #include <FastLED.h>
 #include "strip_anim.hpp"
 
 
 
 ESP8266WebServer server(80);
-#define LED_COUNT 160
 strip_anim_c<LED_COUNT> strip_anim;
 
 
@@ -126,6 +126,12 @@ bool handleFileRead(String path)
 }
 
 
+void return_ok()
+{
+    server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+    server.send(200, "text/plain", "");
+}
+
 
 void setup(void){
     Serial.begin(115200);
@@ -170,8 +176,7 @@ void setup(void){
     };
     strip_anim.set_commands(commands);
 
-    //data, clock
-    FastLED.addLeds<LPD8806, 7,5, GRB >(strip_anim.led_anim.led_level, LED_COUNT);
+    FastLED.addLeds< FASTLED_CONFIG >(strip_anim.led_anim.led_level, LED_COUNT);
     FastLED.setDither(DISABLE_DITHER);
     strip_anim.step();
 
@@ -181,35 +186,30 @@ void setup(void){
 
     wifi_config();
 
+
     // server.on("/set_commands", handle_set_commands);
     server.on("/set_commands", HTTP_POST, [](){
-        server.send(200, "text/plain", "");
+        return_ok();
     }, handle_set_commands);
 
-
-    server.on("/set_commands", HTTP_GET, handle_set_commands);
+    // server.on("/set_commands", HTTP_GET, handle_set_commands);
 
     server.on("/set_commands", HTTP_OPTIONS, [](){
-        Serial.println("OPTIONS");
-             Serial.println(server.uri());
-             String s=server.header("Referer");
-             Serial.println(s);
-        server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
-        server.send(200, "text/plain", "");
+        return_ok();
     });
 
-    // server.on("/inline", [](){
-    //     server.send(200, "text/plain", "this works as well");
-    // });
 
-    // Dir dir = SPIFFS.openDir("/");
-    // while (dir.next()) {
-    //     Serial.println(dir.fileName());
-    // }
-    // FSInfo fs_info;
-    // SPIFFS.info(fs_info);
-    // Serial.println("max path");
-    // Serial.println(fs_info.maxPathLength);
+    //power on/off ATX supply
+    pinMode(PIN_POWER_ON, OUTPUT);
+    server.on("/off", HTTP_GET, [](){
+        digitalWrite(PIN_POWER_ON, 0);
+        return_ok();
+    });
+
+    server.on("/on", HTTP_GET, [](){
+        digitalWrite(PIN_POWER_ON, 1);
+        return_ok();
+    });
 
 
     server.onNotFound([](){
