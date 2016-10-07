@@ -19,7 +19,9 @@ Build something like this:
  
 ### 2. configure software
 
-edit config.h and fill in some sensible values. 
+- change platform.ini to match your board and port. (you can also do this via the gui)
+
+- edit config.h and fill in some sensible values. 
 
 ### 3. wifi configuration
 
