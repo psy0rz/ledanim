@@ -17,6 +17,8 @@ Build something like this:
 
 ![schematic](https://github.com/psy0rz/ledanim/blob/master/ledanim.png?2)
  
+You can skip the transistor and just power your ATX supply by connecting green to ground. (or use a different 5v power supply) 
+ 
 ### 2. configure software
 
 - change platform.ini to match your board and port. (you can also do this via the gui)
