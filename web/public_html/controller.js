@@ -1,5 +1,8 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 
+//we can change this during debugging
+control_url=window.location.protocol+"//"+window.location.host+"/";
+
 //wait until emscripten is ready:
 Module={};
 Module['onRuntimeInitialized']=function()
@@ -168,7 +171,7 @@ Module['onRuntimeInitialized']=function()
             status_processing("Uploading to ESP, bytes: "+commands.size());
 
             var oReq = new XMLHttpRequest();
-            oReq.open("POST", "/set_commands", true);
+            oReq.open("POST", control_url+"set_commands", true);
             // oReq.setRequestHeader('Content-Type', 'application/octet-stream');
             oReq.onload = function (oEvent) {
                 status_ok("Sent to ESP, bytes: "+commands.size());
@@ -380,6 +383,15 @@ Module['onRuntimeInitialized']=function()
                 document.location.reload();
 
             }
+        });
+
+        ////EVENT atx power control
+        $("#power_off").on("click", function() {
+            $.ajax(control_url+"off");
+        });
+
+        $("#power_on").on("click", function() {
+            $.ajax(control_url+"on");
         });
 
         ////EVENT when user changes the program, recompile and save it after a short delay
