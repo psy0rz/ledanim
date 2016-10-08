@@ -117,7 +117,7 @@ bool handleFileRead(String path)
         server.sendHeader("Cache-Control","max-age=86400");
         size_t sent = server.streamFile(file, contentType);
         file.close();
-        server.client().stop();
+        // server.client().stop();
         return true;
     }
     else
@@ -131,7 +131,7 @@ void return_ok()
 {
     server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
     server.send(200, "text/plain", "");
-    server.client().stop();
+    // server.client().stop();
 }
 
 
@@ -218,7 +218,7 @@ void setup(void){
         if(!handleFileRead(server.uri()))
         {
             server.send(404, "text/plain", "FileNotFound");
-            server.client().stop();
+            // server.client().stop();
         }
     });
 
@@ -299,7 +299,6 @@ void loop(void){
     }
 
     ArduinoOTA.handle();
-
     strip_anim.step();
 
     //limit to 60 fps
