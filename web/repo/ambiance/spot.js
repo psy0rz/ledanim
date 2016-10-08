@@ -1,17 +1,26 @@
-//spots
+//simple spots
 
-//with of every spot
-led.width(3);
+width=control.slider({
+    name:"Spot width", 
+    min:1,  
+    max:50,
+    default: 3
+});   
 
-//color
-led.color(255,255,200);
+offset=control.slider({
+    name:"Offset between spots", 
+    min:1,  
+    max:50,
+    default: 10
+});   
 
-//offset between spots
-led.mirror(20);
+
+led.width(width);
+led.mirror(offset);
 
 
 led.led(0);
 led.draw();
 
-led.delay(10)
+
 

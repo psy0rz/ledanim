@@ -72,11 +72,18 @@ Module['onRuntimeInitialized']=function()
                 return (false);
             }
 
+            var program_name=$("#program_name").val();
+            if (! program_name.match(/\.js$/))
+            {
+                status_error("program name should end with .js");
+                return (false);
+            }
+
             localStorage.setItem("current_program", editor.getValue());
 
             settings.leds=leds;
             settings.ledsim_size=ledsim_size;
-            settings.program_name=$("#program_name").val();
+            settings.program_name=program_name;
 
             localStorage.setItem("settings", JSON.stringify(settings));
             status_ok("settings saved");
@@ -282,7 +289,7 @@ Module['onRuntimeInitialized']=function()
                 {
                     var clone=clone_template($(".local_animation.template"))
                     var program_name=key.replace(/^program /, "");
-                    $(".local_program_name", clone).text(program_name);
+                    $(".local_program_name", clone).text(program_name.replace(/\.js$/,""));
                     $(".local_animation_click", clone).data("program_name", program_name);
                 }
             });
@@ -300,7 +307,7 @@ Module['onRuntimeInitialized']=function()
                 for(animation in repo[category])
                 {
                     var animation_element=clone_template($(".animation.template", category_element));
-                    $(".program_name", animation_element).text(animation);
+                    $(".program_name", animation_element).text(animation.replace(/\.js$/,""));
                     $(".animation_desc", animation_element).text(repo[category][animation]);
                     $(".animation_click", animation_element).data("url", url+category+"/"+animation);
                     $(".animation_click", animation_element).data("animation", animation);
@@ -441,8 +448,8 @@ Module['onRuntimeInitialized']=function()
 
         ///EVENT save button
         $("#save").click(function(){
-            save_settings();
-            if (settings.program_name)
+
+            if (save_settings() && settings.program_name)
             {
                 localStorage.setItem("program "+settings.program_name, editor.getValue());
                 update_local_animation_list();
