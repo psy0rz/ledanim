@@ -172,7 +172,6 @@ Module['onRuntimeInitialized']=function()
 
             var oReq = new XMLHttpRequest();
             oReq.open("POST", control_url+"set_commands", true);
-            // oReq.setRequestHeader('Content-Type', 'application/octet-stream');
             oReq.onload = function (oEvent) {
                 status_ok("Sent to ESP, bytes: "+commands.size());
             };
@@ -195,7 +194,7 @@ Module['onRuntimeInitialized']=function()
 
         //get current program from editor and compile it
         // var last_program="";
-        function compile_editor(editor)
+        function compile_editor()
         {
             if (animation_id)
             {
@@ -232,6 +231,7 @@ Module['onRuntimeInitialized']=function()
                 upload_commands(led.commands);
             }
         }
+        control.compiler=compile_editor;
 
         //download a string as a textfile
         //from http://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
@@ -360,7 +360,7 @@ Module['onRuntimeInitialized']=function()
 
         init_canvas();
 
-        compile_editor(editor);
+        compile_editor();
 
         load_animation_repo("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/");
 
@@ -399,7 +399,8 @@ Module['onRuntimeInitialized']=function()
         ////EVENT when user changes the program, recompile and save it after a short delay
         editor.on("change", function() {
             delayed(function() {
-                compile_editor(editor);
+                control.keep=false;
+                compile_editor();
             });
             return false;
         });

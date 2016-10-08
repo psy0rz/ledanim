@@ -1,47 +1,90 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 control={}
 
+control.values={};
+
+//called when something is changed
+control._change_timer=undefined;
+control._changed=function()
+{
+    control.keep=true;
+    if (!control._change_timer)
+    {
+        _change_timer = setTimeout(function()
+        {
+            control._change_timer=undefined;
+            //set by controller.js to direct us to compiler
+            control.compiler();
+
+        }, 300);
+    }
+}
+
 control._begin=function()
 {
-    //marks all controls as unused
-    $("#controls.control:not(.template)").addClass("unused");
+    //remove all controls
+    if (!control.keep)
+    {
+        $("#controls .control:not(.template)").remove();
+    }
 }
 
-//gets existing control and remove unused label
-control._get=function(name)
-{
-    var element=$('#controls .control[name="'+name+'"]');
-    console.log("element", element);
-    if (element.length==0)
-        return(null);
-
-    element.removeClass("unused");
-    return(element);
-}
+//gets existing control
+// control._get=function(name)
+// {
+//     var element=$('#controls .control[name="'+name+'"]');
+//     if (element.length==0)
+//     {
+//         return(null);
+//     }
+//     return(element);
+// }
 
 control._end=function()
 {
     //cleans up unused controls
-    $("#controls .unused").remove();
+    // $("#controls .unused").remove();
 }
 
 control.slider=function(pars)
 {
-    var context=this._get(pars.name);
-
-    if (!context)
+    if (!control.keep)
     {
-        context=clone_template($(".template.slider"));
-        context.attr("name", pars.name);
-        $("label", context).text(pars.name);
+        var context=clone_template($(".template.slider"));
+
+        $(".name", context).text(pars.name);
+
+        var handle = $(".custom-slider-handle", context);
+
+        //not set?
+        if (!name in control.values)
+        {
+            if (pars.default===undefined)
+            {
+                control.values[pars.name]=(pars.min+pars.max)/2;
+            }
+            else
+            {
+                control.values[pars.name]=pars.default;
+            }
+        }
 
         $(".widget", context).slider({
             min: pars.min,
             max: pars.max,
-            value: pars.default
+            value: control.values[pars.name],
+            create: function()
+            {
+                handle.text( $( this ).slider( "value" ) );
+            },
+            slide: function( event, ui )
+            {
+                control.values[pars.name]=ui.value;
+                handle.text( ui.value );
+                control._changed();
+            }
         });
-
     }
 
-    return($(".widget", context).slider("value"));
+    return(control.values[pars.name]);
 };
