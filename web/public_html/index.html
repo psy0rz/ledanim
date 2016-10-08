@@ -92,26 +92,22 @@
     .status_error
     {
         color: white;
-        background-color: #ff0000;
+        background-color: #ff0000 !important;
     }
 
+    .hide-during-load
+    {
+        display:none !important;
+    }
 
     </style>
-    <script src="jslib/jquery-3.1.0.min.js"></script>
-    <script src="jslib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="jslib/jquery-ui-1.12.1/jquery-ui.min.css">
-    <script src="util.js"></script>
-    <script src="led.js"></script>
-    <script src="control.js"></script>
-    <script src="jslib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="controller.js"></script>
-    <script src="strip_anim_bindings.js"></script>
+
 </head>
 <body>
     <div id='main-container'>
-        <canvas  id="ledsim"></canvas>
+        <canvas class='hide-during-load' id="ledsim"></canvas>
 
-        <div id="tabs">
+        <div class='hide-during-load' id="tabs">
             <ul>
                 <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-control">Control</a></li>
@@ -197,7 +193,27 @@
             </div>
         </div>
 
-        <div id="status_bar">Loading...</div>
+        <div class='status_error' id="status_bar">Loading, this can take a while...</div>
     </div>
+
+
+    <link rel="stylesheet" href="jslib/jquery-ui-1.12.1/jquery-ui.min.css">
+
+
+    <!-- these scripts will be combined to one before uploading to the esp8266 -->
+    <script src="jslib/jquery-3.1.0.min.js"></script>
+    <script src="jslib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="util.js"></script>
+    <script src="led.js"></script>
+    <script src="control.js"></script>
+    <script src="jslib/ace/ace.js"></script>
+    <script src="jslib/ace/theme-twilight.js"></script>
+    <script src="jslib/ace/mode-javascript.js"></script>
+    <script src="controller.js"></script>
+    <script src="strip_anim_bindings.js"></script>
+
+    <!-- mind the extra space here so that our combiner doesnt remove this script tag-->
+    <script  src="combined.js"></script>
+
 </body>
 </html>

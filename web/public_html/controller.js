@@ -314,25 +314,6 @@ Module['onRuntimeInitialized']=function()
             timeout = setTimeout(func, 300);
         }
 
-
-        //// INITIALISATION
-
-
-        ///jquery ui stuff
-        $("button").button();
-
-
-        //ace editor
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.getSession().setMode("ace/mode/javascript");
-        editor.$blockScrolling = Infinity;
-
-        load_settings();
-
-        led.leds=settings.leds;
-
-
         //scale led pixels to correct size
         function scale_canvas()
         {
@@ -345,12 +326,33 @@ Module['onRuntimeInitialized']=function()
             $("#ledsim").attr("width", canvas_columns);
             $("#ledsim").css("height",  canvas_rows*settings.ledsim_size );
         }
+
+        //// INITIALISATION
+
+        $(".remove-after-load").remove();
+        $(".hide-during-load").removeClass("hide-during-load");
+
+        ///jquery ui stuff
+        $("button").button();
+
+
+        //ace editor
+        var editor = ace.edit("editor");
+        ace.config.set('basePath', '/jslib/ace');
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/javascript");
+        editor.$blockScrolling = Infinity;
+
+        load_settings();
+
+        led.leds=settings.leds;
+
+
         // $(window).resize(function()
         // {
         //     scale_canvas();
         // });
         scale_canvas();
-
 
         strip_anim.set_used_leds(led.leds);
 
