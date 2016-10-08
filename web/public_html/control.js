@@ -148,13 +148,15 @@ control.color=function(pars)
 
         if (pars.default==undefined)
         {
-            pars.default={ r: 128, g: 128, b: 128 };
+            pars.default={ r: 255, g: 255, b: 255 };
         }
 
 
         function changed( event, ui)
         {
-            control._set_value(pars, ui.color.toRgb());
+            var rgb=ui.color.toRgb();
+            control._set_value(pars, rgb);
+            $(".color-value", context).text(rgb.r+", "+rgb.b+", "+ rgb.g);
         }
 
         $(".widget", context).iris({
