@@ -1,7 +1,7 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 control={}
 
-control.values={};
+control._values={};
 
 //called when something is changed
 control._change_timer=undefined;
@@ -46,45 +46,81 @@ control._end=function()
     // $("#controls .unused").remove();
 }
 
+//get stored value for this control
+control._get_value=function(pars)
+{
+    if (!pars.category)
+    {
+        pars.category="Global control";
+    }
+
+    if (! (pars.category  in control._values))
+    {
+        control._values[pars.category]={};
+    }
+
+    if (! (pars.name in control._values[pars.category]))
+    {
+        control._values[pars.category][pars.name]=pars.default;
+    }
+
+    return(control._values[pars.category][pars.name]);
+}
+
+control._set_value=function(pars, value)
+{
+    if (!pars.category)
+    {
+        pars.category="Global control";
+    }
+
+    if (! (pars.category in control._values))
+    {
+        control._values[pars.category]={}
+    }
+
+    control._values[pars.category][pars.name]=value;
+    control._changed();
+}
+
+
+control._fill_control=function(pars, context)
+{
+    $(".name", context).text(pars.name);
+    $(".category", context).text(pars.category);
+}
+
 control.slider=function(pars)
 {
     if (!control.keep)
     {
         var context=clone_template($(".template.slider"));
 
-        $(".name", context).text(pars.name);
-
         var handle = $(".custom-slider-handle", context);
 
-        //not set?
-        if (!name in control.values)
+        if (pars.default==undefined)
         {
-            if (pars.default===undefined)
-            {
-                control.values[pars.name]=(pars.min+pars.max)/2;
-            }
-            else
-            {
-                control.values[pars.name]=pars.default;
-            }
+            pars.default=(pars.min+pars.max)/2;
         }
 
         $(".widget", context).slider({
             min: pars.min,
             max: pars.max,
-            value: control.values[pars.name],
+            value: control._get_value(pars),
             create: function()
             {
                 handle.text( $( this ).slider( "value" ) );
             },
             slide: function( event, ui )
             {
-                control.values[pars.name]=ui.value;
                 handle.text( ui.value );
-                control._changed();
+                control._set_value(pars, ui.value);
             }
         });
+
+        control._fill_control(pars, context);
+
     }
 
-    return(control.values[pars.name]);
+    return(control._get_value(pars));
 };

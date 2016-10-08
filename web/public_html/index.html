@@ -106,6 +106,12 @@
         width: 3em !important;
     }
 
+    #controls .category
+    {
+        color: gray;
+        font-size: 50%;
+    }
+
     </style>
 
 </head>
@@ -141,10 +147,13 @@
 
 
             <div id="tab-control">
+                <button id='reset_controls'>Reset to defaults</button>
                 <div id='controls'>
                     <!-- Slider control template -->
                     <div class='slider control template'>
-                        <p class='name'></p>
+                        <p>
+                            <span class='name'></span> <span class='category'></span>
+                        </p>
                         <div class='widget'>
                             <div class="custom-slider-handle ui-slider-handle"></div>
                         </div>
