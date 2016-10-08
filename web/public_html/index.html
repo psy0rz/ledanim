@@ -63,7 +63,19 @@
         font-size: 18px;
     }
 
+    #tab-control
+    {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 0.5em;
+    }
 
+    #controls
+    {
+        overflow: auto;
+
+    }
 
     .animation_desc
     {
@@ -122,8 +134,8 @@
 
         <div class='hide-during-load' id="tabs">
             <ul>
-                <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-control">Control</a></li>
+                <li><a href="#tab-animations">Animations</a></li>
                 <li><a href="#tab-edit">Edit</a></li>
                 <li><a href="#tab-files">Files</a></li>
                 <li><a href="#tab-settings">Settings</a></li>
@@ -149,16 +161,25 @@
 
             <div id="tab-control">
                 <div id='controls'>
+
                     <!-- Slider control template -->
                     <div class='slider control template'>
                         <p>
                             <span class='name'></span> <span class='category'></span>
                             <span class="ui-icon ui-icon-arrowreturnthick-1-w on-click-restore-default"></span>
-
                         </p>
                         <div class='widget'>
                             <div class="custom-slider-handle ui-slider-handle"></div>
                         </div>
+                    </div>
+
+                    <!-- color picker control template -->
+                    <div class='color-picker control template'>
+                        <p>
+                            <span class='name'></span> <span class='category'></span>
+                            <span class="ui-icon ui-icon-arrowreturnthick-1-w on-click-restore-default"></span>
+                        </p>
+                        <div class='widget' /></div>
                     </div>
                 </div>
             </div>
@@ -232,6 +253,7 @@
     <script src="jslib/ace/ace.js"></script>
     <script src="jslib/ace/theme-twilight.js"></script>
     <script src="jslib/ace/mode-javascript.js"></script>
+    <script src="jslib/iris/iris.min.js"></script>
     <script src="controller.js"></script>
     <script src="strip_anim_bindings.js"></script>
 

@@ -91,12 +91,6 @@ control._fill_basics=function(pars, context)
     $(".category", context).text(pars.category);
     // $(context).data("default", pars.default);
 
-    //restore defaults
-    $(".on-click-restore-default", context).off().on("click", function()
-    {
-        $(".widget", context).slider("value", pars.default);
-    });
-
 }
 
 control.slider=function(pars)
@@ -131,9 +125,58 @@ control.slider=function(pars)
             change: changed,
         });
 
-        $(".widget", context).on("slide", function()
+        //restore defaults
+        $(".on-click-restore-default", context).off().on("click", function()
         {
-            console.log("JA");
+            $(".widget", context).slider("value", pars.default);
+        });
+
+
+        control._fill_basics(pars, context);
+
+    }
+
+    return(control._get_value(pars));
+};
+
+
+control.color=function(pars)
+{
+    if (!control.keep)
+    {
+        var context=clone_template($(".template.color-picker"));
+
+        if (pars.default==undefined)
+        {
+            pars.default={ r: 128, g: 128, b: 128 };
+        }
+
+
+        function changed( event, ui)
+        {
+            control._set_value(pars, ui.color.toRgb());
+        }
+
+        $(".widget", context).iris({
+            hide: false,
+            mode: 'hsv',
+            controls: {
+                    horiz: 'h', // horizontal defaults to saturation
+                    vert: 's', // vertical defaults to lightness
+                    strip: 'v' // right strip defaults to hue
+                },
+            width: 300,
+            palettes: true,
+            change: changed,
+            color: control._get_value(pars),
+            border:false
+        })
+
+        $(".on-click-restore-default", context).off().on("click", function()
+        {
+            console.log(pars.default);
+            console.log(Color(pars.default));
+            $(".widget", context).iris("color", Color(pars.default));
         });
 
         control._fill_basics(pars, context);
