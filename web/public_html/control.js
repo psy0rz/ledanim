@@ -16,7 +16,7 @@ control._changed=function()
             //set by controller.js to direct us to compiler
             control.compiler();
 
-        }, 300);
+        }, 100);
     }
 }
 

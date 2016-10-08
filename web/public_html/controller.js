@@ -166,16 +166,11 @@ Module['onRuntimeInitialized']=function()
         }
 
 
+        //uploads commands but makes sure there is never more than one request at a time
+        var uploading=false;
+        var upload_next;
         function upload_commands(commands)
         {
-            status_processing("Uploading to ESP, bytes: "+commands.size());
-
-            var oReq = new XMLHttpRequest();
-            oReq.open("POST", control_url+"set_commands", true);
-            oReq.onload = function (oEvent) {
-                status_ok("Sent to ESP, bytes: "+commands.size());
-            };
-
             //some conversion magic to do essentially a raw-data upload
             var plain_array=new Array();
             for (var i=0; i<commands.size(); i++)
@@ -184,11 +179,39 @@ Module['onRuntimeInitialized']=function()
             }
             var uint8_array=new Uint8Array(plain_array);
             var blob = new Blob([uint8_array], { type: "application/octet-binary"});
-            var formData = new FormData();
-            formData.append("file", blob);
+            var form_data = new FormData();
+            form_data.append("file", blob);
 
-            oReq.send(formData);
+            //make sure we only have one request paralllel and always send the latest data
+            if (uploading)
+            {
+                upload_next=form_data;
+                return;
+            }
 
+            function start()
+            {
+                uploading=true;
+                status_processing("Uploading to led strip...");
+                var oReq = new XMLHttpRequest();
+                oReq.open("POST", control_url+"set_commands", true);
+                oReq.onload = function (oEvent) {
+                    status_ok("Uploaded to led strip.");
+                    if (upload_next)
+                    {
+                        form_data = upload_next;
+                        upload_next=undefined;
+                        start();
+                    }
+                    else
+                    {
+                        uploading=false;
+                    }
+                };
+                oReq.send(form_data);
+            }
+
+            start();
 
         }
 
@@ -224,7 +247,8 @@ Module['onRuntimeInitialized']=function()
             }
             else
             {
-                status_ok("Compiled ok, "+led.commands.size()+" bytes.");
+                status_ok("Compiled ok");
+                $("#compile_size").text(led.commands.size());
                 strip_anim.set_commands(led.commands);
                 step();
 
