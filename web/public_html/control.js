@@ -38,14 +38,11 @@ control._begin=function(animation_name)
 
 control._end=function()
 {
-    if ($("#controls .control:not(.template)").length)
-    {
-        $(".highlight-when-control").addClass("highlight");
-    }
-    else {
-        $(".highlight-when-control").removeClass("highlight");
+}
 
-    }
+control.has_controls=function()
+{
+    return ($("#controls .control:not(.template)").length!=0);
 }
 
 //get stored value for this control

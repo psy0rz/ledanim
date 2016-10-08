@@ -240,6 +240,13 @@ Module['onRuntimeInitialized']=function()
                 control._end();
                 led._end();
                 error="";
+
+                if (control.has_controls())
+                    $("#tabs").tabs("enable", "#tab-control");
+                else {
+                    $("#tabs").tabs("disable", "#tab-control");
+
+                }
             }
             catch(e)
             {
