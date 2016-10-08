@@ -35,21 +35,17 @@ control._begin=function(animation_name)
     }
 }
 
-//gets existing control
-// control._get=function(name)
-// {
-//     var element=$('#controls .control[name="'+name+'"]');
-//     if (element.length==0)
-//     {
-//         return(null);
-//     }
-//     return(element);
-// }
 
 control._end=function()
 {
-    //cleans up unused controls
-    // $("#controls .unused").remove();
+    if ($("#controls .control:not(.template)").length)
+    {
+        $(".highlight-when-control").addClass("highlight");
+    }
+    else {
+        $(".highlight-when-control").removeClass("highlight");
+
+    }
 }
 
 //get stored value for this control
