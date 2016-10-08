@@ -1,7 +1,5 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 
-//we can change this during debugging
-control_url=window.location.protocol+"//"+window.location.host+"/";
 
 //wait until emscripten is ready:
 Module={};
@@ -194,7 +192,7 @@ Module['onRuntimeInitialized']=function()
                 uploading=true;
                 status_processing("Uploading to led strip...");
                 var oReq = new XMLHttpRequest();
-                oReq.open("POST", control_url+"set_commands", true);
+                oReq.open("POST", settings.url+"set_commands", true);
                 oReq.onload = function (oEvent) {
                     status_ok("Uploaded to led strip.");
                     if (upload_next)
@@ -369,6 +367,9 @@ Module['onRuntimeInitialized']=function()
 
         load_settings();
 
+        if (!settings.url)
+            settings.url=window.location.protocol+"//"+window.location.host+"/";
+
         led.leds=settings.leds;
 
 
@@ -413,11 +414,11 @@ Module['onRuntimeInitialized']=function()
 
         ////EVENT atx power control
         $("#power_off").on("click", function() {
-            $.ajax(control_url+"off");
+            $.ajax(settings.url+"off");
         });
 
         $("#power_on").on("click", function() {
-            $.ajax(control_url+"on");
+            $.ajax(settings.url+"on");
         });
 
         ////EVENT when user changes the program, recompile and save it after a short delay
@@ -440,11 +441,11 @@ Module['onRuntimeInitialized']=function()
 
         ///EVENT save button
         $("#save").click(function(){
-            if ($("#program_name").val())
+            save_settings();
+            if (settings.program_name)
             {
                 localStorage.setItem("program "+settings.program_name, editor.getValue());
                 update_local_animation_list();
-                save_settings();
                 status_ok("program saved");
             }
             return false;
