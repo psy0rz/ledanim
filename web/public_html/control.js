@@ -1,7 +1,6 @@
 //(C)2016 Edwin Eefting - edwin@datux.nl
 control={}
 
-control._values={};
 
 //called when something is changed
 control._change_timer=undefined;
@@ -20,8 +19,15 @@ control._changed=function()
     }
 }
 
-control._begin=function()
+control._begin=function(animation_name)
 {
+    control._animation_name=animation_name;
+
+    if (! ("controls" in settings))
+    {
+        settings.controls={};
+    }
+
     //remove all controls
     if (!control.keep)
     {
@@ -51,43 +57,53 @@ control._get_value=function(pars)
 {
     if (!pars.category)
     {
-        pars.category="Global control";
+        pars.category=control._animation_name;
     }
 
-    if (! (pars.category  in control._values))
+    if (! (pars.category  in settings.controls))
     {
-        control._values[pars.category]={};
+        settings.controls[pars.category]={};
     }
 
-    if (! (pars.name in control._values[pars.category]))
+    if (! (pars.name in settings.controls[pars.category]))
     {
-        control._values[pars.category][pars.name]=pars.default;
+        settings.controls[pars.category][pars.name]=pars.default;
     }
 
-    return(control._values[pars.category][pars.name]);
+
+    return(settings.controls[pars.category][pars.name]);
 }
 
 control._set_value=function(pars, value)
 {
     if (!pars.category)
     {
-        pars.category="Global control";
+        pars.category=control._animation_name;
     }
 
-    if (! (pars.category in control._values))
+    if (! (pars.category in settings.controls))
     {
-        control._values[pars.category]={}
+        settings.controls[pars.category]={}
     }
 
-    control._values[pars.category][pars.name]=value;
+    settings.controls[pars.category][pars.name]=value;
     control._changed();
 }
 
 
-control._fill_control=function(pars, context)
+
+control._fill_basics=function(pars, context)
 {
     $(".name", context).text(pars.name);
     $(".category", context).text(pars.category);
+    // $(context).data("default", pars.default);
+
+    //restore defaults
+    $(".on-click-restore-default", context).off().on("click", function()
+    {
+        $(".widget", context).slider("value", pars.default);
+    });
+
 }
 
 control.slider=function(pars)
@@ -103,6 +119,13 @@ control.slider=function(pars)
             pars.default=(pars.min+pars.max)/2;
         }
 
+
+        function changed( event, ui)
+        {
+            handle.text( ui.value );
+            control._set_value(pars, ui.value);
+        }
+
         $(".widget", context).slider({
             min: pars.min,
             max: pars.max,
@@ -111,14 +134,16 @@ control.slider=function(pars)
             {
                 handle.text( $( this ).slider( "value" ) );
             },
-            slide: function( event, ui )
-            {
-                handle.text( ui.value );
-                control._set_value(pars, ui.value);
-            }
+            slide: changed,
+            change: changed,
         });
 
-        control._fill_control(pars, context);
+        $(".widget", context).on("slide", function()
+        {
+            console.log("JA");
+        });
+
+        control._fill_basics(pars, context);
 
     }
 

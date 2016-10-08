@@ -227,7 +227,7 @@ Module['onRuntimeInitialized']=function()
             try
             {
                 status_processing("Compiling program...");
-                control._begin();
+                control._begin(settings.program_name);
                 led._begin();
                 eval(editor.getValue());
                 control._end();
@@ -281,9 +281,9 @@ Module['onRuntimeInitialized']=function()
                 if (key.match("^program "))
                 {
                     var clone=clone_template($(".local_animation.template"))
-                    var animation_name=key.replace(/^program /, "");
-                    $(".local_animation_name", clone).text(animation_name);
-                    $(".local_animation_click", clone).data("animation_name", animation_name);
+                    var program_name=key.replace(/^program /, "");
+                    $(".local_program_name", clone).text(program_name);
+                    $(".local_animation_click", clone).data("program_name", program_name);
                 }
             });
 
@@ -300,7 +300,7 @@ Module['onRuntimeInitialized']=function()
                 for(animation in repo[category])
                 {
                     var animation_element=clone_template($(".animation.template", category_element));
-                    $(".animation_name", animation_element).text(animation);
+                    $(".program_name", animation_element).text(animation);
                     $(".animation_desc", animation_element).text(repo[category][animation]);
                     $(".animation_click", animation_element).data("url", url+category+"/"+animation);
                     $(".animation_click", animation_element).data("animation", animation);
@@ -455,9 +455,9 @@ Module['onRuntimeInitialized']=function()
         ///EVENT local load button
         $("body").on("click", ".local_animation_click", function()
         {
-            var animation_name=$(this).data("animation_name");
-            editor.setValue(localStorage.getItem("program "+animation_name),1);
-            $("#program_name").val(animation_name);
+            var program_name=$(this).data("program_name");
+            editor.setValue(localStorage.getItem("program "+program_name),1);
+            $("#program_name").val(program_name);
             return false;
         });
 
