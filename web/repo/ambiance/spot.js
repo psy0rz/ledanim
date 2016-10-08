@@ -23,14 +23,16 @@ offset=control.slider({
 });   
 
 
-brightness=control.slider({
-    name:"Brightness", 
+
+color=control.color({
+    name:"color", 
     min:0,  
     max:255,
-    default: 200
-});   
 
-led.color(brightness, brightness, brightness);
+});    
+
+
+led.color(color.r, color.g, color.b);
 led.width(width);
 led.mirror(distance);
 
