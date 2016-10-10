@@ -256,6 +256,8 @@ Module['onRuntimeInitialized']=function()
             if (error)
             {
                 status_error(error);
+                if (console)
+                    console.error(error);
             }
             else
             {
@@ -326,19 +328,19 @@ Module['onRuntimeInitialized']=function()
         function load_animation_repo(url)
         {
             var index_url=url+"index.json";
-            status_processing("Downloading animation list...");
+            $(".animations_msg").text("( Downloading animation list... )");
 
             $.ajax(index_url, {
                 dataType: "json",
                 error: function(xhr, status, text)
                 {
-                    status_error("Error while loading "+index_url+": "+ text);
+                    $(".animations_msg").text("Error while loading "+index_url+": "+ text);
                 },
                 // succces:
             }).done(function(data)
             {
                 update_animation_list(url, data);
-                status_ok("Animation list downloaded");
+                $(".animations_msg").text("");
             });
         }
 
@@ -399,7 +401,6 @@ Module['onRuntimeInitialized']=function()
 
         init_canvas();
 
-        compile_editor();
 
         load_animation_repo("https://raw.githubusercontent.com/psy0rz/ledanim/master/web/repo/");
 
@@ -415,6 +416,7 @@ Module['onRuntimeInitialized']=function()
 
             }
         });
+        $("#tabs").tabs("disable", "#tab-control");
 
 
         ////EVENT change led config
@@ -427,11 +429,11 @@ Module['onRuntimeInitialized']=function()
         });
 
         ////EVENT atx power control
-        $("#power_off").on("click", function() {
+        $(".power_off").on("click", function() {
             $.ajax(settings.url+"off");
         });
 
-        $("#power_on").on("click", function() {
+        $(".power_on").on("click", function() {
             $.ajax(settings.url+"on");
         });
 
@@ -506,11 +508,11 @@ Module['onRuntimeInitialized']=function()
                     $("#program_name").val(clicked.data("animation"));
                     editor.setValue(data,1);
                 });
+        })
 
+        compile_editor();
 
-            })
+        return false;
+    });
 
-            return false;
-        });
-
-    };
+};

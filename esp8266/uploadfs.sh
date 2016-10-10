@@ -13,6 +13,7 @@ cp -r ../web/public_html /tmp/combined
 
 CWD=`pwd`
 pushd /tmp/combined
+rm combined.js
 JS_FILES=`cat index.html |grep 'script src='|sed 's/.*src="//'|sed 's/".*//'|grep -v combined.js`
 $CWD/compressjs.sh $JS_FILES combined.js
 rm $JS_FILES

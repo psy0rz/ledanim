@@ -19,6 +19,7 @@ control._changed=function()
     }
 }
 
+control.keep=false;
 control._begin=function(animation_name)
 {
     control._animation_name=animation_name;

@@ -139,8 +139,8 @@
 
         <div class='hide-during-load' id="tabs">
             <ul>
-                <li><a href="#tab-control">Control</a></li>
                 <li><a href="#tab-animations">Animations</a></li>
+                <li><a href="#tab-control">Control</a></li>
                 <li><a href="#tab-edit">Edit</a></li>
                 <li><a href="#tab-files">Files</a></li>
                 <li><a href="#tab-settings">Settings</a></li>
@@ -148,10 +148,10 @@
 
 
             <div id="tab-animations" style='overflow: auto;'>
-                <button id='power_off'>Power off</button>
-                <button id='power_on'>Power on</button>
+                <button class='power_off'>Power off</button>
+                <button class='power_on'>Power on</button>
 
-
+                <div class='animations_msg'></div>
                 <div class='category template'>
                     <h1 class='category_title'></h1>
                     <ul>
@@ -165,6 +165,10 @@
 
 
             <div id="tab-control">
+                <div>
+                    <button class='power_off'>Power off</button>
+                    <button class='power_on'>Power on</button>
+                </div>
                 <div id='controls'>
 
                     <!-- Slider control template -->
