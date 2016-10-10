@@ -21,6 +21,10 @@ You can skip the transistor and just power your ATX supply by connecting green t
  
 ### 2. configure software
 
+- install platformio-ide into Atom editor.
+
+- with Atom open the directory ledanim/esp8266
+
 - change platform.ini to match your board and port. (you can also do this via the gui)
 
 - edit config.h and fill in some sensible values. 
@@ -41,7 +45,7 @@ mypassword
 
 - Goto http://ipadress
 
-- You might need to refresh/reload the page a few times because the webserver times out too much.
+- ( You might need to refresh/reload the page a few times, the esp8266 webserver code doesnt handle parallel connections very well )
 
 In later versions you can just use the online webbpage from github and add the ip's of your ESP8266.
 
