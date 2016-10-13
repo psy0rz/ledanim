@@ -107,6 +107,10 @@ control.slider=function(pars)
             pars.default=(pars.min+pars.max)/2;
         }
 
+        if (pars.step==undefined)
+        {
+            pars.step=1;
+        }
 
         function changed( event, ui)
         {
@@ -117,6 +121,7 @@ control.slider=function(pars)
         $(".widget", context).slider({
             min: pars.min,
             max: pars.max,
+            step: pars.step,
             value: control._get_value(pars),
             create: function()
             {
@@ -157,7 +162,7 @@ control.color=function(pars)
         {
             var rgb=ui.color.toRgb();
             control._set_value(pars, rgb);
-            $(".color-value", context).text(rgb.r+", "+rgb.b+", "+ rgb.g);
+            $(".color-value", context).text(rgb.r+", "+rgb.g+", "+ rgb.b);
         }
 
         $(".widget", context).iris({
@@ -177,8 +182,6 @@ control.color=function(pars)
 
         $(".on-click-restore-default", context).off().on("click", function()
         {
-            console.log(pars.default);
-            console.log(Color(pars.default));
             $(".widget", context).iris("color", Color(pars.default));
         });
 
