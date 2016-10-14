@@ -5,7 +5,7 @@
 - Our goal is to create a huge library with animations.
 
 
-For a demonstration look at: https://rawgit.com/psy0rz/ledanim/master/web/public_html/index.html
+For a demonstration look at: http://rawgit.com/psy0rz/ledanim/master/web/public_html/index.html
 
 In future version the control-tab will control certiain variables of the animation.
 
