@@ -70,6 +70,9 @@ class strip_anim_c
 
         //commands
         commands_t commands;
+        commands_t commands_new;
+        bool new_ready;
+
 
         //current proram counter.
         uint16_t pc;
@@ -132,6 +135,17 @@ class strip_anim_c
             stopped=false;
         }
 
+        void clear_new()
+        {
+            new_ready=false;
+            commands_new.clear();
+        }
+
+        void new_set_ready()
+        {
+            new_ready=true;
+        }
+
         void stop()
         {
             stopped=true;
@@ -161,11 +175,11 @@ class strip_anim_c
             this->commands.clear();
         }
 
-        void add_commands(uint8_t * buf, int buf_size)
+        void add_commands_new(uint8_t * buf, int buf_size)
         {
             for (int i=0; i<buf_size; i++)
             {
-                commands.push_back(buf[i]);
+                commands_new.push_back(buf[i]);
             }
         }
 
@@ -444,6 +458,14 @@ class strip_anim_c
             }
 
             led_anim.post_step();
+
+            if (pc==0 && new_ready)
+            {
+                commands=commands_new;
+                new_ready=false;
+                commands_new.clear();
+                led_anim.clear();
+            }
 
         }
 };
