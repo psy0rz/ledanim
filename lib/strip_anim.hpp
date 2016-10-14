@@ -80,8 +80,10 @@ class strip_anim_c
         uint16_t repeat_count;
         uint16_t repeat_begin;
 
-        //delay until next command
+        //delay until next command, in steps (for on frame steps)
         uint16_t delay;
+        //delay until systemclock reaches this time (for syncing with real-world time)
+        unsigned long delay_until;
 
         //current led number
         uint16_t led;
@@ -117,6 +119,7 @@ class strip_anim_c
             stop();
             pc=0;
             delay=0;
+            delay_until=0;
             led=0;
             pen_color=CRGB(255,255,255);
             pen_width=1;
@@ -446,7 +449,7 @@ class strip_anim_c
 
             led_anim.pre_step();
 
-            if (delay==0)
+            if (delay==0 && (delay_until==0 || delay_until>get_millis()))
             {
                 DEBUG_LOG("start execute_commands");
                 execute_commands();
