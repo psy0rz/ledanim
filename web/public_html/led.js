@@ -121,6 +121,14 @@ led.delay=function(steps)
 }
 led.delay.desc="Delay program and update led strip and delay for this many steps.";
 
+led.interval=function(ms)
+{
+    this.add(24);
+    this.add_uint16(ms);
+
+}
+led.delay.desc="Delay until next interval, in ms. Usefull for absolute and BPM syncronisation.";
+
 
 led.repeat_begin=function(steps)
 {

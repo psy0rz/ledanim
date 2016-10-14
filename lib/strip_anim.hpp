@@ -18,6 +18,7 @@ enum led_commands_t
     CMD_UPDATE=1,
     CMD_DELAY_8=2,      //delay execution, but keep updating ledstrip. (doing fades and stuff)   8 bits delay, in steps
     CMD_DELAY_16=3,     //delay execution, but keep updating ledstrip. (doing fades and stuff)  16 bits delay. in steps
+    CMD_INTERVAL_16=24, //delay execution, until next absolute time interval period (absolute timing, usefull for syncing to music)
 
     CMD_REPEAT_BEGIN=4,
     CMD_REPEAT_BEGIN_RND=5,
@@ -248,6 +249,13 @@ class strip_anim_c
                         DEBUG_LOG("CMD_DELAY_16: " << delay);
                         return;
 
+                    //delay until next interval
+                    case CMD_INTERVAL_16:
+                        delay_until=get_next16();
+                        //calculate next absolute interval point
+                        delay_until=(get_millis()/delay_until) * delay_until + delay_until;
+                        DEBUG_LOG("CMD_INTERVAL_16: " << delay_until);
+                        return;
 
                     //start of a repeating loop
                     case CMD_REPEAT_BEGIN:
@@ -451,6 +459,7 @@ class strip_anim_c
 
             if (delay==0 && (delay_until==0 || delay_until>get_millis()))
             {
+                delay_until=0;
                 DEBUG_LOG("start execute_commands");
                 execute_commands();
                 DEBUG_LOG("done execute_commands, delay=" << delay);
