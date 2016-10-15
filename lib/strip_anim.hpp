@@ -253,7 +253,7 @@ class strip_anim_c
                     case CMD_INTERVAL_16:
                         delay_until=get_next16();
                         //calculate next absolute interval point
-                        delay_until=(get_millis()/delay_until) * delay_until + delay_until;
+                        delay_until=((get_millis()/delay_until) * delay_until) + delay_until;
                         DEBUG_LOG("CMD_INTERVAL_16: " << delay_until);
                         return;
 
@@ -457,7 +457,7 @@ class strip_anim_c
 
             led_anim.pre_step();
 
-            if (delay==0 && (delay_until==0 || delay_until>get_millis()))
+            if (delay==0 && (delay_until==0 || get_millis()>delay_until))
             {
                 delay_until=0;
                 DEBUG_LOG("start execute_commands");
@@ -466,7 +466,8 @@ class strip_anim_c
             }
             else
             {
-                delay--;
+                if (delay)
+                    delay--;
             }
 
             led_anim.post_step();
