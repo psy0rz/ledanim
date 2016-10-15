@@ -111,10 +111,11 @@ class strip_anim_c
         }
 
 
-        //reset strip_anim and restart current program
-        void reset()
+        //reset strip_anim and clear current program
+        void reset(bool smooth=false)
         {
             stop();
+            commands.clear();
             pc=0;
             delay=0;
             led=0;
@@ -127,7 +128,10 @@ class strip_anim_c
             repeat_count=0;
             pen_clone_offset=0;
             pen_clone_count=0;
-            led_anim.clear();
+            if (smooth)
+                led_anim.clear_smooth();
+            else
+                led_anim.clear();
         }
 
         void start()
@@ -461,10 +465,11 @@ class strip_anim_c
 
             if (pc==0 && new_ready)
             {
+                reset(true);
                 commands=commands_new;
                 new_ready=false;
                 commands_new.clear();
-                led_anim.clear();
+                start();
             }
 
         }

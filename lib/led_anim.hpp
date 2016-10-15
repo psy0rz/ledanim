@@ -82,6 +82,15 @@ class led_anim_c
             }
         }
 
+        void clear_smooth()
+        {
+            set_mirror(0);
+            for (int i=0; i<used_leds;i++)
+            {
+                fade_to_fast(i, CRGB(0,0,0), 1);
+            }
+        }
+
         //fade from current to specified level, by stepsize
         void fade_to_fast(uint16_t led, CRGB level, uint8_t stepsize)
         {
