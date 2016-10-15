@@ -48,7 +48,6 @@ for (i=width;i>1;i=i-1)
 
 
 
-
-led.delay((60/(bpm/60)) -1);
+led.interval(60000/bpm);
 
 

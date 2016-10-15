@@ -77,6 +77,6 @@ for (s=0; s<8; s++)
 
     colors.push(colors.shift());
 
-    led.delay((60/(bpm/60)) -1);
+    led.interval(60000/bpm);
 }
 

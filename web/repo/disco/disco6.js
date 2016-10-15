@@ -94,7 +94,6 @@ for (i=1;i<width;i=i+1)
 
 
 
-// bpm=bpm*4;
-led.delay(   (60/(bpm/60)) -1);
+led.interval(60000/bpm);
  
 
