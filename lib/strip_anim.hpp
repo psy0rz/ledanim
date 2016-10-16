@@ -143,13 +143,14 @@ class strip_anim_c
             stopped=false;
         }
 
-        void clear_new()
+        //clear new-command buffer
+        void add_commands_clear()
         {
             new_ready=false;
             commands_new.clear();
         }
 
-        void new_set_ready()
+        void add_commands_done()
         {
             new_ready=true;
         }
@@ -169,12 +170,23 @@ class strip_anim_c
             this->used_leds=used_leds;
         }
 
-        void set_commands(commands_t commands)
+        void set_commands(commands_t commands, bool abort)
         {
-            reset();
-            this->commands=commands;
-            start();
+            //abort current animation and start now
+            if (abort)
+            {
+                reset();
+                this->commands=commands;
+                start();
+            }
+            else
+            {
+                //finish current program and start at a nice point for smooter transition
+                this->commands_new=commands;
+                this->add_commands_done();
+            }
         }
+
 
         //stops program, resets and clears command buffer
         void clear()
@@ -183,7 +195,8 @@ class strip_anim_c
             this->commands.clear();
         }
 
-        void add_commands_new(uint8_t * buf, int buf_size)
+        //add commands to new commands buffer, use add_commands_done to activate
+        void add_commands(uint8_t * buf, int buf_size)
         {
             for (int i=0; i<buf_size; i++)
             {
@@ -456,6 +469,16 @@ class strip_anim_c
 
         void step()
         {
+            //activate new commands?
+            if (pc==0 && new_ready)
+            {
+                reset(true);
+                commands=commands_new;
+                new_ready=false;
+                commands_new.clear();
+                start();
+            }
+
             if (stopped)
                 return;
 
@@ -476,14 +499,6 @@ class strip_anim_c
 
             led_anim.post_step();
 
-            if (pc==0 && new_ready)
-            {
-                reset(true);
-                commands=commands_new;
-                new_ready=false;
-                commands_new.clear();
-                start();
-            }
 
         }
 };

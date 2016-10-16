@@ -53,18 +53,18 @@ void handle_set_commands()
         Serial.println("Upload started...");
         Serial.println(upload.filename);
         // strip_anim.clear();
-        strip_anim.clear_new();
+        strip_anim.add_commands_clear();
       } else if (upload.status == UPLOAD_FILE_WRITE){
         //if(uploadFile) uploadFile.write(upload.buf, upload.currentSize);
         Serial.print("Upload processing bytes:");
         Serial.println(upload.currentSize);
-        strip_anim.add_commands_new(upload.buf, upload.currentSize);
+        strip_anim.add_commands(upload.buf, upload.currentSize);
 
       } else if (upload.status == UPLOAD_FILE_END)
       {
         Serial.println("Upload done, total:");
         Serial.print(upload.totalSize);
-        strip_anim.new_set_ready();
+        strip_anim.add_commands_done();
       }
 }
 
@@ -178,7 +178,7 @@ void setup(void){
         CMD_DELAY_8            , 120,
 
     };
-    strip_anim.set_commands(commands);
+    strip_anim.set_commands(commands, true);
 
     FastLED.addLeds< FASTLED_CONFIG >(strip_anim.led_anim.led_level, LED_COUNT);
     FastLED.setDither(DISABLE_DITHER);

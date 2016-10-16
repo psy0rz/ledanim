@@ -263,7 +263,7 @@ Module['onRuntimeInitialized']=function()
             {
                 status_ok("Compiled ok");
                 $("#compile_size").text(led.commands.size());
-                strip_anim.set_commands(led.commands);
+                strip_anim.set_commands(led.commands, false);
                 step();
 
                 upload_commands(led.commands);
