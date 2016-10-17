@@ -150,6 +150,7 @@
             <div id="tab-animations" style='overflow: auto;'>
                 <button class='power_off'>Power off</button>
                 <button class='power_on'>Power on</button>
+                <button class='send'>Send</button>
 
                 <div class='animations_msg'></div>
                 <div class='category template'>
@@ -168,6 +169,7 @@
                 <div>
                     <button class='power_off'>Power off</button>
                     <button class='power_on'>Power on</button>
+                    <button class='send'>Send</button>
                 </div>
                 <div id='controls'>
 
@@ -225,18 +227,22 @@
 
 
             <div id="tab-settings">
-                <fieldset>
-                    <legend>Led strip</legend>
-                    Number of leds: <input id='settings_leds' type='text' size=4 value=''></input>
-                    <p/>
-                    Auto send: <input id='settings_auto_send' type='checkbox'></input>
-
-                </fieldset>
+                <p>
+                    <fieldset>
+                        <legend>Led strip</legend>
+                        Number of leds: <input id='settings_leds' type='text' size=4 value=''></input>
+                        <p/>
+                        Auto send: <input id='settings_auto_send' type='checkbox'></input>
+                        <p/>
+                        Smooth transition: <input id='settings_strip_smooth' type='checkbox'></input>
+                    </fieldset>
+                </p>
                 <p>
                     <fieldset>
                         <legend>Led simulator in Web Browser</legend>
                         Led size: <input id='settings_ledsim_size' type='text' size=4 value=''></input> pixels
-
+                        <p/>
+                        Smooth transition: <input id='settings_ledsim_smooth' type='checkbox'></input>
                     </fieldset>
                 </p>
                 <p>

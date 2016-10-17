@@ -25,6 +25,18 @@ Module['onRuntimeInitialized']=function()
             $("#status_bar").text(txt).removeClass("status_processing status_ok").addClass("status_error");
         }
 
+        var original_jquery_handle = jQuery.event.dispatch;
+        jQuery.event.dispatch = function () {
+            try
+            {
+                original_jquery_handle.apply(this, arguments);
+            }
+            catch (e)
+            {
+                status_error(e.message);
+                throw e;
+            }
+        }
 
         function load_settings()
         {
@@ -41,12 +53,17 @@ Module['onRuntimeInitialized']=function()
                     leds: 160,
                     ledsim_size: 10,
                     auto_send: true,
+                    ledsim_smooth: false,
+                    strip_smooth: false
                 }
             }
 
             $("#program_name").val(settings.program_name);
             $("#settings_leds").val(settings.leds);
             $("#settings_ledsim_size").val(settings.ledsim_size);
+            $("#settings_auto_send").prop("checked", settings.auto_send);
+            $("#settings_ledsim_smooth").prop("checked", settings.ledsim_smooth);
+            $("#settings_strip_smooth").prop("checked", settings.strip_smooth);
 
             //load last editor contents from localstorage
             if (localStorage.hasOwnProperty("current_program"))
@@ -61,22 +78,19 @@ Module['onRuntimeInitialized']=function()
             var leds=Number($("#settings_leds").val());
             if (leds<1 || leds > Module.MAX_LEDS)
             {
-                status_error("Number of leds should be between 1 and "+Module.MAX_LEDS);
-                return (false);
+                throw new Error("Number of leds should be between 1 and "+Module.MAX_LEDS);
             }
 
             var ledsim_size=Number($("#settings_ledsim_size").val());
             if (ledsim_size<1 || ledsim_size>40)
             {
-                status_error("led size should be between 1 and 40");
-                return (false);
+                throw new Error("led size should be between 1 and 40");
             }
 
             var program_name=$("#program_name").val();
             if (! program_name.match(/\.js$/))
             {
-                status_error("program name should end with .js");
-                return (false);
+                throw new Error("program name should end with .js");
             }
 
             localStorage.setItem("current_program", editor.getValue());
@@ -84,10 +98,13 @@ Module['onRuntimeInitialized']=function()
             settings.leds=leds;
             settings.ledsim_size=ledsim_size;
             settings.program_name=program_name;
+            settings.auto_send=$("#settings_auto_send").prop("checked");
+            settings.ledsim_smooth=$("#settings_ledsim_smooth").prop("checked");
+            settings.strip_smooth=$("#settings_strip_smooth").prop("checked");
+
 
             localStorage.setItem("settings", JSON.stringify(settings));
             status_ok("settings saved");
-            return(true);
         }
 
 
@@ -194,24 +211,34 @@ Module['onRuntimeInitialized']=function()
                 return;
             }
 
+            function check_next()
+            {
+                if (upload_next)
+                {
+                    form_data = upload_next;
+                    upload_next=undefined;
+                    start();
+                }
+                else
+                {
+                    uploading=false;
+                }
+            }
+
             function start()
             {
                 uploading=true;
-                status_processing("Uploading to led strip...");
+                status_processing("Sending to led strip...");
                 var oReq = new XMLHttpRequest();
                 oReq.open("POST", settings.url+"set_commands", true);
+                oReq.onerror= function (oEvent)
+                {
+                    status_error("Error while sending to led strip");
+                    check_next();
+                }
                 oReq.onload = function (oEvent) {
-                    status_ok("Uploaded to led strip.");
-                    if (upload_next)
-                    {
-                        form_data = upload_next;
-                        upload_next=undefined;
-                        start();
-                    }
-                    else
-                    {
-                        uploading=false;
-                    }
+                    status_ok("Sent to led strip succesfully.");
+                    check_next();
                 };
                 oReq.send(form_data);
             }
@@ -242,10 +269,11 @@ Module['onRuntimeInitialized']=function()
                 error="";
 
                 if (control.has_controls())
+                {
                     $("#tabs").tabs("enable", "#tab-control");
+                }
                 else {
                     $("#tabs").tabs("disable", "#tab-control");
-
                 }
             }
             catch(e)
@@ -255,18 +283,22 @@ Module['onRuntimeInitialized']=function()
 
             if (error)
             {
-                status_error(error);
+                status_error("Compile error: "+error);
                 if (console)
+                {
                     console.error(error);
+                }
             }
             else
             {
                 status_ok("Compiled ok");
                 $("#compile_size").text(led.commands.size());
-                strip_anim.set_commands(led.commands, false);
+                strip_anim.set_commands(led.commands, settings.ledsim_smooth);
                 step();
-
-                upload_commands(led.commands);
+                if (settings.auto_send)
+                {
+                    upload_commands(led.commands);
+                }
             }
         }
         control.compiler=compile_editor;
@@ -384,7 +416,7 @@ Module['onRuntimeInitialized']=function()
         load_settings();
 
         if (!settings.url)
-            settings.url=window.location.protocol+"//"+window.location.host+"/";
+        settings.url=window.location.protocol+"//"+window.location.host+"/";
 
         led.leds=settings.leds;
 
@@ -421,11 +453,8 @@ Module['onRuntimeInitialized']=function()
 
         ////EVENT change led config
         $("#settings_update").on("click", function() {
-            if (save_settings())
-            {
-                document.location.reload();
-
-            }
+            save_settings();
+            document.location.reload();
         });
 
         ////EVENT atx power control
@@ -435,6 +464,11 @@ Module['onRuntimeInitialized']=function()
 
         $(".power_on").on("click", function() {
             $.ajax(settings.url+"on");
+        });
+
+        ///EVENT send commands to strip
+        $(".send").on("click", function() {
+            upload_commands(led.commands);
         });
 
         ////EVENT when user changes the program, recompile and save it after a short delay
@@ -458,7 +492,8 @@ Module['onRuntimeInitialized']=function()
         ///EVENT save button
         $("#save").click(function(){
 
-            if (save_settings() && settings.program_name)
+            save_settings();
+            if (settings.program_name)
             {
                 localStorage.setItem("program "+settings.program_name, editor.getValue());
                 update_local_animation_list();
@@ -472,8 +507,8 @@ Module['onRuntimeInitialized']=function()
         $("body").on("click", ".local_animation_click", function()
         {
             var program_name=$(this).data("program_name");
-            editor.setValue(localStorage.getItem("program "+program_name),1);
             $("#program_name").val(program_name);
+            editor.setValue(localStorage.getItem("program "+program_name),1);
             return false;
         });
 
@@ -508,11 +543,11 @@ Module['onRuntimeInitialized']=function()
                     $("#program_name").val(clicked.data("animation"));
                     editor.setValue(data,1);
                 });
-        })
+            })
 
-        compile_editor();
+            compile_editor();
 
-        return false;
-    });
+            return false;
+        });
 
-};
+    };

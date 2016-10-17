@@ -170,20 +170,20 @@ class strip_anim_c
             this->used_leds=used_leds;
         }
 
-        void set_commands(commands_t commands, bool abort)
+        void set_commands(commands_t commands, bool smooth)
         {
-            //abort current animation and start now
-            if (abort)
-            {
-                reset();
-                this->commands=commands;
-                start();
-            }
-            else
+            if (smooth)
             {
                 //finish current program and start at a nice point for smooter transition
                 this->commands_new=commands;
                 this->add_commands_done();
+            }
+            else
+            {
+                //abort current animation and start now
+                reset();
+                this->commands=commands;
+                start();
             }
         }
 
