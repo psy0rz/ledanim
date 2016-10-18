@@ -157,13 +157,19 @@ control.color=function(pars)
             pars.default={ r: 255, g: 255, b: 255 };
         }
 
+        function update_text(rgb)
+        {
+            $(".color-value", context).text("{ r:"+rgb.r+", g:"+rgb.g+", b:"+ rgb.b+"}");
+        }
+        update_text(control._get_value(pars));
 
         function changed( event, ui)
         {
             var rgb=ui.color.toRgb();
             control._set_value(pars, rgb);
-            $(".color-value", context).text(rgb.r+", "+rgb.g+", "+ rgb.b);
+            update_text(rgb);
         }
+
 
         $(".widget", context).iris({
             hide: false,

@@ -230,16 +230,26 @@ Module['onRuntimeInitialized']=function()
                 uploading=true;
                 status_processing("Sending to led strip...");
                 var oReq = new XMLHttpRequest();
-                oReq.open("POST", settings.url+"set_commands", true);
+                if (settings.strip_smooth)
+                {
+                    oReq.open("POST", settings.url+"set_commands_smooth", true);
+                }
+                else
+                {
+                    oReq.open("POST", settings.url+"set_commands", true);
+                }
+
                 oReq.onerror= function (oEvent)
                 {
                     status_error("Error while sending to led strip");
                     check_next();
                 }
+
                 oReq.onload = function (oEvent) {
                     status_ok("Sent to led strip succesfully.");
                     check_next();
                 };
+
                 oReq.send(form_data);
             }
 
@@ -272,7 +282,8 @@ Module['onRuntimeInitialized']=function()
                 {
                     $("#tabs").tabs("enable", "#tab-control");
                 }
-                else {
+                else
+                {
                     $("#tabs").tabs("disable", "#tab-control");
                 }
             }
@@ -305,12 +316,15 @@ Module['onRuntimeInitialized']=function()
 
         //download a string as a textfile
         //from http://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
-        function download(filename, data) {
+        function download(filename, data)
+        {
             var blob = new Blob([data], {type: 'text/plain'});
-            if(window.navigator.msSaveOrOpenBlob) {
+            if(window.navigator.msSaveOrOpenBlob)
+            {
                 window.navigator.msSaveBlob(blob, filename);
             }
-            else{
+            else
+            {
                 var elem = window.document.createElement('a');
                 elem.href = window.URL.createObjectURL(blob);
                 elem.download = filename;
@@ -457,19 +471,6 @@ Module['onRuntimeInitialized']=function()
             document.location.reload();
         });
 
-        ////EVENT atx power control
-        $(".power_off").on("click", function() {
-            $.ajax(settings.url+"off");
-        });
-
-        $(".power_on").on("click", function() {
-            $.ajax(settings.url+"on");
-        });
-
-        ///EVENT send commands to strip
-        $(".send").on("click", function() {
-            upload_commands(led.commands);
-        });
 
         ////EVENT when user changes the program, recompile and save it after a short delay
         editor.on("change", function() {
@@ -481,13 +482,12 @@ Module['onRuntimeInitialized']=function()
         });
 
 
-
-
         ///EVENT download button
         $("#download").click(function(){
             download($("#program_name").val(), editor.getValue());
             return false;
         });
+
 
         ///EVENT save button
         $("#save").click(function(){
@@ -529,25 +529,44 @@ Module['onRuntimeInitialized']=function()
             var url=clicked.data("url");
             status_processing("Downloading animation "+url);
 
-            $.ajax(url,
+            $.ajax(url,{
+                dataType: "text",
+                error: function(xhr, status, text)
                 {
-                    dataType: "text",
-                    error: function(xhr, status, text)
-                    {
-                        status_error("Error while loading "+url+": "+ text);
-                    },
-                    // succces:
-                }).done(function(data)
-                {
-                    status_ok("Download of animation ok");
-                    $("#program_name").val(clicked.data("animation"));
-                    editor.setValue(data,1);
-                });
-            })
+                    status_error("Error while loading "+url+": "+ text);
+                },
+                // succces:
+            }).done(function(data)
+            {
+                status_ok("Download of animation ok");
+                $("#program_name").val(clicked.data("animation"));
+                editor.setValue(data,1);
+            });
+        })
 
-            compile_editor();
-
-            return false;
+        ////EVENT bunch of simple on-click things
+        $(".on-click-power-off").on("click", function() {
+            $.ajax(settings.url+"off");
         });
 
-    };
+        $(".on-click-power-on").on("click", function() {
+            $.ajax(settings.url+"on");
+        });
+
+        $(".on-click-send").on("click", function() {
+            upload_commands(led.commands);
+        });
+
+        $(".on-click-restore-defaults").on("click", function() {
+            //restore all defaults
+            $(".on-click-restore-default").click();
+        });
+
+        compile_editor();
+
+        return false;
+
+
+
+    });
+};

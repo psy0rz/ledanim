@@ -137,6 +137,7 @@ void return_ok()
 }
 
 
+bool smooth=false;
 void setup(void){
     Serial.begin(115200);
 
@@ -178,7 +179,7 @@ void setup(void){
         CMD_DELAY_8            , 120,
 
     };
-    strip_anim.set_commands(commands, true);
+    strip_anim.set_commands(commands, smooth);
 
     FastLED.addLeds< FASTLED_CONFIG >(strip_anim.led_anim.led_level, LED_COUNT);
     FastLED.setDither(DISABLE_DITHER);
@@ -193,15 +194,22 @@ void setup(void){
 
     // server.on("/set_commands", handle_set_commands);
     server.on("/set_commands", HTTP_POST, [](){
+        smooth=false;
         return_ok();
     }, handle_set_commands);
-
-    // server.on("/set_commands", HTTP_GET, handle_set_commands);
 
     server.on("/set_commands", HTTP_OPTIONS, [](){
         return_ok();
     });
 
+    server.on("/set_commands_smooth", HTTP_POST, [](){
+        smooth=true;
+        return_ok();
+    }, handle_set_commands);
+
+    server.on("/set_commands_smooth", HTTP_OPTIONS, [](){
+        return_ok();
+    });
 
     //power on/off ATX supply
     pinMode(PIN_POWER_ON, OUTPUT);
