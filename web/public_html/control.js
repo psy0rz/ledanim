@@ -180,7 +180,7 @@ control.color=function(pars)
                     strip: 'v' // right strip defaults to hue
                 },
             width: 300,
-            palettes: true,
+            palettes: ['#FFF', '#000', '#F00', '#0F0', '#00F', '#0FF', '#F0F', '#FF0' ],
             change: changed,
             color: control._get_value(pars),
             border:false
