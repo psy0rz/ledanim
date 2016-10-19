@@ -13,13 +13,23 @@
 #include <MD5.h>
 
 
+#ifdef FASTLED_CONFIG
 #include <FastLED.h>
+#endif
+
+#ifdef NEOPIXEL_CONFIG
+#include <NeoPixelBus.h>
+NeoPixelBus<NEOPIXEL_CONFIG> neopixel_strip(LED_COUNT);
+#endif
+
+
 #include "strip_anim.hpp"
 
 
 
 ESP8266WebServer server(80);
 strip_anim_c<LED_COUNT> strip_anim;
+
 
 
 // void handleRoot() {
@@ -50,20 +60,20 @@ void handle_set_commands()
     HTTPUpload& upload = server.upload();
       if (upload.status == UPLOAD_FILE_START)
       {
-        Serial.println("Upload started...");
-        Serial.println(upload.filename);
+        // Serial.println("Upload started...");
+        // Serial.println(upload.filename);
         // strip_anim.clear();
         strip_anim.add_commands_clear();
       } else if (upload.status == UPLOAD_FILE_WRITE){
         //if(uploadFile) uploadFile.write(upload.buf, upload.currentSize);
-        Serial.print("Upload processing bytes:");
-        Serial.println(upload.currentSize);
+        // Serial.print("Upload processing bytes:");
+        // Serial.println(upload.currentSize);
         strip_anim.add_commands(upload.buf, upload.currentSize);
 
       } else if (upload.status == UPLOAD_FILE_END)
       {
-        Serial.println("Upload done, total:");
-        Serial.print(upload.totalSize);
+        // Serial.println("Upload done, total:");
+        // Serial.print(upload.totalSize);
         strip_anim.add_commands_done();
       }
 }
@@ -181,8 +191,15 @@ void setup(void){
     };
     strip_anim.set_commands(commands, smooth);
 
+#ifdef FASTLED_CONFIG
     FastLED.addLeds< FASTLED_CONFIG >(strip_anim.led_anim.led_level, LED_COUNT);
     FastLED.setDither(DISABLE_DITHER);
+#endif
+
+#ifdef NEOPIXEL_CONFIG
+    neopixel_strip.Begin();
+#endif
+
     strip_anim.step();
 
 
@@ -249,14 +266,18 @@ void setup(void){
         Serial.println("OTA: Start");
         SPIFFS.end(); //important
         strip_anim.led_anim.clear(CRGB(0,255,0)); //still safe
+#ifdef FASTLED_CONFIG
         FastLED.show();
+#endif
     });
     ArduinoOTA.onEnd([]() {
         Serial.println("\nOTA: End");
         //"dangerous": if you reset during flash you have to reflash via serial
         //so dont touch device until restart is complete
         strip_anim.led_anim.clear(CRGB(255,0,0));
+#ifdef FASTLED_CONFIG
         FastLED.show();
+#endif
         Serial.println("\nOTA: DO NOT RESET OR POWER OFF UNTIL BOOT+FLASH IS COMPLETE.");
         delay(1000);
         ESP.reset();
@@ -266,7 +287,9 @@ void setup(void){
         Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
         //getting more "dangerous"
         strip_anim.led_anim.set((progress*LED_COUNT)/total, CRGB(255,255,0));
+#ifdef FASTLED_CONFIG
         FastLED.show();
+#endif
     });
     ArduinoOTA.onError([](ota_error_t error) {
         Serial.printf("Error[%u]: ", error);
@@ -311,12 +334,32 @@ void loop(void){
     ArduinoOTA.handle();
     strip_anim.step();
 
-    //limit to 60 fps
+    //profiling
+    // Serial.print("microseconds used: ");
+    // Serial.println(micros()-last_micros);
+    // with the last tests i did it was usually lower than 2000uS (for both strips)
+
+    //we work at 60 fps
     while (micros()-last_micros < 16666);
-    // while (micros()-last_micros < 1000000);
     last_micros=micros();
 
+#ifdef FASTLED_CONFIG
+    //push current led_levels to actual hardware
     FastLED.show();
+#endif
+
+#ifdef NEOPIXEL_CONFIG
+    //OPTIMIZE: too bad we need this extra buffer and copy. change strip_anim to direct pixel manipulation?
+    //copy current led_levels to neopixel_strip, which will push it to hardware via DMA
+    for (int l=0; l<LED_COUNT; l++)
+    {
+        neopixel_strip.SetPixelColor(l, RgbColor(
+            strip_anim.led_anim.led_level[l].r,
+            strip_anim.led_anim.led_level[l].g,
+            strip_anim.led_anim.led_level[l].b));
+    }
+    neopixel_strip.Show();
+#endif
 
 
 }
