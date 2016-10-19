@@ -7,7 +7,6 @@
 
 For a demonstration look at: http://rawgit.com/psy0rz/ledanim/master/web/public_html/index.html
 
-In future version the control-tab will control certiain variables of the animation.
 
 ## Supported ledstrips
 
@@ -15,7 +14,9 @@ In future version the control-tab will control certiain variables of the animati
 
 - Most NEOpixelbus led-strips: https://github.com/Makuna/NeoPixelBus/wiki
 
-For most SPI-controlled strips you should be fine with FastLED. However there are timeing issues with serial-controlled strips like the WS2812b. In that case you should use the NeoPixelBus library. (it works excellent with the WS2812b)
+For most SPI-controlled strips you should be fine with FastLED. However there are timing issues with serial-controlled strips like the WS2812b. In that case you should use the NeoPixelBus library. (it works excellent with the WS2812b)
+
+NeoPixelBus uses all kind of hardware tricks (DMA, UARTS) to create smoother and faster led-updates. (but its less portable as a library) 
 
 
 ## HOWTO
