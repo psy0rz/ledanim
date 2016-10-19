@@ -143,17 +143,6 @@ class strip_anim_c
             stopped=false;
         }
 
-        //clear new-command buffer
-        void add_commands_clear()
-        {
-            new_ready=false;
-            commands_new.clear();
-        }
-
-        void add_commands_done()
-        {
-            new_ready=true;
-        }
 
         void stop()
         {
@@ -193,6 +182,27 @@ class strip_anim_c
         {
             reset();
             this->commands.clear();
+        }
+        //clear new-command buffer
+        void add_commands_clear()
+        {
+            new_ready=false;
+            commands_new.clear();
+        }
+
+        //indicate new commands are ready. it will be activated when pc==0 or when add_commands_activate is called.
+        void add_commands_done()
+        {
+            new_ready=true;
+        }
+
+        void add_commands_activate(bool smooth)
+        {
+            reset(smooth);
+            commands=commands_new;
+            new_ready=false;
+            commands_new.clear();
+            start();
         }
 
         //add commands to new commands buffer, use add_commands_done to activate
@@ -472,11 +482,7 @@ class strip_anim_c
             //activate new commands?
             if (pc==0 && new_ready)
             {
-                reset(true);
-                commands=commands_new;
-                new_ready=false;
-                commands_new.clear();
-                start();
+                add_commands_activate(true);
             }
 
             if (stopped)

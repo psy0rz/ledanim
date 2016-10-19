@@ -54,6 +54,7 @@ void wifi_config()
     }
 }
 
+bool smooth=false;
 void handle_set_commands()
 {
 
@@ -75,6 +76,9 @@ void handle_set_commands()
         // Serial.println("Upload done, total:");
         // Serial.print(upload.totalSize);
         strip_anim.add_commands_done();
+
+        if (!smooth)
+            strip_anim.add_commands_activate(false);
       }
 }
 
@@ -147,7 +151,6 @@ void return_ok()
 }
 
 
-bool smooth=false;
 void setup(void){
     Serial.begin(115200);
 
@@ -189,7 +192,7 @@ void setup(void){
         CMD_DELAY_8            , 120,
 
     };
-    strip_anim.set_commands(commands, smooth);
+    strip_anim.set_commands(commands, false);
 
 #ifdef FASTLED_CONFIG
     FastLED.addLeds< FASTLED_CONFIG >(strip_anim.led_anim.led_level, LED_COUNT);

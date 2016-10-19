@@ -87,7 +87,7 @@ class led_anim_c
             set_mirror(0);
             for (int i=0; i<used_leds;i++)
             {
-                fade_to_fast(i, CRGB(0,0,0), 1);
+                fade_to_fast(i, CRGB(0,0,0), 10);
             }
         }
 
