@@ -19,7 +19,7 @@
 
 #ifdef NEOPIXEL_CONFIG
 #include <NeoPixelBus.h>
-NeoPixelBus<NEOPIXEL_CONFIG> neopixel_strip(LED_COUNT);
+NeoPixelBus<NEOPIXEL_CONFIG> * neopixel_strip=new NeoPixelBus<NEOPIXEL_CONFIG>(LED_COUNT);
 #endif
 
 
@@ -150,6 +150,30 @@ void return_ok()
     // server.client().stop();
 }
 
+//send current strip_anim values to hardware
+void send_leds()
+{
+    #ifdef FASTLED_CONFIG
+        //push current led_levels to actual hardware
+        FastLED.show();
+    #endif
+
+    #ifdef NEOPIXEL_CONFIG
+        //OPTIMIZE: too bad we need this extra buffer and copy. change strip_anim to direct pixel manipulation?
+        //copy current led_levels to neopixel_strip, which will push it to hardware via DMA
+        if (neopixel_strip!=NULL)
+        {
+            for (int l=0; l<LED_COUNT; l++)
+            {
+                neopixel_strip->SetPixelColor(l, RgbColor(
+                    strip_anim.led_anim.led_level[l].r,
+                    strip_anim.led_anim.led_level[l].g,
+                    strip_anim.led_anim.led_level[l].b));
+            }
+            neopixel_strip->Show();
+        }
+    #endif
+}
 
 void setup(void){
     Serial.begin(115200);
@@ -200,7 +224,7 @@ void setup(void){
 #endif
 
 #ifdef NEOPIXEL_CONFIG
-    neopixel_strip.Begin();
+    neopixel_strip->Begin();
 #endif
 
     strip_anim.step();
@@ -269,20 +293,18 @@ void setup(void){
         Serial.println("OTA: Start");
         SPIFFS.end(); //important
         strip_anim.led_anim.clear(CRGB(0,255,0)); //still safe
-#ifdef FASTLED_CONFIG
-        FastLED.show();
-#endif
+        send_leds();
     });
     ArduinoOTA.onEnd([]() {
         Serial.println("\nOTA: End");
         //"dangerous": if you reset during flash you have to reflash via serial
         //so dont touch device until restart is complete
         strip_anim.led_anim.clear(CRGB(255,0,0));
-#ifdef FASTLED_CONFIG
-        FastLED.show();
-#endif
+        send_leds();
         Serial.println("\nOTA: DO NOT RESET OR POWER OFF UNTIL BOOT+FLASH IS COMPLETE.");
-        delay(1000);
+        delay(100);
+        delete neopixel_strip; //imporatant, otherwise conflicts with flashing i think
+        neopixel_strip=NULL;
         ESP.reset();
     });
     ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -290,9 +312,7 @@ void setup(void){
         Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
         //getting more "dangerous"
         strip_anim.led_anim.set((progress*LED_COUNT)/total, CRGB(255,255,0));
-#ifdef FASTLED_CONFIG
-        FastLED.show();
-#endif
+        send_leds();
     });
     ArduinoOTA.onError([](ota_error_t error) {
         Serial.printf("Error[%u]: ", error);
@@ -311,6 +331,8 @@ void setup(void){
 
 unsigned long last_micros=0;
 int last_wifi_status=-1;
+
+
 
 void loop(void){
     // Serial.println("lup");
@@ -346,23 +368,7 @@ void loop(void){
     while (micros()-last_micros < 16666);
     last_micros=micros();
 
-#ifdef FASTLED_CONFIG
-    //push current led_levels to actual hardware
-    FastLED.show();
-#endif
-
-#ifdef NEOPIXEL_CONFIG
-    //OPTIMIZE: too bad we need this extra buffer and copy. change strip_anim to direct pixel manipulation?
-    //copy current led_levels to neopixel_strip, which will push it to hardware via DMA
-    for (int l=0; l<LED_COUNT; l++)
-    {
-        neopixel_strip.SetPixelColor(l, RgbColor(
-            strip_anim.led_anim.led_level[l].r,
-            strip_anim.led_anim.led_level[l].g,
-            strip_anim.led_anim.led_level[l].b));
-    }
-    neopixel_strip.Show();
-#endif
+    send_leds();
 
 
 }
