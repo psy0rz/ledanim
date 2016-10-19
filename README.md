@@ -9,6 +9,15 @@ For a demonstration look at: http://rawgit.com/psy0rz/ledanim/master/web/public_
 
 In future version the control-tab will control certiain variables of the animation.
 
+## Supported ledstrips
+
+- Most FastLED led-strips: https://github.com/FastLED/FastLED/wiki/Chipset-reference
+
+- Most NEOpixelbus led-strips: https://github.com/Makuna/NeoPixelBus/wiki
+
+For most SPI-controlled strips you should be fine with FastLED. However there are timeing issues with serial-controlled strips like the WS2812b. In that case you should use the NeoPixelBus library. (it works excellent with the WS2812b)
+
+
 ## HOWTO
 
 ### 1. hardware 
@@ -27,7 +36,7 @@ You can skip the transistor and just power your ATX supply by connecting green t
 
 - change platform.ini to match your board and port. (you can also do this via the gui)
 
-- edit config.h and fill in some sensible values. 
+- edit config.h and enable the correct ledstrip config. (and FastLed/NeopixelBus stuff)
 
 ### 3. wifi configuration
 
@@ -41,6 +50,12 @@ mypassword
 
 - Build and upload project
 
+
+
+### 4. testing
+
+- After powerup the first 3 leds should be blinking in order r, g, b with a fade effect. Check if the rgb-order is fine and the fading is smooth.
+
 - Use serial monitor to see if the unit boots and connects to your wifi
 
 - Goto http://ipadress
@@ -48,7 +63,3 @@ mypassword
 - ( You might need to refresh/reload the page a few times, the esp8266 webserver code doesnt handle parallel connections very well )
 
 In later versions you can just use the online webbpage from github and add the ip's of your ESP8266.
-
-
-
-
