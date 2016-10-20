@@ -33,7 +33,7 @@ for SRC in `find "$SRC_DIR" -type f`; do
         exit 1
     fi
 
-    gzip -9 < "$SRC" > $HASHED_DST
+    gzip --rsyncable -9 < "$SRC" > $HASHED_DST
     echo "gzipped to: $HASHED_DST"
 done
 

@@ -359,7 +359,9 @@ class strip_anim_c
                             rgb.b=get_next8();
                             DEBUG_LOG("CMD_LED_SET_NEXT (" << (int)rgb.r << " , " << (int)rgb.g << " , " << (int)rgb.b << ")  led=" << led);
                             led_anim.set(led, rgb);
-                            led=(led+pen_step)%used_leds;
+                            led=(led+pen_step);
+                            if (led>=used_leds)
+                                led=used_leds-1;
                             break;
                         }
 
@@ -460,11 +462,17 @@ class strip_anim_c
                                             break;
                                     }
                                     tmp_led++;
+                                    if (tmp_led>=used_leds)
+                                        tmp_led=used_leds-1;
                                 }
-                                tmp_led=(led+pen_clone_offset*(clone_count+1))%used_leds;
+                                tmp_led=(led+pen_clone_offset*(clone_count+1));
+                                if (tmp_led>=used_leds)
+                                    tmp_led=used_leds-1;
                             }
                         }
-                        led=(led+pen_step)%used_leds;
+                        led=(led+pen_step);
+                        if (led>=used_leds)
+                            led=used_leds-1;
                         break;
 
 
