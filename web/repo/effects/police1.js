@@ -1,4 +1,4 @@
-//policy lights (will add more in the future)
+//police lights 
 bpm=control.slider({
     name:"BPM",
     category: "music",
@@ -25,8 +25,7 @@ led.delay(2);
 led.led(0);
 led.color(255,0,0);
 led.draw();
-// led.delay(14);
-led.interval(30000/bpm);
+led.interval(60000/bpm);
 
 
 led.led(0);
@@ -47,7 +46,7 @@ led.delay(2);
 led.led(led.leds-width);
 led.color(0,0,255);
 led.draw();
-led.interval(30000/bpm);
+led.interval(60000/bpm);
 
 led.led(led.leds-width);
 led.color(0,0,0);

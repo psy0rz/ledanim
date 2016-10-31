@@ -303,8 +303,10 @@ void setup(void){
         send_leds();
         Serial.println("\nOTA: DO NOT RESET OR POWER OFF UNTIL BOOT+FLASH IS COMPLETE.");
         delay(100);
+#ifdef NEOPIXEL_CONFIG
         delete neopixel_strip; //imporatant, otherwise conflicts with flashing i think
         neopixel_strip=NULL;
+#endif
         ESP.reset();
     });
     ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {

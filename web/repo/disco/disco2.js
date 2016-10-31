@@ -1,4 +1,5 @@
-//fading light blob
+//flame colored blobs
+
 
 bpm=control.slider({
     name:"BPM",
@@ -8,17 +9,24 @@ bpm=control.slider({
     default: 160
 });   
 
+split=control.slider({
+    name:"Split",
+    min:1,  
+    max:led.leds/40,
+    default: 2
+});   
 
 
 color=control.color({
     name:"Color", 
-    default: { r: 0, g:255, b:191 }
+    default: { r:255, g:161, b:0}
+
 
 });
 
-// led.mirror(30);
+led.mirror(led.leds/split);
 
-led.led_rnd(0, led.leds-20);
+led.led_rnd(0, (led.leds/split)-40);
 led.fade_mode(2);
 led.fade_speed(8);
 

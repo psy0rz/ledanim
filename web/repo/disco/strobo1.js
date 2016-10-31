@@ -1,9 +1,18 @@
-//policy lights (will add more in the future)
+//stroboscope effect
+
+
+flash=control.slider({
+    name:"Flash length (1/60s seconds)",
+    min:1,  
+    max:60,
+    default: 2
+});   
+
 delay=control.slider({
     name:"Delay (1/60s seconds)",
     min:1,  
     max:60,
-    default: 6
+    default: 5
 });   
 
 color=control.color({
@@ -20,7 +29,7 @@ led.mirror(20);
 led.led(0);
 led.color(color.r, color.g, color.b);
 led.draw();
-led.delay(0);
+led.delay(flash-1);
 
 
 led.led(0);
