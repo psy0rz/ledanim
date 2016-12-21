@@ -27,7 +27,7 @@ color2=control.color({
 /// flash first led color 
 led.led_rnd(0, led.leds);
 led.set(color1.r, color1.g, color1.b)
-led.color(flashcolor.r, flashcolor.g, flashcolor.g);
+led.color(flashcolor.r, flashcolor.g, flashcolor.b);
 led.fade_mode(2);
 led.fade_speed(20);
 led.draw();
@@ -40,7 +40,7 @@ led.repeat_end();
 /// flash second led color
 led.led_rnd(0, led.leds);
 led.set(color2.r, color2.g, color2.b)
-led.color(flashcolor.r, flashcolor.g, flashcolor.g);
+led.color(flashcolor.r, flashcolor.g, flashcolor.b);
 led.fade_mode(2);
 led.fade_speed(20);
 led.draw();
