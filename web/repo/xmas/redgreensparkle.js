@@ -1,5 +1,7 @@
 // red green xmas sparkles
 
+led.step(0)
+
 delay=control.slider({
     name:"delay",
     min:0,  
@@ -48,6 +50,19 @@ led.draw();
 led.repeat_begin_rnd(0,delay)
 led.delay(1)
 led.repeat_end();
+
+
+/// turn a led off
+led.led_rnd(0, led.leds);
+led.color(0,0,0);
+led.fade_mode(1);
+led.fade_speed(1);
+led.draw();
+
+led.repeat_begin_rnd(0,delay)
+led.delay(1)
+led.repeat_end();
+
 
 
         
