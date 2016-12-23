@@ -1,7 +1,19 @@
 // Some kind of red green comet :)
 
-tail=30;
-mirror=60;
+
+tail=control.slider({
+    name:"tail",
+    min:0,  
+    max:100,
+    default: 30
+});   
+
+mirror=control.slider({
+    name:"mirror",
+    min:10,  
+    max:200,
+    default: 100
+});   
 
 led.mirror(mirror);
 led.fade_mode(1);
@@ -14,7 +26,7 @@ for(i=0;i<mirror; i++)
     led.set(255,255,255);
 
     //fade to green fast
-    if (i%2==0)
+    if (i&8)
         led.color_rnd(0,0, 50,180, 0,0);
     else 
         led.color_rnd(50,180,0,0, 0,0);
