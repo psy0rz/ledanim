@@ -551,13 +551,26 @@ Module['onRuntimeInitialized']=function()
             });
         })
 
+        function esp_rpc(url, desc)
+        {
+          status_processing(desc);
+          $.ajax(url, {
+            error:    function(r) { status_error(r.responseText); },
+            success:  function(r) { status_ok(r); },
+          });
+        }
+
         ////EVENT bunch of simple on-click things
         $(".on-click-power-off").on("click", function() {
-            $.ajax(settings.url+"off");
+            esp_rpc(settings.url+"off", "Power off");
         });
 
         $(".on-click-power-on").on("click", function() {
-            $.ajax(settings.url+"on");
+            esp_rpc(settings.url+"on", "Power on");
+        });
+
+        $(".on-click-save-to-flash").on("click", function() {
+          esp_rpc(settings.url+"save", "Saving current animation to flash");
         });
 
         $(".on-click-send").on("click", function() {

@@ -63,14 +63,13 @@ class strip_anim_c
 {
     public:
         led_anim_c<MAX_LEDS> led_anim;
+        commands_t commands;
 
     private:
         uint16_t used_leds=MAX_LEDS;
 
         bool stopped;
 
-        //commands
-        commands_t commands;
         commands_t commands_new;
         bool new_ready;
 

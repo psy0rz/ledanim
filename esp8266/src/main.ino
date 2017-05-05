@@ -143,12 +143,23 @@ bool handleFileRead(String path)
 }
 
 
+void return_ok(const __FlashStringHelper* flashString)
+{
+    server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+    server.send(200, "text/plain", String(flashString));
+}
+
 void return_ok()
 {
     server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
     server.send(200, "text/plain", "");
-    // server.client().stop();
 }
+
+void return_error(const __FlashStringHelper* flashString)
+{
+    server.send(500, "text/plain", String(flashString));
+}
+
 
 //send current strip_anim values to hardware
 void send_leds()
@@ -236,6 +247,26 @@ void setup(void){
     wifi_config();
 
 
+    // load default animation from flash
+    File fh=SPIFFS.open("commands.dat", "r+");
+    if (fh)
+    {
+Serial.println("open ok");
+        strip_anim.add_commands_clear();
+
+        while(fh.available())
+        {
+          // Serial.println("byteee");
+            uint8_t b;
+            b=fh.read();
+            strip_anim.add_commands(&b, 1);
+        }
+        fh.close();
+        strip_anim.add_commands_activate(false);
+Serial.println("cloost");
+    }
+
+
     // server.on("/set_commands", handle_set_commands);
     server.on("/set_commands", HTTP_POST, [](){
         smooth=false;
@@ -267,6 +298,32 @@ void setup(void){
         return_ok();
     });
 
+    //save current command string to SPIFFS
+    server.on("/save", HTTP_GET, [](){
+        // server.send(404, "text/plain", "FileNotFound");
+        File fh=SPIFFS.open("commands.dat", "w");
+        if (!fh)
+        {
+            return_error(F("Error creating save file."));
+        }
+        else
+        {
+            commands_t::iterator i;
+            i=strip_anim.commands.begin();
+            while(i!=strip_anim.commands.end())
+            {
+                if (fh.write(*i)!=1)
+                {
+                    fh.close();
+                    return_error(F("Error while saving."));
+                    return;
+                }
+                i++;
+            }
+            fh.close();
+            return_ok(F("Saved current animation as default."));
+        }
+    });
 
     server.onNotFound([](){
         if(!handleFileRead(server.uri()))
