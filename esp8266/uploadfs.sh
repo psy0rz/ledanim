@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# XXX this script isnt needed anymore, we're hosting the web ui online
+
 set -e
 
 

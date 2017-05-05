@@ -9,6 +9,8 @@ Module['onRuntimeInitialized']=function()
     //wait until document is ready:
     $( document ).ready( function()
     {
+        var url_params = new URLSearchParams(window.location.search);
+
 
         function status_ok(txt)
         {
@@ -40,7 +42,7 @@ Module['onRuntimeInitialized']=function()
 
         function load_settings()
         {
-            var settings_json=localStorage.getItem("settings");
+            var settings_json=localStorage.getItem("settings_"+url_params.get('host'));
             if (settings_json)
             {
                 settings=JSON.parse(settings_json);
@@ -104,7 +106,7 @@ Module['onRuntimeInitialized']=function()
             settings.strip_smooth=$("#settings_strip_smooth").prop("checked");
 
 
-            localStorage.setItem("settings", JSON.stringify(settings));
+            localStorage.setItem("settings_"+url_params.get('host'), JSON.stringify(settings));
             status_ok("settings saved");
         }
 
@@ -228,8 +230,10 @@ Module['onRuntimeInitialized']=function()
 
             function start()
             {
+                if (!settings.url)
+                    return;
                 uploading=true;
-                status_processing("Sending to led strip...");
+                status_processing("Sending to led strip "+settings.url+"...");
                 var oReq = new XMLHttpRequest();
                 if (settings.strip_smooth)
                 {
@@ -430,8 +434,10 @@ Module['onRuntimeInitialized']=function()
 
         load_settings();
 
-        if (!settings.url)
-        settings.url=window.location.protocol+"//"+window.location.host+"/";
+        if (url_params.get('host'))
+        {
+          settings.url="http://"+url_params.get('host')+"/";
+        }
 
         led.leds=settings.leds;
 
