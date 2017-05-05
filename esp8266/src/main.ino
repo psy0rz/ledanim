@@ -101,17 +101,17 @@ String getContentType(String filename)
     return "text/plain";
 }
 
-//hash to workaround 32 character path-limit
-String hashed_gz_path(String & path)
-{
-    unsigned char* hash=MD5::make_hash(path.c_str());
-    char *md5str = MD5::make_digest(hash, 13);
-    String ret(md5str);
-    ret="/"+ret+".gz";
-    free(md5str);
-    free(hash);
-    return(ret);
-}
+// //hash to workaround 32 character path-limit
+// String hashed_gz_path(String & path)
+// {
+//     unsigned char* hash=MD5::make_hash(path.c_str());
+//     char *md5str = MD5::make_digest(hash, 13);
+//     String ret(md5str);
+//     ret="/"+ret+".gz";
+//     free(md5str);
+//     free(hash);
+//     return(ret);
+// }
 
 bool handleFileRead(String path)
 {
@@ -124,7 +124,7 @@ bool handleFileRead(String path)
 
     String contentType = getContentType(path);
 
-    path=hashed_gz_path(path);
+    // path=hashed_gz_path(path);
     // Serial.println("hashed file: " + path);
 
     if(SPIFFS.exists(path))
