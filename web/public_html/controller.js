@@ -50,6 +50,7 @@ Module['onRuntimeInitialized']=function()
                 //default settings
                 settings=
                 {
+                    program_name: 'animation.js',
                     leds: 160,
                     ledsim_size: 10,
                     auto_send: true,
