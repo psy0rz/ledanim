@@ -47,9 +47,11 @@ void wifi_config()
     {
         String ssid=wifi_config_fh.readStringUntil('\n');
         String password=wifi_config_fh.readStringUntil('\n');
+        wifi_config_fh.close();
 
         Serial.print("Wifi connecting to: ");
         Serial.println(ssid.c_str());
+        WiFi.setAutoReconnect(true);
         WiFi.begin(ssid.c_str(), password.c_str());
     }
 }
@@ -244,14 +246,12 @@ void setup(void){
     if (!SPIFFS.begin())
     Serial.println("SPIFFS: error while mounting");
 
-    wifi_config();
 
 
     // load default animation from flash
     File fh=SPIFFS.open("commands.dat", "r+");
     if (fh)
     {
-Serial.println("open ok");
         strip_anim.add_commands_clear();
 
         while(fh.available())
@@ -263,7 +263,6 @@ Serial.println("open ok");
         }
         fh.close();
         strip_anim.add_commands_activate(false);
-Serial.println("cloost");
     }
 
 
@@ -383,6 +382,7 @@ Serial.println("cloost");
     });
     ArduinoOTA.begin();
 
+    wifi_config();
 
     Serial.println("boot complete");
 }
@@ -390,12 +390,19 @@ Serial.println("cloost");
 
 unsigned long last_micros=0;
 int last_wifi_status=-1;
+unsigned long last_check=0;
 
+void periodic_checks()
+{
+  if (last_wifi_status!=WL_CONNECTED)
+    wifi_config();
+}
 
 
 void loop(void){
     // Serial.println("lup");
     server.handleClient();
+
 
     if (WiFi.status() != last_wifi_status)
     {
@@ -415,8 +422,20 @@ void loop(void){
 
     }
 
+    // if (last_wifi_status!=WL_CONNECTED)
+    //   wifi_config();
+
+
     ArduinoOTA.handle();
     strip_anim.step();
+
+    //do periodic checks ever 10s
+    if ((millis()-last_check)>10000)
+    {
+      periodic_checks();
+      last_check=millis();
+    }
+
 
     //profiling
     // Serial.print("microseconds used: ");
