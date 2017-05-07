@@ -68,6 +68,7 @@ control._get_value=function(pars)
     return(settings.controls[pars.category][pars.name]);
 }
 
+//called by browser events when user changed control
 control._set_value=function(pars, value)
 {
     if (!pars.category)

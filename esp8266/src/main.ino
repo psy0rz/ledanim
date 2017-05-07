@@ -382,7 +382,7 @@ void setup(void){
     });
     ArduinoOTA.begin();
 
-    wifi_config();
+    // wifi_config();
 
     Serial.println("boot complete");
 }
@@ -421,9 +421,6 @@ void loop(void){
         }
 
     }
-
-    // if (last_wifi_status!=WL_CONNECTED)
-    //   wifi_config();
 
 
     ArduinoOTA.handle();
