@@ -285,8 +285,9 @@ void setup(void){
         return_ok();
     });
 
-    //power on/off ATX supply
+    //power on/off ATX supply. when booting we always turn the ATX power on. (you can turn it off via the webgui)
     pinMode(PIN_POWER_ON, OUTPUT);
+    digitalWrite(PIN_POWER_ON, 1);
     server.on("/off", HTTP_GET, [](){
         digitalWrite(PIN_POWER_ON, 0);
         return_ok();
