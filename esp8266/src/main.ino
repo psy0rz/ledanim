@@ -147,18 +147,21 @@ bool handleFileRead(String path)
 
 void return_ok(const __FlashStringHelper* flashString)
 {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
     server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
     server.send(200, "text/plain", String(flashString));
 }
 
 void return_ok()
 {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
     server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
     server.send(200, "text/plain", "");
 }
 
 void return_error(const __FlashStringHelper* flashString)
 {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(500, "text/plain", String(flashString));
 }
 
