@@ -55,6 +55,8 @@ Module['onRuntimeInitialized']=function()
                     program_name: 'animation.js',
                     leds: 160,
                     ledsim_size: 10,
+                    ledsim_xcount:16,
+                    ledsim_ycount: 10,
                     auto_send: true,
                     ledsim_smooth: false,
                     strip_smooth: false
@@ -63,6 +65,8 @@ Module['onRuntimeInitialized']=function()
 
             $("#program_name").val(settings.program_name);
             $("#settings_leds").val(settings.leds);
+            $("#settings_ledsim_xcount").val(settings.ledsim_xcount);
+            $("#settings_ledsim_ycount").val(settings.ledsim_ycount);
             $("#settings_ledsim_size").val(settings.ledsim_size);
             $("#settings_auto_send").prop("checked", settings.auto_send);
             $("#settings_ledsim_smooth").prop("checked", settings.ledsim_smooth);
@@ -90,6 +94,13 @@ Module['onRuntimeInitialized']=function()
                 throw new Error("led size should be between 1 and 40");
             }
 
+            var ledsim_xcount=Number($("#settings_ledsim_xcount").val());
+            var ledsim_ycount=Number($("#settings_ledsim_ycount").val());
+            if (ledsim_xcount<1 || ledsim_ycount<1 )
+            {
+                throw new Error("led count should be >0");
+            }
+
             var program_name=$("#program_name").val();
             if (! program_name.match(/\.js$/))
             {
@@ -100,6 +111,8 @@ Module['onRuntimeInitialized']=function()
 
             settings.leds=leds;
             settings.ledsim_size=ledsim_size;
+            settings.ledsim_xcount=ledsim_xcount;
+            settings.ledsim_ycount=ledsim_ycount;
             settings.program_name=program_name;
             settings.auto_send=$("#settings_auto_send").prop("checked");
             settings.ledsim_smooth=$("#settings_ledsim_smooth").prop("checked");
@@ -403,13 +416,16 @@ Module['onRuntimeInitialized']=function()
             timeout = setTimeout(func, 300);
         }
 
-        //scale led pixels to correct size
+        //scale led ds to correct size
         function scale_canvas()
         {
-            var screen_width=$("#ledsim").width();
+            var screen_width=settings.ledsim_size*settings.ledsim_xcount;
+            $("#ledsim").width(screen_width);
 
-            var canvas_columns=Math.floor(screen_width/settings.ledsim_size);
-            var canvas_rows=Math.floor(settings.leds/canvas_columns)+1;
+            // var canvas_columns=Math.floor(screen_width/settings.ledsim_size);
+            // var canvas_rows=Math.floor(settings.leds/canvas_columns)+1;
+            var canvas_columns=settings.ledsim_xcount;
+            var canvas_rows=settings.ledsim_ycount;
 
             $("#ledsim").attr("height", canvas_rows);
             $("#ledsim").attr("width", canvas_columns);
