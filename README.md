@@ -1,5 +1,7 @@
-# Led animation library for ESP8266
+NOTE: If you want something much more advanced, for use with led-matrixes and a raspberry, keep an eye on https://github.com/psy0rz/ledder 
 
+# Led animation library for ESP8266
+                    
 - Has a nice webgui to select and SIMULATE led animations.
 - Create web animations in javascript in your browser and submit them to your ESP8266 that has an actual ledstrip.
 - Our goal is to create a huge library with animations.
